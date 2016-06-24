@@ -1,0 +1,249 @@
+# Copyright 2016 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#==============================================================================
+
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("feature_extractor_proto") {
+  sources = [
+    "feature_extractor.proto"
+  ]
+}
+
+proto_library("sentence_proto") {
+  sources = [
+    "sentence.proto"
+  ]
+}
+
+proto_library("sparse_proto") {
+  sources = [
+    "sparse.proto"
+  ]
+}
+
+proto_library("task_spec_proto") {
+  sources = [
+    "task_spec.proto"
+  ]
+}
+
+static_library("base") {
+  sources = [
+    "base.h",
+    "base.cc"
+  ]
+  deps = [
+    "//base",
+  ]
+}
+
+static_library("embedding_feature_extractor") {
+  sources = [
+    "embedding_feature_extractor.h",
+    "embedding_feature_extractor.cc"
+  ]
+  deps = [
+    ":base",
+    ":feature_extractor",
+    ":sparse_proto",
+    ":task_context",
+    ":utils",
+    ":workspace",
+    "//base",
+  ]
+}
+
+static_library("embedding_network") {
+  sources = [
+    "embedding_network.h",
+    "embedding_network.cc"
+  ]
+  deps = [
+    ":base",
+    ":embedding_network_params",
+    ":simple_adder",
+    ":sparse_proto",
+    ":task_context_params",
+    "//base",
+  ]
+}
+
+static_library("embedding_network_params") {
+  sources = [
+    "embedding_network_params.h",
+    "embedding_network_params.cc"
+  ]
+}
+
+static_library("feature_extractor") {
+  sources = [
+    "feature_extractor.h",
+    "feature_extractor.cc",
+    "feature_types.h"
+  ]
+  deps = [
+    ":base",
+    ":feature_extractor_proto",
+    ":fml_parser",
+    ":registry",
+    ":task_context",
+    ":utils",
+    ":workspace",
+    "//base",
+  ]
+}
+
+static_library("fml_parser") {
+  sources = [
+    "fml_parser.h",
+    "fml_parser.cc"
+  ]
+  deps = [
+    ":base",
+    ":feature_extractor_proto",
+    ":utils",
+    "//base",
+  ]
+}
+
+static_library("language_identifier_features") {
+  sources = [
+    "language_identifier_features.h",
+    "language_identifier_features.cc"
+  ]
+  deps = [
+    ":base",
+    ":feature_extractor",
+    ":sentence_features",
+    ":sentence_proto",
+    ":task_context",
+    ":utils",
+    ":workspace",
+    "//base",
+  ]
+}
+
+static_library("nnet_language_identifier") {
+  sources = [
+    "nnet_language_identifier.h",
+    "nnet_language_identifier.cc"
+  ]
+  deps = [
+    ":base",
+    ":embedding_feature_extractor",
+    ":embedding_network",
+    ":language_identifier_features",
+    ":sentence_features",
+    ":sentence_proto",
+    ":sparse_proto",
+    ":task_context",
+    ":task_context_params",
+    ":task_spec_proto",
+    ":workspace",
+    "//base",
+    "//third_party/cld_3/src/script_span:script_span",
+  ]
+}
+
+static_library("registry") {
+  sources = [
+    "registry.h",
+    "registry.cc"
+  ]
+  deps = [
+    ":base",
+    "//base"
+  ]
+}
+
+static_library("sentence_features") {
+  sources = [
+    "sentence_features.h",
+    "sentence_features.cc"
+  ]
+  deps = [
+    ":feature_extractor",
+    ":registry",
+    ":sentence_proto",
+  ]
+}
+
+static_library("simple_adder") {
+  sources = [
+    "simple_adder.h"
+  ]
+  deps = [
+    ":base",
+    "//base",
+  ]
+}
+
+static_library("task_context") {
+  sources = [
+    "task_context.h",
+    "task_context.cc"
+  ]
+  deps = [
+    ":base",
+    ":task_spec_proto",
+    ":utils",
+    "//base",
+  ]
+}
+
+static_library("task_context_params") {
+  sources = [
+    "task_context_params.h",
+    "task_context_params.cc",
+  ]
+  deps = [
+    ":base",
+    ":task_context",
+    ":task_spec_proto",
+  ]
+}
+
+static_library("utils") {
+  sources = [
+    "utils.h",
+    "utils.cc" ]
+  deps = [
+    ":base",
+    "//base",
+  ]
+}
+
+static_library("workspace") {
+  sources = [
+    "workspace.h",
+    "workspace.cc"
+  ]
+  deps = [
+    ":base",
+    "//base",
+  ]
+}
+
+executable("language_identifier_main") {
+  sources = [
+    "language_identifier_main.cc",
+  ]
+  deps = [
+    ":base",
+    ":nnet_language_identifier",
+    "//base",
+    "//third_party/protobuf:protobuf_lite",
+  ]
+}

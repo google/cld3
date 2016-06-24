@@ -1,0 +1,54 @@
+# Copyright 2016 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#==============================================================================
+
+# TODO(abakalov): The code in script_span was copied from CLD2. It can be
+# simplified and cleaned up.
+
+config("script_span_warnings") {
+  if (is_clang) {
+    cflags = [
+      # offsetmap.cc uses a char as a subscript.
+      "-Wno-char-subscripts",
+    ]
+  }
+}
+
+static_library("script_span") {
+  sources = [
+    "fixunicodevalue.cc",
+    "generated_entities.cc",
+    "generated_ulscript.cc",
+    "getonescriptspan.cc",
+    "offsetmap.cc",
+    "utf8statetable.cc",
+    "fixunicodevalue.h",
+    "generated_ulscript.h",
+    "getonescriptspan.h",
+    "integral_types.h",
+    "offsetmap.h",
+    "port.h",
+    "stringpiece.h",
+    "utf8acceptinterchange.h",
+    "utf8prop_lettermarkscriptnum.h",
+    "utf8scannot_lettermarkspecial.h",
+    "utf8statetable.h",
+  ]
+  deps = [
+    "//base",
+  ]
+  configs += [
+    ":script_span_warnings",
+  ]
+}
