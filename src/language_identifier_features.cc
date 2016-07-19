@@ -52,12 +52,11 @@ void ContinuousBagOfNgramsFunction::Init(TaskContext *context) {
 
 void ContinuousBagOfNgramsFunction::Evaluate(const WorkspaceSet &workspaces,
                                              const Sentence &sentence,
-                                             int focus,
                                              FeatureVector *result) const {
   // Include terminators for each token. Tokens are discovered by splitting the
   // text on spaces.
   vector<string> chars;
-  utils::GetUTF8Chars(sentence.token(focus).word(), &chars);
+  utils::GetUTF8Chars(sentence.text(), &chars);
   if (include_terminators_) {
     vector<string> new_chars{"^"};
     for (size_t index = 0; index < chars.size(); ++index) {
@@ -107,47 +106,7 @@ void ContinuousBagOfNgramsFunction::Evaluate(const WorkspaceSet &workspaces,
   }
 }
 
-REGISTER_SENTENCE_IDX_FEATURE("continuous-bag-of-ngrams",
-                              ContinuousBagOfNgramsFunction);
-
-string ByteFeatureType::GetFeatureValueName(FeatureValue value) const {
-  if (value == 256) return "<NULL>";
-  string result;
-  result += static_cast<char>(value);
-  return result;
-}
-
-FeatureValue WordByte::Compute(const WorkspaceSet &workspaces,
-                               const Sentence &sentence, int focus,
-                               const FeatureVector *result) const {
-  if (focus < 0 || focus >= sentence.token_size()) return 256;
-  const Token &token = sentence.token(focus);
-  const int offset =
-      argument() >= 0 ? argument() : token.word().size() + argument();
-  if (offset < 0 || offset >= static_cast<int>(token.word().size())) return 256;
-  return token.word().c_str()[offset];
-}
-
-REGISTER_SENTENCE_IDX_FEATURE("word-byte", WordByte);
-
-void WordChar::Setup(TaskContext *context) {
-  id_dimension_ = GetIntParameter("id_dim", 50);
-  null_id_ = id_dimension_ - 1;
-}
-
-FeatureValue WordChar::Compute(const WorkspaceSet &workspaces,
-                               const Sentence &sentence, int focus,
-                               const FeatureVector *result) const {
-  vector<string> chars;
-  utils::GetUTF8Chars(sentence.token(focus).word(), &chars);
-  const int offset = argument() >= 0 ? argument() : chars.size() + argument();
-  if (offset < 0 || offset >= static_cast<int>(chars.size())) {
-    return null_id_;
-  }
-
-  return utils::Hash32WithDefaultSeed(chars.at(offset)) % null_id_;
-}
-
-REGISTER_SENTENCE_IDX_FEATURE("word-char", WordChar);
+REGISTER_WHOLE_SENTENCE_FEATURE("continuous-bag-of-ngrams",
+                                ContinuousBagOfNgramsFunction);
 
 }  // namespace chrome_lang_id

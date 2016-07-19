@@ -27,8 +27,6 @@ limitations under the License.
 #include <utility>
 #include <vector>
 
-#include "base/logging.h"
-#include "base/macros.h"
 #include "third_party/cld_3/src/base.h"
 
 namespace chrome_lang_id {
@@ -45,14 +43,15 @@ class Workspace {
   Workspace() {}
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(Workspace);
+  CLD3_DISALLOW_COPY_AND_ASSIGN(Workspace);
 };
 
 // A registry that keeps track of workspaces.
 class WorkspaceRegistry {
  public:
   // Create an empty registry.
-  WorkspaceRegistry() {}
+  WorkspaceRegistry();
+  ~WorkspaceRegistry();
 
   const std::unordered_map<std::type_index, vector<std::string>>
       &WorkspaceNames() const {
@@ -69,7 +68,7 @@ class WorkspaceRegistry {
   // Workspace names, indexed as workspace_names_[typeid][workspace].
   std::unordered_map<std::type_index, vector<string>> workspace_names_;
 
-  DISALLOW_COPY_AND_ASSIGN(WorkspaceRegistry);
+  CLD3_DISALLOW_COPY_AND_ASSIGN(WorkspaceRegistry);
 };
 
 // A typed collected of workspaces. The workspaces are indexed according to an
@@ -77,7 +76,8 @@ class WorkspaceRegistry {
 // also immutable.
 class WorkspaceSet {
  public:
-  ~WorkspaceSet() { Reset(WorkspaceRegistry()); }
+  WorkspaceSet();
+  ~WorkspaceSet();
 
   void Reset(const WorkspaceRegistry &registry) {
     // Deallocate current workspaces.
@@ -135,6 +135,8 @@ class VectorIntWorkspace : public Workspace {
   // given value.
   VectorIntWorkspace(int size, int value);
 
+  ~VectorIntWorkspace() override;
+
   // Returns the name of this type of workspace.
   static string TypeName();
 
@@ -154,6 +156,7 @@ class VectorVectorIntWorkspace : public Workspace {
  public:
   // Creates a vector of empty vectors of the given size.
   explicit VectorVectorIntWorkspace(int size);
+  ~VectorVectorIntWorkspace() override;
 
   // Returns the name of this type of workspace.
   static string TypeName();

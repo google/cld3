@@ -20,11 +20,11 @@
 #include "third_party/cld_3/src/script_span/offsetmap.h"
 
 #include <string.h>                     // for strcmp
-#include <stdio.h>                      // for fprintf, stderr, fclose, etc
 #include <algorithm>                    // for min
 
 using namespace std;
 
+namespace chrome_lang_id {
 namespace CLD2 {
 
 // Constructor, destructor
@@ -59,35 +59,6 @@ static inline char OpPart(const char c) {
 }
 static inline char LenPart(const char c) {
   return c & 0x3f;
-}
-
-// Print map to file, for debugging
-void OffsetMap::Printmap(const char* filename) {
-  FILE* fout;
-  bool needs_close = false;
-  if (strcmp(filename, "stdout") == 0) {
-    fout = stdout;
-  } else if (strcmp(filename, "stderr") == 0) {
-    fout = stderr;
-  } else {
-    fout = fopen(filename, "w");
-    needs_close = true;
-  }
-  if (fout == NULL) {
-    fprintf(stderr, "%s did not open\n", filename);
-    return;
-  }
-
-  Flush();    // Make sure any pending entry gets printed
-  fprintf(fout, "Offsetmap: %d bytes\n", static_cast<int>(diffs_.size()));
-  for (int i = 0; i < static_cast<int>(diffs_.size()); ++i) {
-    fprintf(fout, "%c%02d ", "&=+-"[OpPart(diffs_[i])], LenPart(diffs_[i]));
-    if ((i % 20) == 19) {fprintf(fout, "\n");}
-  }
-  fprintf(fout, "\n");
-  if (needs_close) {
-    fclose(fout);
-  }
 }
 
 // Reset to offset 0
@@ -205,58 +176,6 @@ void OffsetMap::Emit(MapOp op, int len) {
   diffs_.push_back(c);
 }
 
-void OffsetMap::DumpString() {
-  for (int i = 0; i < static_cast<int>(diffs_.size()); ++i) {
-    fprintf(stderr, "%c%02d ", "&=+-"[OpPart(diffs_[i])], LenPart(diffs_[i]));
-  }
-  fprintf(stderr, "\n");
-
-  // Print running table of correspondences
-  fprintf(stderr, "       op      A =>  A'     (A forward-maps to A')\n");
-  int aoffset = 0;
-  int aprimeoffset = 0;
-  int length = 0;
-  for (int i = 0; i < static_cast<int>(diffs_.size()); ++i) {
-    char c = diffs_[i];
-    MapOp op = static_cast<MapOp>(OpPart(c));
-    int len = LenPart(c);
-    length = (length << 6) + len;
-    if (op == COPY_OP) {
-      aoffset += length;
-      aprimeoffset += length;
-      length = 0;
-    } else if (op == INSERT_OP) {
-      aoffset += 0;
-      aprimeoffset += length;
-      length = 0;
-    } else if (op == DELETE_OP) {
-      aoffset += length;
-      aprimeoffset += 0;
-      length = 0;
-    } else {              // (op == PREFIX_OP)
-      // Do nothing else
-    }
-    fprintf(stderr, "[%3d] %c%02d %6d %6d%s\n",
-            i, "&=+-"[op], len,
-            aoffset, aprimeoffset,
-            (next_diff_sub_ == i) ? " <==next_diff_sub_" : "");
-
-  }
-  fprintf(stderr, "\n");
-}
-
-void OffsetMap::DumpWindow() {
-  fprintf(stderr, "DumpWindow(A => A'): max_aoffset_ = %d, "
-                  "max_aprimeoffset_ = %d, next_diff_sub_ = %d<br>\n",
-          max_aoffset_, max_aprimeoffset_, next_diff_sub_);
-  fprintf(stderr, "A  [%u..%u)\n",
-          current_lo_aoffset_, current_hi_aoffset_);
-  fprintf(stderr, "A' [%u..%u)\n",
-          current_lo_aprimeoffset_, current_hi_aprimeoffset_);
-  fprintf(stderr, "  diff = %d\n", current_diff_);
-  DumpString();
-}
-
 //----------------------------------------------------------------------------//
 // The guts of the 2013 design                                                //
 // If there are three ranges a b c in  diffs_, we can be in one of five       //
@@ -335,21 +254,6 @@ int OffsetMap::ParsePrevious(int sub, MapOp* op, int* length) {
   return ParseNext(sub, op, length);
 }
 
-// Quick debugging dump; does not parse multi-byte items, so just length & 0x3f
-void OffsetMap::PrintPosition(const char* str) {
-  MapOp op = PREFIX_OP;
-  int length = 0;
-  if ((0 < next_diff_sub_) && (next_diff_sub_ <= static_cast<int>(diffs_.size()))) {
-    op = static_cast<MapOp>(OpPart(diffs_[next_diff_sub_ - 1]));
-    length = LenPart(diffs_[next_diff_sub_ - 1]);
-  }
-  fprintf(stderr, "%s[%d] %c%02d = A[%d..%d) ==> A'[%d..%d)\n",
-          str,
-          next_diff_sub_, "&=+-"[op], length,
-          current_lo_aoffset_, current_hi_aoffset_,
-          current_lo_aprimeoffset_, current_hi_aprimeoffset_);
-}
-
 // Move active window one range to the right
 // Return true if move was OK
 bool OffsetMap::MoveRight() {
@@ -401,7 +305,10 @@ bool OffsetMap::MoveLeft() {
   // Actually OK to move left
   MapOp op;
   int length;
-  bool retval = true;
+
+  // TODO(abakalov): 'retval' below is set but not used, which is suspicious.
+  // Did the authors mean to return this variable, analogously to MoveRight()?
+  // bool retval = true;
   // If mal-formed or in LEFT, this will return with op = PREFIX_OP
   next_diff_sub_ = ParsePrevious(next_diff_sub_, &op, &length);
 
@@ -418,7 +325,7 @@ bool OffsetMap::MoveLeft() {
     current_lo_aprimeoffset_ = current_hi_aprimeoffset_ - 0;
   } else {
     SetLeft();
-    retval = false;
+    // retval = false;
   }
   current_diff_ = current_lo_aprimeoffset_ - current_lo_aoffset_;
   return true;
@@ -568,3 +475,4 @@ void OffsetMap::StuffIt(const std::string& diffs,
 
 
 }  // namespace CLD2
+}  // namespace chrome_lang_id

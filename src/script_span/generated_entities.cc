@@ -19,6 +19,7 @@
 //
 #include "third_party/cld_3/src/script_span/generated_ulscript.h"  // for CharIntPair
 
+namespace chrome_lang_id {
 namespace CLD2 {
 
 // Alphabetical order for binary search
@@ -292,3 +293,4 @@ extern const CharIntPair kNameToEntity[kNameToEntitySize] = {
 };
 
 }  // namespace CLD2
+}  // namespace chrome_lang_id

@@ -44,6 +44,7 @@
 // number of differences.
 //
 
+namespace chrome_lang_id {
 namespace CLD2 {
 
 class OffsetMap {
@@ -66,9 +67,6 @@ class OffsetMap {
   // Add to mapping from A to A', specifying how many next bytes are
   // deleted from A while not advancing in A' at all
   void Delete(int bytes);
-
-  // Print map to file, for debugging
-  void Printmap(const char* filename);
 
   // [Finish building map,] Re-position to offset 0
   // This call is optional; MapForward and MapBack finish building the map
@@ -112,9 +110,6 @@ class OffsetMap {
   // the latter figure.
   static void ComposeOffsetMap(OffsetMap* g, OffsetMap* f, OffsetMap* h);
 
-  // For debugging only; writes to stderr
-  void DumpWindow();
-
   // For testing only -- force a mapping
   void StuffIt(const std::string& diffs, int max_aoffset, int max_aprimeoffset);
 
@@ -141,11 +136,8 @@ class OffsetMap {
   // Return current subscript
   int ParsePrevious(int sub, MapOp* op, int* length);
 
-  void PrintPosition(const char* str);
-
   bool MoveRight();     // Returns true if OK
   bool MoveLeft();      // Returns true if OK
-  void DumpString();
 
   // Copies insert operations from source to dest. Returns true if no
   // other operations are found.
@@ -171,5 +163,6 @@ class OffsetMap {
 };
 
 }  // namespace CLD2
+}  // namespace chrome_lang_id
 
 #endif  // THIRD_PARTY_CLD_3_SRC_SCRIPT_SPAN_OFFSETMAP_H_

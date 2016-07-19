@@ -20,9 +20,7 @@ limitations under the License.
 #include <string>
 #include <vector>
 
-#include "base/logging.h"
 #include "third_party/cld_3/src/feature_extractor.h"
-#include "third_party/cld_3/src/sparse.pb.h"
 #include "third_party/cld_3/src/task_context.h"
 #include "third_party/cld_3/src/workspace.h"
 
@@ -41,7 +39,8 @@ namespace chrome_lang_id {
 // Read() or updated via UpdateMapsForExample.
 class GenericEmbeddingFeatureExtractor {
  public:
-  virtual ~GenericEmbeddingFeatureExtractor() {}
+  GenericEmbeddingFeatureExtractor();
+  virtual ~GenericEmbeddingFeatureExtractor();
 
   // Get the prefix string to put in front of all arguments, so they don't
   // conflict with other embedding models.
@@ -91,14 +90,6 @@ class GenericEmbeddingFeatureExtractor {
   // knowing the specific calling arguments of the extractor itself.
   virtual const GenericFeatureExtractor &generic_feature_extractor(
       int idx) const = 0;
-
-  // Converts a vector of extracted features into SparseFeatures. Each feature
-  // in each feature vector becomes a single SparseFeatures. The predicates are
-  // mapped through map_fn which should point to either mutable_map_fn or
-  // const_map_fn depending on whether or not the predicate maps should be
-  // updated.
-  vector<vector<SparseFeatures>> ConvertExample(
-      const vector<FeatureVector> &feature_vectors) const;
 
  private:
   // Embedding space names for parameter sharing.
@@ -161,29 +152,15 @@ class EmbeddingFeatureExtractor : public GenericEmbeddingFeatureExtractor {
     }
   }
 
-  // Returns a ragged array of SparseFeatures, for 1) each feature extractor
-  // class e, and 2) each feature f extracted by e. Underlying predicate maps
-  // will not be updated and so unrecognized predicates may occur. In such a
-  // case the SparseFeatures object associated with a given extractor class and
-  // feature will be empty.
-  vector<vector<SparseFeatures>> ExtractSparseFeatures(
-      const WorkspaceSet &workspaces, const OBJ &obj, ARGS... args) const {
-    vector<FeatureVector> features(feature_extractors_.size());
-    ExtractFeatures(workspaces, obj, args..., &features);
-    return ConvertExample(features);
-  }
-
   // Extracts features using the extractors. Note that features must already
   // be initialized to the correct number of feature extractors. No predicate
   // mapping is applied.
   void ExtractFeatures(const WorkspaceSet &workspaces, const OBJ &obj,
                        ARGS... args, vector<FeatureVector> *features) const {
-    DCHECK(features != nullptr);
-    DCHECK_EQ(features->size(), feature_extractors_.size());
     for (size_t i = 0; i < feature_extractors_.size(); ++i) {
-      (*features)[i].clear();
-      feature_extractors_[i].ExtractFeatures(workspaces, obj, args...,
-                                             &(*features)[i]);
+      features->at(i).clear();
+      feature_extractors_.at(i).ExtractFeatures(workspaces, obj, args...,
+                                                &features->at(i));
     }
   }
 
@@ -191,9 +168,7 @@ class EmbeddingFeatureExtractor : public GenericEmbeddingFeatureExtractor {
   // Provides generic access to the feature extractors.
   const GenericFeatureExtractor &generic_feature_extractor(
       int idx) const override {
-    DCHECK_LT(idx, static_cast<int>(feature_extractors_.size()));
-    DCHECK_GE(idx, 0);
-    return feature_extractors_[idx];
+    return feature_extractors_.at(idx);
   }
 
  private:

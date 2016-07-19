@@ -18,6 +18,8 @@ limitations under the License.
 #include <ctype.h>
 #include <stdlib.h>
 
+#include "third_party/cld_3/src/script_span/stringpiece.h"
+
 namespace chrome_lang_id {
 namespace utils {
 
@@ -79,7 +81,7 @@ string CEscape(const string &src) {
 
 std::vector<string> Split(const string &text, char delim) {
   std::vector<string> result;
-  int token_start = 0;
+  size_t token_start = 0;
   if (!text.empty()) {
     for (size_t i = 0; i < text.size() + 1; i++) {
       if ((i == text.size()) || (text[i] == delim)) {
@@ -91,8 +93,8 @@ std::vector<string> Split(const string &text, char delim) {
   return result;
 }
 
-size_t RemoveLeadingWhitespace(StringPiece *text) {
-  size_t count = 0;
+int RemoveLeadingWhitespace(StringPiece *text) {
+  int count = 0;
   const char *ptr = text->data();
   while (count < text->size() && isspace(*ptr)) {
     count++;
@@ -102,8 +104,8 @@ size_t RemoveLeadingWhitespace(StringPiece *text) {
   return count;
 }
 
-size_t RemoveTrailingWhitespace(StringPiece *text) {
-  size_t count = 0;
+int RemoveTrailingWhitespace(StringPiece *text) {
+  int count = 0;
   const char *ptr = text->data() + text->size() - 1;
   while (count < text->size() && isspace(*ptr)) {
     ++count;
@@ -113,7 +115,7 @@ size_t RemoveTrailingWhitespace(StringPiece *text) {
   return count;
 }
 
-size_t RemoveWhitespaceContext(StringPiece *text) {
+int RemoveWhitespaceContext(StringPiece *text) {
   // use RemoveLeadingWhitespace() and RemoveTrailingWhitespace() to do the job
   return RemoveLeadingWhitespace(text) + RemoveTrailingWhitespace(text);
 }
@@ -139,7 +141,7 @@ uint32 Hash32(const char *data, size_t n, uint32 seed) {
   const int r = 24;
 
   // Initialize the hash to a 'random' value
-  uint32 h = seed ^ n;
+  uint32 h = static_cast<uint32>(seed ^ n);
 
   // Mix 4 bytes at a time into the hash
   while (n >= 4) {

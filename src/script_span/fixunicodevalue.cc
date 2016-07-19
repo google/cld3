@@ -19,6 +19,7 @@
 #include "third_party/cld_3/src/script_span/fixunicodevalue.h"
 #include "third_party/cld_3/src/script_span/integral_types.h"
 
+namespace chrome_lang_id {
 namespace CLD2 {
 
 // Guarantees that the resulting output value is interchange valid
@@ -51,3 +52,4 @@ char32 FixUnicodeValue(char32 uv) {
 }
 
 }       // End namespace CLD2
+}       // End namespace chrome_lang_id

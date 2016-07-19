@@ -18,44 +18,140 @@ limitations under the License.
 
 #include <vector>
 
-#include "base/logging.h"
-#include "third_party/cld_3/src/base.h"
 #include "third_party/cld_3/src/embedding_network_params.h"
-#include "third_party/cld_3/src/simple_adder.h"
-#include "third_party/cld_3/src/sparse.pb.h"
+#include "third_party/cld_3/src/feature_extractor.h"
+#include "third_party/cld_3/src/float16.h"
 
 namespace chrome_lang_id {
 
+// Classifier using a hand-coded feed-forward neural network.
+//
+// No gradient computation, just inference.
+//
+// Based on the more general nlp_saft::EmbeddingNetwork.
+//
+// Classification works as follows:
+//
+// Discrete features -> Embeddings -> Concatenation -> Hidden+ -> Softmax
+//
+// In words: given some discrete features, this class extracts the embeddings
+// for these features, concatenates them, passes them through one or two hidden
+// layers (each layer uses Relu) and next through a softmax layer that computes
+// an unnormalized score for each possible class.  Note: there is always a
+// softmax layer.
+//
+// NOTE(salcianu): current code can easily be changed to allow more than two
+// hidden layers.  Feel free to do so if you have a genuine need for that.
 class EmbeddingNetwork {
  public:
+  // Class used to represent an embedding matrix.  Each row is the embedding on
+  // a vocabulary element.  Number of columns = number of embedding dimensions.
+  class EmbeddingMatrix {
+   public:
+    explicit EmbeddingMatrix(const EmbeddingNetworkParams::Matrix source_matrix)
+        : rows_(source_matrix.rows),
+          cols_(source_matrix.cols),
+          quant_type_(source_matrix.quant_type),
+          data_(source_matrix.elements),
+          row_size_in_bytes_(GetRowSizeInBytes(cols_, quant_type_)),
+          quant_scales_(source_matrix.quant_scales) {}
+
+    // Returns vocabulary size; one embedding for each vocabulary element.
+    int size() const { return rows_; }
+
+    // Returns number of weights in embedding of each vocabulary element.
+    int dim() const { return cols_; }
+
+    // Returns quantization type for this embedding matrix.
+    QuantizationType quant_type() const { return quant_type_; }
+
+    // Gets embedding for k-th vocabulary element: on return, sets *data to
+    // point to the embedding weights and *scale to the quantization scale (1.0
+    // if no quantization).
+    void get_embedding(int k, const void **data, float *scale) const {
+      CLD3_CHECK_GE(k, 0);
+      CLD3_CHECK_LT(k, size());
+      *data = reinterpret_cast<const char *>(data_) + k * row_size_in_bytes_;
+      if (quant_type_ == QuantizationType::NONE) {
+        *scale = 1.0;
+      } else {
+        *scale = Float16To32(quant_scales_[k]);
+      }
+    }
+
+   private:
+    static int GetRowSizeInBytes(int cols, QuantizationType quant_type) {
+      CLD3_CHECK(quant_type == QuantizationType::NONE ||
+                 quant_type == QuantizationType::UINT8);
+      if (quant_type == QuantizationType::NONE) {
+        return cols * sizeof(float);
+      } else {  // QuantizationType::UINT8
+        return cols * sizeof(uint8);
+      }
+    }
+
+    // Vocabulary size.
+    int rows_;
+
+    // Number of elements in each embedding.
+    int cols_;
+
+    QuantizationType quant_type_;
+
+    // Pointer to the embedding weights, in row-major order.  This is a pointer
+    // to an array of floats / uint8, depending on the quantization type.
+    // Not owned.
+    const void *data_;
+
+    // Number of bytes for one row.  Used to jump to next row in data_.
+    int row_size_in_bytes_;
+
+    // Pointer to quantization scales.  nullptr if no quantization.  Otherwise,
+    // quant_scales_[i] is scale for embedding of i-th vocabulary element.
+    const float16 *quant_scales_;
+  };
+
   // An immutable vector that doesn't own the memory that stores the underlying
   // floats.  Can be used e.g., as a wrapper around model weights stored in the
   // static memory.
-  class ConstVector {
+  class VectorWrapper {
    public:
-    ConstVector() : ConstVector(nullptr, 0) {}
-    ConstVector(const float *data, int size) : data_(data), size_(size) {}
+    VectorWrapper() : VectorWrapper(nullptr, 0) {}
+
+    // Constructs a vector wrapper around the size consecutive floats that start
+    // at address data.  Note: the underlying data should be alive for at least
+    // the lifetime of this VectorWrapper object.  That's trivially true if data
+    // points to statically allocated data :)
+    VectorWrapper(const float *data, int size) : data_(data), size_(size) {}
+
     int size() const { return size_; }
+
     const float *data() const { return data_; }
 
    private:
     const float *data_;  // Not owned.
     int size_;
+
+    // Doesn't own anything, so it can be copied and assigned at will :)
   };
 
-  // Precision of the network.
-  typedef std::vector<ConstVector> Matrix;
+  typedef std::vector<VectorWrapper> Matrix;
   typedef std::vector<float> Vector;
 
-  // Constructs an embedding network.
-  EmbeddingNetwork();
+  // Constructs an embedding network using the parameters from model.
+  //
+  // Note: model should stay alive for at least the lifetime of this
+  // EmbeddingNetwork object.  TODO(salcianu): remove this constraint: we should
+  // copy all necessary data (except, of course, the static weights) at
+  // construction time and use that, instead of relying on model.
+  explicit EmbeddingNetwork(const EmbeddingNetworkParams *model);
 
   virtual ~EmbeddingNetwork() {}
 
   // Runs forward computation to fill scores with unnormalized output unit
   // scores. This is useful for making predictions.
-  void ComputeFinalScores(const vector<vector<SparseFeatures>> &sparse_features,
-                          Vector *scores);
+  void ComputeFinalScores(const vector<FeatureVector> &features,
+                          Vector *scores) const;
 
  private:
   // Computes the softmax scores (prior to normalization) from the concatenated
@@ -65,19 +161,24 @@ class EmbeddingNetwork {
 
   // Constructs the concatenated input embedding vector in place in output
   // vector concat.
-  void ConcatEmbeddings(const vector<vector<SparseFeatures>> &sparse_features,
+  void ConcatEmbeddings(const vector<FeatureVector> &features,
                         Vector *concat) const;
 
-  EmbeddingNetworkParams model_;
+  // Pointer to the model object passed to the constructor.  Not owned.
+  const EmbeddingNetworkParams *model_;
 
   // Network parameters.
-  vector<Matrix> hidden_weights_;
-  vector<ConstVector> hidden_bias_;
-  Matrix softmax_weights_;
-  ConstVector softmax_bias_;
 
-  // Embedding parameters.
-  vector<Matrix> embedding_weights_;
+  // One weight matrix for each embedding.
+  vector<EmbeddingMatrix> embedding_matrices_;
+
+  // One weight matrix and one vector of bias weights for each hiden layer.
+  vector<Matrix> hidden_weights_;
+  vector<VectorWrapper> hidden_bias_;
+
+  // Weight matrix and bias vector for the softmax layer.
+  Matrix softmax_weights_;
+  VectorWrapper softmax_bias_;
 };
 
 }  // namespace chrome_lang_id

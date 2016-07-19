@@ -24,6 +24,7 @@
 #include "third_party/cld_3/src/script_span/integral_types.h"
 #include "third_party/cld_3/src/script_span/offsetmap.h"
 
+namespace chrome_lang_id {
 namespace CLD2 {
 
 static const int kMaxScriptBuffer = 40960;
@@ -111,5 +112,6 @@ class ScriptScanner {
 };
 
 }  // namespace CLD2
+}  // namespace chrome_lang_id
 
 #endif  // THIRD_PARTY_CLD_3_SRC_SCRIPT_SPAN_GETONESCRIPTSPAN_H_

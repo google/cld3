@@ -15,10 +15,13 @@ limitations under the License.
 
 #include "third_party/cld_3/src/task_context.h"
 
-#include "base/logging.h"
 #include "third_party/cld_3/src/utils.h"
 
 namespace chrome_lang_id {
+
+TaskContext::TaskContext() {}
+
+TaskContext::~TaskContext() {}
 
 TaskInput *TaskContext::GetInput(const string &name) {
   // Return existing input if it exists.
@@ -122,7 +125,7 @@ bool TaskContext::Get(const string &name, bool defval) const {
 }
 
 string TaskContext::InputFile(const TaskInput &input) {
-  CHECK_EQ(input.part_size(), 1) << input.name();
+  CLD3_CHECK_EQ(input.part_size(), 1);
   return input.part(0).file_pattern();
 }
 

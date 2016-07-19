@@ -28,6 +28,7 @@
 #include "third_party/cld_3/src/script_span/utf8scannot_lettermarkspecial.h"
 #include "third_party/cld_3/src/script_span/utf8statetable.h"
 
+namespace chrome_lang_id {
 namespace CLD2 {
 
 // Alphabetical order for binary search, from
@@ -461,8 +462,10 @@ void EntityToBuffer(const char* src, int len, char* dst,
 
 // Returns true if character is < > or &, none of which are letters
 bool inline IsSpecial(char c) {
+  // Comparison (int != 0) is used to silence the warning:
+  // 'const char': forcing value to bool
   if ((c & 0xe0) == 0x20) {
-    return kSpecialSymbol[static_cast<uint8>(c)];
+    return (kSpecialSymbol[static_cast<uint8>(c)] != 0);
   }
   return false;
 }
@@ -711,7 +714,7 @@ bool ScriptScanner::GetOneTextSpan(LangSpan* span) {
   script_buffer_[1] = '\0';
   int take = 0;
   int put = 1;              // Start after the initial space
-  int tlen, plen;
+  int tlen = 0, plen = 0;
 
   if (byte_length_ <= 0) {
     return false;          // No more text to be found
@@ -1064,3 +1067,4 @@ int GetUTF8LetterScriptNum(const char* src) {
 }
 
 }  // namespace CLD2
+}  // namespace chrome_lang_id

@@ -24,6 +24,7 @@
 #include <string.h>
 #include <string>
 
+namespace chrome_lang_id {
 
 typedef int stringpiece_ssize_type;
 
@@ -41,13 +42,13 @@ class StringPiece {
   StringPiece(const char* str)  // NOLINT(runtime/explicit)
       : ptr_(str), length_(0) {
     if (str != NULL) {
-      length_ = strlen(str);
+      length_ = static_cast<stringpiece_ssize_type>(strlen(str));
     }
   }
 
   StringPiece(const std::string& str)  // NOLINT(runtime/explicit)
       : ptr_(str.data()), length_(0) {
-    length_ = str.size();
+    length_ = static_cast<stringpiece_ssize_type>(str.size());
   }
 
   StringPiece(const char* offset, stringpiece_ssize_type len)
@@ -74,5 +75,7 @@ class StringPiece {
 };
 
 class StringPiece;
+
+}  // namespace chrome_lang_id
 
 #endif  // THIRD_PARTY_CLD_3_SRC_SCRIPT_SPAN_STRINGPIECE_H__

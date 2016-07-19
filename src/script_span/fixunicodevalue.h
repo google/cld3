@@ -26,6 +26,7 @@
 #include "third_party/cld_3/src/script_span/integral_types.h" // for char32
 #include "third_party/cld_3/src/script_span/port.h"
 
+namespace chrome_lang_id {
 namespace CLD2 {
 
 // Map byte value 0000-00FF to char32
@@ -63,5 +64,6 @@ static const char32 kMapFullMicrosoft1252OrSpace[256] = {
 char32 FixUnicodeValue(char32 uv);
 
 }       // End namespace CLD2
+}       // End namespace chrome_lang_id
 
 #endif  // THIRD_PARTY_CLD_3_SRC_SCRIPT_SPAN_FIXUNICODEVALUE_H_

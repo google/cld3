@@ -25,9 +25,18 @@ namespace chrome_lang_id {
 
 constexpr FeatureValue GenericFeatureFunction::kNone;
 
+FeatureVector::FeatureVector() {}
+
+FeatureVector::~FeatureVector() {}
+
 GenericFeatureExtractor::GenericFeatureExtractor() {}
 
 GenericFeatureExtractor::~GenericFeatureExtractor() {}
+
+GenericFeatureExtractor::GenericFeatureExtractor(
+    const GenericFeatureExtractor &extractor)
+    : descriptor_(extractor.descriptor_),
+      feature_types_(extractor.feature_types_) {}
 
 void GenericFeatureExtractor::Parse(const string &source) {
   // Parse feature specification into descriptor.
@@ -46,16 +55,12 @@ void GenericFeatureExtractor::InitializeFeatureTypes() {
     ft->set_base(i);
 
     // Check for feature space overflow.
-    double domain_size = ft->GetDomainSize();
-    if (domain_size < 0) {
-      LOG(FATAL) << "Illegal domain size for feature " << ft->name()
-                 << domain_size;
-    }
+    CLD3_CHECK_GE(ft->GetDomainSize(), 0);
   }
 
   vector<string> types_names;
   GetFeatureTypeNames(&types_names);
-  CHECK_EQ(feature_types_.size(), types_names.size());
+  CLD3_CHECK_EQ(feature_types_.size(), types_names.size());
 }
 
 void GenericFeatureExtractor::GetFeatureTypeNames(
@@ -108,7 +113,6 @@ bool GenericFeatureFunction::GetBoolParameter(const string &name,
   if (value.empty()) return default_value;
   if (value == "true") return true;
   if (value == "false") return false;
-  LOG(WARNING) << "Illegal value '" << value << "' for option '" << name << "'";
   return false;
 }
 

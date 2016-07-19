@@ -23,6 +23,7 @@
 
 #include "third_party/cld_3/src/script_span/integral_types.h"
 
+namespace chrome_lang_id {
 namespace CLD2 {
 
 // Portable handling of unaligned loads, stores, and copies.
@@ -137,5 +138,6 @@ inline void UNALIGNED_STORE64(void *p, uint64 v) {
 #endif
 
 }       // End namespace CLD2
+}       // End namespace chrome_lang_id
 
 #endif  // THIRD_PARTY_CLD_3_SRC_SCRIPT_SPAN_PORT_H_

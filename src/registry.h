@@ -56,7 +56,6 @@ limitations under the License.
 #include <string.h>
 #include <string>
 
-#include "base/logging.h"
 #include "third_party/cld_3/src/base.h"
 
 namespace chrome_lang_id {
@@ -158,9 +157,8 @@ struct ComponentRegistry {
   const Registrar *GetComponent(const char *type) const {
     Registrar *r = components;
     while (r != NULL && strcmp(type, r->type()) != 0) r = r->next();
-    if (r == NULL) {
-      LOG(FATAL) << "Unknown " << name << " component: '" << type << "'.";
-    }
+    CLD3_CHECK_NE(r, NULL);
+
     return r;
   }
 

@@ -27,6 +27,7 @@
 #include "third_party/cld_3/src/script_span/integral_types.h"
 #include "third_party/cld_3/src/script_span/utf8statetable.h"
 
+namespace chrome_lang_id {
 namespace CLD2 {
 
 #define X__ (kExitIllegalStructure)
@@ -480,5 +481,6 @@ static const UTF8ScanObj utf8acceptinterchange_obj = {
 // Table has 4608 bytes, Hash = 505C-3D29
 
 }       // End namespace CLD2
+}       // End namespace chrome_lang_id
 
 #endif  // THIRD_PARTY_CLD_3_SRC_SCRIPT_SPAN_UTF8ACCEPTINTERCHANGE_H_

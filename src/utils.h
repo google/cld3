@@ -22,8 +22,8 @@ limitations under the License.
 #include <string>
 #include <vector>
 
-#include "base/logging.h"
 #include "third_party/cld_3/src/base.h"
+#include "third_party/cld_3/src/script_span/stringpiece.h"
 
 namespace chrome_lang_id {
 namespace utils {
@@ -34,7 +34,7 @@ bool ParseDouble(const char *c_str, double *value);
 template <typename T>
 T ParseUsing(const string &str, std::function<bool(const char *, T *)> func) {
   T value;
-  CHECK(func(str.c_str(), &value)) << "Failed to convert: " << str;
+  func(str.c_str(), &value);
   return value;
 }
 
@@ -48,11 +48,11 @@ string CEscape(const string &src);
 
 std::vector<string> Split(const string &text, char delim);
 
-size_t RemoveLeadingWhitespace(StringPiece *text);
+int RemoveLeadingWhitespace(StringPiece *text);
 
-size_t RemoveTrailingWhitespace(StringPiece *text);
+int RemoveTrailingWhitespace(StringPiece *text);
 
-size_t RemoveWhitespaceContext(StringPiece *text);
+int RemoveWhitespaceContext(StringPiece *text);
 
 uint32 Hash32(const char *data, size_t n, uint32 seed);
 
@@ -73,9 +73,6 @@ void STLDeleteElements(T *container) {
   }
   container->clear();
 }
-
-// Returns lower-cased version of s.
-string Lowercase(StringPiece s);
 
 class PunctuationUtil {
  public:

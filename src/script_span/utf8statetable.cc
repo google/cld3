@@ -34,7 +34,7 @@
 #include "third_party/cld_3/src/script_span/port.h"
 #include "third_party/cld_3/src/script_span/stringpiece.h"
 
-
+namespace chrome_lang_id {
 namespace CLD2 {
 
 static const int kReplaceAndResumeFlag = 0x80; // Bit in del byte to distinguish
@@ -256,7 +256,9 @@ bool UTF8HasGenericProperty(const UTF8PropObj& st, const char* src) {
     Tbl = &Tbl_0[e << eshift];
     e = Tbl[lsrc[3]];
   }
-  return e;
+
+  // Comparing against 0 to avoid a warning due to implicit conversion.
+  return (e != 0);
 }
 
 
@@ -350,7 +352,9 @@ bool UTF8HasGenericPropertyBigOneByte(const UTF8PropObj& st, const char* src) {
     Tbl = &Tbl[e << eshift];          // Relative +/-
     e = Tbl[lsrc[3]];
   }
-  return e;
+
+  // Comparing against 0 to avoid implicit conversion and a warning.
+  return (e != 0);
 }
 
 
@@ -440,7 +444,9 @@ bool UTF8HasGenericPropertyTwoByte(const UTF8PropObj_2& st, const char* src) {
     Tbl = &Tbl_0[e << eshift];
     e = Tbl[lsrc[3]];
   }
-  return e;
+
+  // Comparing against 0 to avoid implicit conversion and a warning.
+  return (e != 0);
 }
 
 
@@ -901,10 +907,6 @@ static int UTF8GenericReplaceInternalTwoByte(const UTF8ReplaceObj_2* st,
 
   int total_changed = 0;
 
-  int src_lll = srclimit - src;
-  int dst_lll = dstlimit - dst;
-
-
   // Invariant condition during replacements:
   //  remaining dst size >= remaining src size
   if ((dstlimit - dst) < (srclimit - src)) {
@@ -935,8 +937,6 @@ static int UTF8GenericReplaceInternalTwoByte(const UTF8ReplaceObj_2* st,
     Tbl = &Tbl_0[e << eshift];
   }
   //----------------------------
-  src_lll = src - isrc;
-  dst_lll = dst - odst;
 
   // Exit possibilities:
   //  Replacement code, do the replacement and loop
@@ -1341,3 +1341,4 @@ void UTF8TrimToChars(StringPiece* istr) {
 }
 
 }       // End namespace CLD2
+}       // End namespace chrome_lang_id

@@ -20,6 +20,7 @@
 
 #include "third_party/cld_3/src/script_span/generated_ulscript.h"
 
+namespace chrome_lang_id {
 namespace CLD2 {
 
 // Subscripted by enum ULScript
@@ -674,3 +675,4 @@ extern const CharIntPair kCodeToULScript[kNameToULScriptSize] = {
 };
 
 }  // namespace CLD2
+}  // namespace chrome_lang_id

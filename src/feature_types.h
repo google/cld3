@@ -23,7 +23,6 @@ limitations under the License.
 #include <string>
 #include <utility>
 
-#include "base/logging.h"
 #include "third_party/cld_3/src/base.h"
 
 namespace chrome_lang_id {
@@ -41,9 +40,9 @@ typedef Predicate FeatureValue;
 class FeatureType {
  public:
   // Initializes a feature type.
-  explicit FeatureType(const string &name) : name_(name), base_(0) {}
+  explicit FeatureType(const string &name);
 
-  virtual ~FeatureType() {}
+  virtual ~FeatureType();
 
   // Converts a feature value to a name.
   virtual string GetFeatureValueName(FeatureValue value) const = 0;
@@ -57,12 +56,18 @@ class FeatureType {
   Predicate base() const { return base_; }
   void set_base(Predicate base) { base_ = base; }
 
+  // Returns true iff this feature is continuous; see FloatFeatureValue.
+  bool is_continuous() const { return is_continuous_; }
+
  private:
   // Feature type name.
   string name_;
 
   // "Base" feature value: i.e. a "slot" in a global ordering of features.
   Predicate base_;
+
+  // See doc for is_continuous().
+  bool is_continuous_;
 };
 
 // Templated generic resource based feature type. This feature type delegates
@@ -82,19 +87,10 @@ class ResourceBasedFeatureType : public FeatureType {
   // resource->NumValues() so as to avoid collisions; this is verified with
   // CHECK at creation.
   ResourceBasedFeatureType(const string &name, const Resource *resource,
-                           const map<FeatureValue, string> &values)
-      : FeatureType(name), resource_(resource), values_(values) {
-    max_value_ = resource->NumValues() - 1;
-    for (const auto &pair : values) {
-      CHECK_GE(pair.first, resource->NumValues())
-          << "Invalid extra value: " << pair.first << "," << pair.second;
-      max_value_ = pair.first > max_value_ ? pair.first : max_value_;
-    }
-  }
+                           const map<FeatureValue, string> &values);
 
   // Creates a new type with no special values.
-  ResourceBasedFeatureType(const string &name, const Resource *resource)
-      : ResourceBasedFeatureType(name, resource, {}) {}
+  ResourceBasedFeatureType(const string &name, const Resource *resource);
 
   // Returns the feature name for a given feature value. First checks the values
   // map, then checks the resource to look up the name.
@@ -105,7 +101,6 @@ class ResourceBasedFeatureType : public FeatureType {
     if (value >= 0 && value < resource_->NumValues()) {
       return resource_->GetFeatureValueName(value);
     } else {
-      LOG(ERROR) << "Invalid feature value " << value << " for " << name();
       return "<INVALID>";
     }
   }
@@ -140,28 +135,15 @@ class ResourceBasedFeatureType : public FeatureType {
 class EnumFeatureType : public FeatureType {
  public:
   EnumFeatureType(const string &name,
-                  const map<FeatureValue, string> &value_names)
-      : FeatureType(name), value_names_(value_names) {
-    for (const auto &pair : value_names) {
-      CHECK_GE(pair.first, 0) << "Invalid feature value: " << pair.first << ", "
-                              << pair.second;
-      domain_size_ = std::max(domain_size_, pair.first + 1);
-    }
-  }
+                  const map<FeatureValue, string> &value_names);
+  ~EnumFeatureType() override;
 
   // Returns the feature name for a given feature value.
-  string GetFeatureValueName(FeatureValue value) const override {
-    auto it = value_names_.find(value);
-    if (it == value_names_.end()) {
-      LOG(ERROR) << "Invalid feature value " << value << " for " << name();
-      return "<INVALID>";
-    }
-    return it->second;
-  }
+  string GetFeatureValueName(FeatureValue value) const override;
 
   // Returns the number of possible values for this feature type. This is one
   // greater than the largest value in the value_names map.
-  FeatureValue GetDomainSize() const override { return domain_size_; }
+  FeatureValue GetDomainSize() const override;
 
  protected:
   // Maximum possible value this feature could take.

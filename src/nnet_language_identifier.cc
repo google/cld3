@@ -21,13 +21,11 @@ limitations under the License.
 #include <limits>
 #include <string>
 
-#include "base/logging.h"
 #include "third_party/cld_3/src/base.h"
 #include "third_party/cld_3/src/embedding_network.h"
 #include "third_party/cld_3/src/script_span/generated_ulscript.h"
 #include "third_party/cld_3/src/script_span/getonescriptspan.h"
 #include "third_party/cld_3/src/sentence.pb.h"
-#include "third_party/cld_3/src/sparse.pb.h"
 #include "third_party/cld_3/src/task_context.h"
 #include "third_party/cld_3/src/workspace.h"
 
@@ -65,7 +63,29 @@ bool OrderBySecondDescending(const std::pair<string, float> &x,
 const int NNetLanguageIdentifier::kMinNumBytesToConsider = 100;
 const int NNetLanguageIdentifier::kMaxNumBytesToConsider = 5000;
 const char NNetLanguageIdentifier::kUnknown[] = "<unknown>";
-const float NNetLanguageIdentifier::kReliabilityThreshold = 0.53;
+const float NNetLanguageIdentifier::kReliabilityThreshold = 0.53f;
+
+const string LanguageIdEmbeddingFeatureExtractor::ArgPrefix() const {
+  return "language_identifier";
+}
+
+NNetLanguageIdentifier::NNetLanguageIdentifier()
+    : NNetLanguageIdentifier(kMinNumBytesToConsider, kMaxNumBytesToConsider) {}
+
+NNetLanguageIdentifier::NNetLanguageIdentifier(int min_num_bytes,
+                                               int max_num_bytes)
+    : num_languages_(TaskContextParams::GetNumLanguages()),
+      network_(&nn_params_),
+      min_num_bytes_(min_num_bytes),
+      max_num_bytes_(max_num_bytes) {
+  // Get the model parameters, set up and initialize the model.
+  TaskContext context;
+  TaskContextParams::ToTaskContext(&context);
+  Setup(&context);
+  Init(&context);
+}
+
+NNetLanguageIdentifier::~NNetLanguageIdentifier() {}
 
 void NNetLanguageIdentifier::Setup(TaskContext *context) {
   feature_extractor_.Setup(context);
@@ -76,23 +96,18 @@ void NNetLanguageIdentifier::Init(TaskContext *context) {
   feature_extractor_.RequestWorkspaces(&workspace_registry_);
 }
 
-vector<vector<SparseFeatures>> NNetLanguageIdentifier::GetSparseFeatures(
-    Sentence *sentence) const {
+void NNetLanguageIdentifier::GetFeatures(
+    Sentence *sentence, vector<FeatureVector> *features) const {
   // Feature workspace set.
   WorkspaceSet workspace;
   workspace.Reset(workspace_registry_);
   feature_extractor_.Preprocess(&workspace, sentence);
-
-  // TODO(abakalov): In the current setup we are extracting features from the
-  // first token of the given Sentence. Modify the code, so that char features
-  // are extracted based on the whole Sentence.
-  return feature_extractor_.ExtractSparseFeatures(workspace, *sentence,
-                                                  0 /* focus */);
+  feature_extractor_.ExtractFeatures(workspace, *sentence, features);
 }
 
 // Returns the language name corresponding to the given id.
 string NNetLanguageIdentifier::GetLanguageName(int language_id) const {
-  CHECK((language_id >= 0) && (language_id < num_languages_));
+  CLD3_CHECK((language_id >= 0) && (language_id < num_languages_));
   return TaskContextParams::language_names(language_id);
 }
 
@@ -120,8 +135,12 @@ NNetLanguageIdentifier::Result NNetLanguageIdentifier::FindLanguageOfValidUTF8(
   token->set_end(text.length() - 1);
 
   // Predict language.
+  // TODO(salcianu): reuse vector<FeatureVector>.
+  vector<FeatureVector> features(feature_extractor_.NumEmbeddings());
+  GetFeatures(&sentence, &features);
+
   EmbeddingNetwork::Vector scores;
-  network_.ComputeFinalScores(GetSparseFeatures(&sentence), &scores);
+  network_.ComputeFinalScores(features, &scores);
   int prediction_id = -1;
   float max_val = -std::numeric_limits<float>::infinity();
   for (size_t i = 0; i < scores.size(); ++i) {

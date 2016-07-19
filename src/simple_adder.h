@@ -16,7 +16,6 @@ limitations under the License.
 #ifndef THIRD_PARTY_CLD_3_SRC_SIMPLE_ADDER_H_
 #define THIRD_PARTY_CLD_3_SRC_SIMPLE_ADDER_H_
 
-#include "base/logging.h"
 #include "third_party/cld_3/src/base.h"
 
 namespace chrome_lang_id {
@@ -26,37 +25,36 @@ class SimpleAdder {
  public:
   static constexpr const int kNumFloatsPerBatch = 1;
 
-  ATTRIBUTE_ALWAYS_INLINE SimpleAdder(float *dest, int num_floats)
+  CLD3_ATTRIBUTE_ALWAYS_INLINE SimpleAdder(float *dest, int num_floats)
       : dest_(dest), num_floats_(num_floats) {}
 
-  ATTRIBUTE_ALWAYS_INLINE ~SimpleAdder() {
-    CHECK(dest_ == nullptr)
-        << " Should call Finalize function before destruction.";
+  CLD3_ATTRIBUTE_ALWAYS_INLINE ~SimpleAdder() {
+    // Should call Finalize function before destruction.
+    CLD3_CHECK_EQ(dest_, nullptr);
   }
 
   // Caller must call this function before calling deconstruct this object.
-  ATTRIBUTE_ALWAYS_INLINE void Finalize() { dest_ = nullptr; }
+  CLD3_ATTRIBUTE_ALWAYS_INLINE void Finalize() { dest_ = nullptr; }
 
-  ATTRIBUTE_ALWAYS_INLINE void LazyAdd(const float *source) const {
+  CLD3_ATTRIBUTE_ALWAYS_INLINE void LazyAdd(const float *source) const {
     AddImpl(source, num_floats_, dest_);
   }
 
-  ATTRIBUTE_ALWAYS_INLINE void LazyScaleAdd(const float *source,
-                                            const float scale) const {
+  CLD3_ATTRIBUTE_ALWAYS_INLINE void LazyScaleAdd(const float *source,
+                                                 const float scale) const {
     ScaleAddImpl(source, num_floats_, scale, dest_);
   }
 
   // Simple fast while loop to implement dest += source.
-  ATTRIBUTE_ALWAYS_INLINE static void AddImpl(const float *__restrict source,
-                                              uint32 size,
-                                              float *__restrict dest) {
+  CLD3_ATTRIBUTE_ALWAYS_INLINE static void AddImpl(
+      const float *__restrict source, uint32 size, float *__restrict dest) {
     for (uint32 i = 0; i < size; ++i) {
       dest[i] += source[i];
     }
   }
 
   // Simple fast while loop to implement dest += scale * source.
-  ATTRIBUTE_ALWAYS_INLINE static void ScaleAddImpl(
+  CLD3_ATTRIBUTE_ALWAYS_INLINE static void ScaleAddImpl(
       const float *__restrict source, uint32 size, const float scale,
       float *__restrict dest) {
     for (uint32 i = 0; i < size; ++i) {

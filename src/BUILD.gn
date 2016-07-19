@@ -17,161 +17,196 @@ import("//third_party/protobuf/proto_library.gni")
 
 proto_library("feature_extractor_proto") {
   sources = [
-    "feature_extractor.proto"
+    "feature_extractor.proto",
   ]
 }
 
 proto_library("sentence_proto") {
   sources = [
-    "sentence.proto"
-  ]
-}
-
-proto_library("sparse_proto") {
-  sources = [
-    "sparse.proto"
+    "sentence.proto",
   ]
 }
 
 proto_library("task_spec_proto") {
   sources = [
-    "task_spec.proto"
+    "task_spec.proto",
   ]
 }
 
 static_library("base") {
   sources = [
+    "base.cc",
     "base.h",
-    "base.cc"
-  ]
-  deps = [
-    "//base",
   ]
 }
 
 static_library("embedding_feature_extractor") {
   sources = [
+    "embedding_feature_extractor.cc",
     "embedding_feature_extractor.h",
-    "embedding_feature_extractor.cc"
   ]
   deps = [
     ":base",
     ":feature_extractor",
-    ":sparse_proto",
     ":task_context",
     ":utils",
     ":workspace",
-    "//base",
   ]
 }
 
 static_library("embedding_network") {
   sources = [
+    "embedding_network.cc",
     "embedding_network.h",
-    "embedding_network.cc"
   ]
   deps = [
     ":base",
     ":embedding_network_params",
+    ":feature_extractor",
     ":simple_adder",
-    ":sparse_proto",
     ":task_context_params",
-    "//base",
   ]
 }
 
-static_library("embedding_network_params") {
+source_set("embedding_network_params") {
   sources = [
     "embedding_network_params.h",
-    "embedding_network_params.cc"
+  ]
+  deps = [
+    ":base",
+    ":float16",
   ]
 }
 
 static_library("feature_extractor") {
   sources = [
-    "feature_extractor.h",
     "feature_extractor.cc",
-    "feature_types.h"
+    "feature_extractor.h",
+  ]
+  public_deps = [
+    "//third_party/protobuf:protobuf_lite",
   ]
   deps = [
     ":base",
     ":feature_extractor_proto",
+    ":feature_types",
     ":fml_parser",
     ":registry",
     ":task_context",
     ":utils",
     ":workspace",
-    "//base",
+    "//third_party/cld_3/src/script_span:stringpiece",
+  ]
+}
+
+static_library("feature_types") {
+  sources = [
+    "feature_types.cc",
+    "feature_types.h",
+  ]
+  deps = [
+    ":base",
+  ]
+}
+
+source_set("float16") {
+  sources = [
+    "casts.h",
+    "float16.h",
+  ]
+  deps = [
+    ":base",
   ]
 }
 
 static_library("fml_parser") {
   sources = [
+    "fml_parser.cc",
     "fml_parser.h",
-    "fml_parser.cc"
+  ]
+  public_deps = [
+    "//third_party/protobuf:protobuf_lite",
   ]
   deps = [
     ":base",
     ":feature_extractor_proto",
     ":utils",
-    "//base",
   ]
 }
 
 static_library("language_identifier_features") {
   sources = [
+    "language_identifier_features.cc",
     "language_identifier_features.h",
-    "language_identifier_features.cc"
+  ]
+  public_deps = [
+    "//third_party/protobuf:protobuf_lite",
   ]
   deps = [
     ":base",
     ":feature_extractor",
+    ":feature_types",
     ":sentence_features",
     ":sentence_proto",
     ":task_context",
     ":utils",
     ":workspace",
-    "//base",
+  ]
+}
+
+static_library("lang_id_nn_params") {
+  sources = [
+    "lang_id_nn_params.cc",
+    "lang_id_nn_params.h",
+  ]
+  deps = [
+    ":base",
+    ":embedding_network_params",
+    ":float16",
   ]
 }
 
 static_library("nnet_language_identifier") {
   sources = [
+    "nnet_language_identifier.cc",
     "nnet_language_identifier.h",
-    "nnet_language_identifier.cc"
+  ]
+  public_deps = [
+    "//third_party/protobuf:protobuf_lite",
   ]
   deps = [
     ":base",
     ":embedding_feature_extractor",
     ":embedding_network",
+    ":lang_id_nn_params",
     ":language_identifier_features",
     ":sentence_features",
     ":sentence_proto",
-    ":sparse_proto",
     ":task_context",
     ":task_context_params",
     ":task_spec_proto",
     ":workspace",
-    "//base",
     "//third_party/cld_3/src/script_span:script_span",
   ]
 }
 
 static_library("registry") {
   sources = [
+    "registry.cc",
     "registry.h",
-    "registry.cc"
   ]
   deps = [
     ":base",
-    "//base"
   ]
 }
 
 static_library("sentence_features") {
   sources = [
+    "sentence_features.cc",
     "sentence_features.h",
-    "sentence_features.cc"
+  ]
+  public_deps = [
+    "//third_party/protobuf:protobuf_lite",
   ]
   deps = [
     ":feature_extractor",
@@ -180,33 +215,37 @@ static_library("sentence_features") {
   ]
 }
 
-static_library("simple_adder") {
+source_set("simple_adder") {
   sources = [
-    "simple_adder.h"
+    "simple_adder.h",
   ]
   deps = [
     ":base",
-    "//base",
   ]
 }
 
 static_library("task_context") {
   sources = [
+    "task_context.cc",
     "task_context.h",
-    "task_context.cc"
+  ]
+  public_deps = [
+    "//third_party/protobuf:protobuf_lite",
   ]
   deps = [
     ":base",
     ":task_spec_proto",
     ":utils",
-    "//base",
   ]
 }
 
 static_library("task_context_params") {
   sources = [
-    "task_context_params.h",
     "task_context_params.cc",
+    "task_context_params.h",
+  ]
+  public_deps = [
+    "//third_party/protobuf:protobuf_lite",
   ]
   deps = [
     ":base",
@@ -217,22 +256,21 @@ static_library("task_context_params") {
 
 static_library("utils") {
   sources = [
+    "utils.cc",
     "utils.h",
-    "utils.cc" ]
+  ]
   deps = [
     ":base",
-    "//base",
   ]
 }
 
 static_library("workspace") {
   sources = [
+    "workspace.cc",
     "workspace.h",
-    "workspace.cc"
   ]
   deps = [
     ":base",
-    "//base",
   ]
 }
 
@@ -243,7 +281,5 @@ executable("language_identifier_main") {
   deps = [
     ":base",
     ":nnet_language_identifier",
-    "//base",
-    "//third_party/protobuf:protobuf_lite",
   ]
 }

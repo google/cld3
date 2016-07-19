@@ -59,14 +59,14 @@ class NumericFeatureType : public FeatureType {
 //     Hash32WithDefaultSeed(char ngram) % id_dim.
 //   size(int, 3):
 //     Only ngrams of this size will be extracted.
-class ContinuousBagOfNgramsFunction : public SentenceFeature {
+class ContinuousBagOfNgramsFunction : public WholeSentenceFeature {
  public:
   void Setup(TaskContext *context) override;
   void Init(TaskContext *context) override;
 
   // Appends the features computed from the focus to the feature vector.
   void Evaluate(const WorkspaceSet &workspaces, const Sentence &sentence,
-                int focus, FeatureVector *result) const override;
+                FeatureVector *result) const override;
 
  private:
   // If 'true', then splits the text based on spaces to get tokens, adds "^" to
@@ -87,57 +87,6 @@ class ContinuousBagOfNgramsFunction : public SentenceFeature {
 
   // Only ngrams of size ngram_size_ will be extracted.
   int ngram_size_;
-};
-
-// Class defining the byte feature type.
-class ByteFeatureType : public FeatureType {
- public:
-  explicit ByteFeatureType(const string &name) : FeatureType(name) {}
-
-  // Converts a feature value to a name.
-  string GetFeatureValueName(FeatureValue value) const override;
-
-  // Returns the size of the feature values domain.
-  FeatureValue GetDomainSize() const override { return 257; }
-};
-
-// Class for extracting word byte features. If the offset is negative, then the
-// feature returns bytes from the end of the word.
-class WordByte : public SentenceFeature {
-  void Init(TaskContext *context) override {
-    set_feature_type(new ByteFeatureType(name()));
-  }
-
-  // Computes the feature for the focus and saves it in the feature vector.
-  FeatureValue Compute(const WorkspaceSet &workspaces, const Sentence &sentence,
-                       int focus, const FeatureVector *result) const override;
-};
-
-// Class for extracting character features. If the offset is negative, then the
-// feature returns chars from the end of the word.
-// Feature function descriptor parameters:
-//   id_dim(int, 50):
-//     The integer id of each char is computed as follows:
-//     Hash32WithDefaultSeed(char) % id_dim
-class WordChar : public SentenceFeature {
- public:
-  void Setup(TaskContext *context) override;
-  void Init(TaskContext *context) override {
-    set_feature_type(new NumericFeatureType(name(), id_dimension_));
-  }
-
-  // Computes the feature for the focus and saves it in the feature vector.
-  FeatureValue Compute(const WorkspaceSet &workspaces, const Sentence &sentence,
-                       int focus, const FeatureVector *result) const override;
-
- private:
-  // The integer id of each char is computed as follows:
-  // Hash32WithDefaultSeed(char) % id_dimension_.
-  int id_dimension_;
-
-  // Id for the case when the offset is outside of the available range. It is
-  // set to the maximum possible id.
-  int null_id_;
 };
 
 }  // namespace chrome_lang_id

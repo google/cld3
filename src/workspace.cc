@@ -19,6 +19,14 @@ limitations under the License.
 
 namespace chrome_lang_id {
 
+WorkspaceSet::WorkspaceSet() {}
+
+WorkspaceSet::~WorkspaceSet() { Reset(WorkspaceRegistry()); }
+
+WorkspaceRegistry::WorkspaceRegistry() {}
+
+WorkspaceRegistry::~WorkspaceRegistry() {}
+
 string WorkspaceRegistry::DebugString() const {
   string str;
   for (auto &it : workspace_names_) {
@@ -34,6 +42,8 @@ string WorkspaceRegistry::DebugString() const {
   return str;
 }
 
+VectorIntWorkspace::~VectorIntWorkspace() {}
+
 VectorIntWorkspace::VectorIntWorkspace(int size) : elements_(size) {}
 
 VectorIntWorkspace::VectorIntWorkspace(int size, int value)
@@ -43,6 +53,8 @@ VectorIntWorkspace::VectorIntWorkspace(const vector<int> &elements)
     : elements_(elements) {}
 
 string VectorIntWorkspace::TypeName() { return "Vector"; }
+
+VectorVectorIntWorkspace::~VectorVectorIntWorkspace() {}
 
 VectorVectorIntWorkspace::VectorVectorIntWorkspace(int size)
     : elements_(size) {}

@@ -41,11 +41,11 @@ limitations under the License.
 #include <string>
 #include <vector>
 
-#include "base/logging.h"
 #include "third_party/cld_3/src/base.h"
 #include "third_party/cld_3/src/feature_extractor.pb.h"
 #include "third_party/cld_3/src/feature_types.h"
 #include "third_party/cld_3/src/registry.h"
+#include "third_party/cld_3/src/script_span/stringpiece.h"
 #include "third_party/cld_3/src/task_context.h"
 #include "third_party/cld_3/src/utils.h"
 #include "third_party/cld_3/src/workspace.h"
@@ -65,18 +65,22 @@ void ToFML(const FeatureFunctionDescriptor &function, string *output);
 union FloatFeatureValue {
  public:
   explicit FloatFeatureValue(FeatureValue v) : discrete_value(v) {}
-  FloatFeatureValue(uint32 i, float w) : id(i), weight(w) {}
+  FloatFeatureValue(uint32 i, float w) {
+    value.id = i;
+    value.weight = w;
+  }
   FeatureValue discrete_value;
-  struct {
+  struct IdWeight {
     uint32 id;
     float weight;
-  };
+  } value;
 };
 
 // A feature vector contains feature type and value pairs.
 class FeatureVector {
  public:
-  FeatureVector() {}
+  FeatureVector();
+  ~FeatureVector();
 
   // Adds feature type and value pair to feature vector.
   void add(FeatureType *type, FeatureValue value) {
@@ -111,7 +115,7 @@ class FeatureVector {
   // Array for storing feature vector elements.
   vector<Element> features_;
 
-  DISALLOW_COPY_AND_ASSIGN(FeatureVector);
+  CLD3_DISALLOW_COPY_AND_ASSIGN(FeatureVector);
 };
 
 // The generic feature extractor is the type-independent part of a feature
@@ -122,6 +126,7 @@ class GenericFeatureExtractor {
  public:
   GenericFeatureExtractor();
   virtual ~GenericFeatureExtractor();
+  GenericFeatureExtractor(const GenericFeatureExtractor &extractor);
 
   // Initializes the feature extractor from a source representation of the
   // feature extractor. The first line is used for determining the feature
@@ -268,8 +273,7 @@ class GenericFeatureFunction {
     StringPiece stripped(output);
     utils::RemoveWhitespaceContext(&stripped);
 
-    bstring stripped_output;
-    stripped.CopyToString(&stripped_output);
+    string stripped_output(stripped.data(), stripped.size());
     return stripped_output;
   }
 
@@ -290,7 +294,7 @@ class GenericFeatureFunction {
   // Sets the feature type for single-type feature functions.  This takes
   // ownership of feature_type.  Can only be called once.
   void set_feature_type(FeatureType *feature_type) {
-    CHECK(feature_type_ == nullptr);
+    CLD3_CHECK_EQ(feature_type_, nullptr);
     feature_type_ = feature_type;
   }
 
@@ -393,8 +397,8 @@ class NestedFeatureFunction : public FeatureFunction<OBJ, ARGS...> {
 
   // By default, just appends the nested feature types.
   void GetFeatureTypes(vector<FeatureType *> *types) const override {
-    CHECK(!this->nested().empty())
-        << "Nested features require nested features to be defined.";
+    // Nested features require nested features to be defined.
+    CLD3_CHECK(!this->nested().empty());
     for (auto *function : nested_) function->GetFeatureTypes(types);
   }
 
@@ -516,8 +520,8 @@ class FeatureLocator : public MetaFeatureFunction<OBJ, ARGS...> {
  public:
   // Feature locators have an additional check that there is no intrinsic type.
   void GetFeatureTypes(vector<FeatureType *> *types) const override {
-    CHECK(this->feature_type() == nullptr)
-        << "FeatureLocators should not have an intrinsic type.";
+    // FeatureLocators should not have an intrinsic type.
+    CLD3_CHECK_EQ(this->feature_type(), nullptr);
     MetaFeatureFunction<OBJ, ARGS...>::GetFeatureTypes(types);
   }
 

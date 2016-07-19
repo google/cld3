@@ -19,7 +19,7 @@ limitations under the License.
 
 namespace chrome_lang_id {
 
-// Registry for the Sentence + token index feature functions.
-REGISTER_CLASS_REGISTRY("sentence+index feature function", SentenceFeature);
+// Registry for the whole Sentence feature functions.
+REGISTER_CLASS_REGISTRY("sentence feature function", WholeSentenceFeature);
 
 }  // namespace chrome_lang_id

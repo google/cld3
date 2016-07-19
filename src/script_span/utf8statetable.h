@@ -27,7 +27,7 @@
 #include "third_party/cld_3/src/script_span/integral_types.h" // for uint8, uint32, uint16
 #include "third_party/cld_3/src/script_span/stringpiece.h"
 
-
+namespace chrome_lang_id {
 namespace CLD2 {
 
 class OffsetMap;
@@ -280,5 +280,6 @@ inline int UTF8OneCharLen(const char* in) {
 void UTF8TrimToChars(StringPiece* istr);
 
 }       // End namespace CLD2
+}       // End namespace chrome_lang_id
 
 #endif  // THIRD_PARTY_CLD_3_SRC_SCRIPT_SPAN_UTF8STATETABLE_H_

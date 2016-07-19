@@ -15,23 +15,34 @@ limitations under the License.
 
 #include "third_party/cld_3/src/embedding_network.h"
 
-#include <iostream>
-#include <memory>
-
-#include "base/logging.h"
+#include "third_party/cld_3/src/base.h"
+#include "third_party/cld_3/src/embedding_network_params.h"
+#include "third_party/cld_3/src/float16.h"
 #include "third_party/cld_3/src/simple_adder.h"
-#include "third_party/cld_3/src/task_context_params.h"
 
 namespace chrome_lang_id {
 namespace {
 
-// Fills a Matrix object with the parameters in the given MatrixParams.
-void FillMatrixParams(int num_rows, int num_cols, const float *weights,
+using VectorWrapper = EmbeddingNetwork::VectorWrapper;
+
+void CheckNoQuantization(const EmbeddingNetworkParams::Matrix matrix) {
+  // Quantization not allowed here.
+  CLD3_CHECK_EQ(static_cast<int>(QuantizationType::NONE),
+                static_cast<int>(matrix.quant_type));
+}
+
+// Fills a Matrix object with the parameters in the given MatrixParams.  This
+// function is used to initialize weight matrices that are *not* embedding
+// matrices.
+void FillMatrixParams(const EmbeddingNetworkParams::Matrix source_matrix,
                       EmbeddingNetwork::Matrix *mat) {
-  mat->resize(num_rows);
-  for (int r = 0; r < num_rows; ++r) {
-    (*mat)[r] = EmbeddingNetwork::ConstVector(weights, num_cols);
-    weights += num_cols;
+  mat->resize(source_matrix.rows);
+  CheckNoQuantization(source_matrix);
+  const float *weights =
+      reinterpret_cast<const float *>(source_matrix.elements);
+  for (int r = 0; r < source_matrix.rows; ++r) {
+    (*mat)[r] = EmbeddingNetwork::VectorWrapper(weights, source_matrix.cols);
+    weights += source_matrix.cols;
   }
 }
 
@@ -39,7 +50,7 @@ void FillMatrixParams(int num_rows, int num_cols, const float *weights,
 template <typename ScaleAdderClass>
 void SparseReluProductPlusBias(bool apply_relu,
                                const EmbeddingNetwork::Matrix &weights,
-                               const EmbeddingNetwork::ConstVector &b,
+                               const EmbeddingNetwork::VectorWrapper &b,
                                const EmbeddingNetwork::Vector &x,
                                EmbeddingNetwork::Vector *y) {
   y->assign(b.data(), b.data() + b.size());
@@ -58,34 +69,65 @@ void SparseReluProductPlusBias(bool apply_relu,
   }
   adder.Finalize();
 }
-
 }  // namespace
 
 void EmbeddingNetwork::ConcatEmbeddings(
-    const vector<vector<SparseFeatures>> &sparse_features,
-    Vector *concat) const {
-  concat->resize(model_.concat_layer_size());
-  for (size_t i = 0; i < sparse_features.size(); ++i) {
-    int feature_offset = model_.concat_offset(i);
-    for (size_t j = 0; j < sparse_features[i].size(); ++j) {
-      for (int k = 0; k < sparse_features[i][j].id_size(); k++) {
-        const int id = sparse_features[i][j].id(k);
-        if (sparse_features[i][j].weight_size() > 0) {
-          for (int embedding_offset = 0;
-               embedding_offset < model_.embedding_dim(i); ++embedding_offset) {
-            (*concat)[feature_offset + embedding_offset] +=
-                embedding_weights_[i][id].data()[embedding_offset] *
-                sparse_features[i][j].weight(k);
-          }
-        } else {
-          for (int embedding_offset = 0;
-               embedding_offset < model_.embedding_dim(i); ++embedding_offset) {
-            (*concat)[feature_offset + embedding_offset] +=
-                embedding_weights_[i][id].data()[embedding_offset];
-          }
+    const vector<FeatureVector> &feature_vectors, Vector *concat) const {
+  concat->resize(model_->concat_layer_size());
+
+  // "es_index" stands for "embedding space index".
+  for (size_t es_index = 0; es_index < feature_vectors.size(); ++es_index) {
+    const int concat_offset = model_->concat_offset(es_index);
+    const int embedding_dim = model_->embedding_dim(es_index);
+
+    const EmbeddingMatrix &embedding_matrix = embedding_matrices_[es_index];
+    CLD3_CHECK_EQ(embedding_matrix.dim(), embedding_dim);
+
+    const bool is_quantized =
+        embedding_matrix.quant_type() != QuantizationType::NONE;
+
+    const FeatureVector &feature_vector = feature_vectors[es_index];
+    const int num_features = feature_vector.size();
+    for (int fi = 0; fi < num_features; ++fi) {
+      const FeatureType *feature_type = feature_vector.type(fi);
+      int feature_offset = concat_offset + feature_type->base() * embedding_dim;
+      CLD3_CHECK_LE(feature_offset + embedding_dim,
+                    static_cast<int>(concat->size()));
+
+      // Weighted embeddings will be added starting from this address.
+      float *concat_ptr = concat->data() + feature_offset;
+
+      // Pointer to float / uint8 weights for relevant embedding.
+      const void *embedding_data;
+
+      // Multiplier for each embedding weight.
+      float multiplier;
+      const FeatureValue feature_value = feature_vector.value(fi);
+      if (feature_type->is_continuous()) {
+        // Continuous features (encoded as FloatFeatureValue).
+        FloatFeatureValue float_feature_value(feature_value);
+        const int id = float_feature_value.value.id;
+        embedding_matrix.get_embedding(id, &embedding_data, &multiplier);
+        multiplier *= float_feature_value.value.weight;
+      } else {
+        // Discrete features: every present feature has implicit value 1.0.
+        embedding_matrix.get_embedding(feature_value, &embedding_data,
+                                       &multiplier);
+      }
+
+      if (is_quantized) {
+        const uint8 *quant_weights =
+            reinterpret_cast<const uint8 *>(embedding_data);
+        for (int i = 0; i < embedding_dim; ++i, ++quant_weights, ++concat_ptr) {
+          // 128 is bias for UINT8 quantization, only one we currently support.
+          *concat_ptr += (static_cast<int>(*quant_weights) - 128) * multiplier;
+        }
+      } else {
+        const float *weights = reinterpret_cast<const float *>(embedding_data);
+        for (int i = 0; i < embedding_dim; ++i, ++weights, ++concat_ptr) {
+          *concat_ptr += *weights * multiplier;
         }
       }
-      feature_offset += model_.embedding_dim(i);
     }
   }
 }
@@ -93,11 +135,11 @@ void EmbeddingNetwork::ConcatEmbeddings(
 template <typename ScaleAdderClass>
 void EmbeddingNetwork::FinishComputeFinalScores(const Vector &concat,
                                                 Vector *scores) const {
-  scores->resize(softmax_bias_.size(), 0.0);
   Vector h0(hidden_bias_[0].size());
   SparseReluProductPlusBias<ScaleAdderClass>(false, hidden_weights_[0],
                                              hidden_bias_[0], concat, &h0);
 
+  CLD3_CHECK(hidden_weights_.size() == 1 || hidden_weights_.size() == 2);
   if (hidden_weights_.size() == 1) {  // 1 hidden layer
     SparseReluProductPlusBias<ScaleAdderClass>(true, softmax_weights_,
                                                softmax_bias_, h0, scores);
@@ -107,49 +149,48 @@ void EmbeddingNetwork::FinishComputeFinalScores(const Vector &concat,
                                                hidden_bias_[1], h0, &h1);
     SparseReluProductPlusBias<ScaleAdderClass>(true, softmax_weights_,
                                                softmax_bias_, h1, scores);
-  } else {
-    LOG(FATAL) << ">2 hidden layers not supported.";
   }
 }
 
-void EmbeddingNetwork::ComputeFinalScores(
-    const vector<vector<SparseFeatures>> &sparse_features, Vector *scores) {
+void EmbeddingNetwork::ComputeFinalScores(const vector<FeatureVector> &features,
+                                          Vector *scores) const {
   Vector concat;
-  ConcatEmbeddings(sparse_features, &concat);
+  ConcatEmbeddings(features, &concat);
+
+  scores->resize(softmax_bias_.size());
   FinishComputeFinalScores<SimpleAdder>(concat, scores);
 }
 
-EmbeddingNetwork::EmbeddingNetwork() {
+EmbeddingNetwork::EmbeddingNetwork(const EmbeddingNetworkParams *model)
+    : model_(model) {
   int offset_sum = 0;
-  for (int i = 0; i < model_.embedding_dim_size(); ++i) {
-    CHECK_EQ(offset_sum, model_.concat_offset(i)) << "Mismatch in model dims.";
-    offset_sum += model_.embedding_dim(i) * model_.embedding_num_features(i);
-
-    embedding_weights_.emplace_back();
-    FillMatrixParams(model_.embeddings_num_rows(i),
-                     model_.embeddings_num_cols(i),
-                     model_.embeddings_weights(i), &embedding_weights_[i]);
+  for (int i = 0; i < model_->embedding_dim_size(); ++i) {
+    CLD3_CHECK_EQ(offset_sum, model_->concat_offset(i));
+    offset_sum += model_->embedding_dim(i) * model_->embedding_num_features(i);
+    embedding_matrices_.emplace_back(model_->GetEmbeddingMatrix(i));
   }
 
-  CHECK_EQ(model_.hidden_size(), model_.hidden_bias_size());
-  hidden_weights_.resize(model_.hidden_size());
-  hidden_bias_.resize(model_.hidden_size());
-  for (int i = 0; i < model_.hidden_size(); ++i) {
-    FillMatrixParams(model_.hidden_num_rows(i), model_.hidden_num_cols(i),
-                     model_.hidden_weights(i), &hidden_weights_[i]);
-
-    CHECK_EQ(1, model_.hidden_bias_num_cols(i));
-    hidden_bias_[i] = ConstVector(model_.hidden_bias_weights(i),
-                                  model_.hidden_bias_num_rows(i));
+  CLD3_CHECK_EQ(model_->hidden_size(), model_->hidden_bias_size());
+  hidden_weights_.resize(model_->hidden_size());
+  hidden_bias_.resize(model_->hidden_size());
+  for (int i = 0; i < model_->hidden_size(); ++i) {
+    FillMatrixParams(model_->GetHiddenLayerMatrix(i), &hidden_weights_[i]);
+    EmbeddingNetworkParams::Matrix bias = model_->GetHiddenLayerBias(i);
+    CLD3_CHECK_EQ(1, bias.cols);
+    CheckNoQuantization(bias);
+    hidden_bias_[i] = VectorWrapper(
+        reinterpret_cast<const float *>(bias.elements), bias.rows);
   }
 
-  FillMatrixParams(model_.softmax_num_rows(0), model_.softmax_num_cols(0),
-                   model_.softmax_weights(0), &softmax_weights_);
+  CLD3_CHECK(model_->HasSoftmax());
+  FillMatrixParams(model_->GetSoftmaxMatrix(), &softmax_weights_);
 
-  CHECK_EQ(1, model_.softmax_bias_size());
-  CHECK_EQ(1, model_.softmax_bias_num_cols(0));
-  softmax_bias_ = ConstVector(model_.softmax_bias_weights(0),
-                              model_.softmax_bias_num_rows(0));
+  EmbeddingNetworkParams::Matrix softmax_bias = model_->GetSoftmaxBias();
+  CLD3_CHECK_EQ(1, softmax_bias.cols);
+  CheckNoQuantization(softmax_bias);
+  softmax_bias_ =
+      VectorWrapper(reinterpret_cast<const float *>(softmax_bias.elements),
+                    softmax_bias.rows);
 }
 
 }  // namespace chrome_lang_id

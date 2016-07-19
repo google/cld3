@@ -18,11 +18,13 @@ limitations under the License.
 #include <ctype.h>
 #include <string>
 
-#include "base/logging.h"
 #include "third_party/cld_3/src/base.h"
 #include "third_party/cld_3/src/utils.h"
 
 namespace chrome_lang_id {
+
+FMLParser::FMLParser() {}
+FMLParser::~FMLParser() {}
 
 void FMLParser::Initialize(const string &source) {
   // Initialize parser state.
@@ -33,13 +35,6 @@ void FMLParser::Initialize(const string &source) {
 
   // Read first input item.
   NextItem();
-}
-
-void FMLParser::Error(const string &error_message) {
-  LOG(FATAL) << "Error in feature model, line " << item_line_number_
-             << ", position " << (item_start_ - line_start_ + 1) << ": "
-             << error_message << "\n    " << string(line_start_, current_)
-             << " <--HERE";
 }
 
 void FMLParser::Next() {
@@ -93,7 +88,7 @@ void FMLParser::NextItem() {
     Next();
     string::iterator start = current_;
     while (*current_ != '"') {
-      if (eos()) Error("Unterminated string");
+      CLD3_CHECK(!eos());
       Next();
     }
     item_text_.assign(start, current_);
@@ -126,18 +121,17 @@ void FMLParser::Parse(const string &source,
 
   while (item_type_ != END) {
     // Parse either a parameter name or a feature.
-    if (item_type_ != NAME) Error("Feature type name expected");
+    CLD3_CHECK_EQ(item_type_, NAME);
     string name = item_text_;
     NextItem();
 
-    if (item_type_ == '=') {
-      Error("Invalid syntax: feature expected");
-    } else {
-      // Parse feature.
-      FeatureFunctionDescriptor *descriptor = result->add_feature();
-      descriptor->set_type(name);
-      ParseFeature(descriptor);
-    }
+    // Feature expected.
+    CLD3_CHECK_NE(static_cast<char>(item_type_), '=');
+
+    // Parse feature.
+    FeatureFunctionDescriptor *descriptor = result->add_feature();
+    descriptor->set_type(name);
+    ParseFeature(descriptor);
   }
 }
 
@@ -151,16 +145,16 @@ void FMLParser::ParseFeature(FeatureFunctionDescriptor *result) {
       ParseParameter(result);
     }
 
-    if (item_type_ != ')') Error(") expected");
+    CLD3_CHECK_EQ(item_type_, ')');
     NextItem();
   }
 
   // Parse feature name.
   if (item_type_ == ':') {
     NextItem();
-    if (item_type_ != NAME && item_type_ != STRING) {
-      Error("Feature name expected");
-    }
+
+    // Feature name expected.
+    CLD3_CHECK(item_type_ == NAME || item_type_ == STRING);
     string name = item_text_;
     NextItem();
 
@@ -172,7 +166,7 @@ void FMLParser::ParseFeature(FeatureFunctionDescriptor *result) {
   if (item_type_ == '.') {
     // Parse dotted sub-feature.
     NextItem();
-    if (item_type_ != NAME) Error("Feature type name expected");
+    CLD3_CHECK_EQ(item_type_, NAME);
     string type = item_text_;
     NextItem();
 
@@ -184,7 +178,7 @@ void FMLParser::ParseFeature(FeatureFunctionDescriptor *result) {
     // Parse sub-feature block.
     NextItem();
     while (item_type_ != '}') {
-      if (item_type_ != NAME) Error("Feature type name expected");
+      CLD3_CHECK_EQ(item_type_, NAME);
       string type = item_text_;
       NextItem();
 
@@ -198,18 +192,21 @@ void FMLParser::ParseFeature(FeatureFunctionDescriptor *result) {
 }
 
 void FMLParser::ParseParameter(FeatureFunctionDescriptor *result) {
+  CLD3_CHECK(item_type_ == NUMBER || item_type_ == NAME);
   if (item_type_ == NUMBER) {
     int argument = utils::ParseUsing<int>(item_text_, utils::ParseInt32);
     NextItem();
 
     // Set default argument for feature.
     result->set_argument(argument);
-  } else if (item_type_ == NAME) {
+  } else {  // item_type_ == NAME
     string name = item_text_;
     NextItem();
-    if (item_type_ != '=') Error("= expected");
+    CLD3_CHECK_EQ(item_type_, '=');
     NextItem();
-    if (item_type_ >= END) Error("Parameter value expected");
+
+    // Parameter value expected.
+    CLD3_CHECK_LT(item_type_, END);
     string value = item_text_;
     NextItem();
 
@@ -218,8 +215,6 @@ void FMLParser::ParseParameter(FeatureFunctionDescriptor *result) {
     parameter = result->add_parameter();
     parameter->set_name(name);
     parameter->set_value(value);
-  } else {
-    Error("Syntax error in parameter list");
   }
 }
 

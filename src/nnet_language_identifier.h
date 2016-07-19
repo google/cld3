@@ -21,10 +21,10 @@ limitations under the License.
 #include "third_party/cld_3/src/base.h"
 #include "third_party/cld_3/src/embedding_feature_extractor.h"
 #include "third_party/cld_3/src/embedding_network.h"
+#include "third_party/cld_3/src/lang_id_nn_params.h"
 #include "third_party/cld_3/src/language_identifier_features.h"
 #include "third_party/cld_3/src/sentence.pb.h"
 #include "third_party/cld_3/src/sentence_features.h"
-#include "third_party/cld_3/src/sparse.pb.h"
 #include "third_party/cld_3/src/task_context.h"
 #include "third_party/cld_3/src/task_context_params.h"
 #include "third_party/cld_3/src/task_spec.pb.h"
@@ -35,9 +35,9 @@ namespace chrome_lang_id {
 // Specialization of the EmbeddingFeatureExtractor for extracting from
 // (Sentence, int).
 class LanguageIdEmbeddingFeatureExtractor
-    : public EmbeddingFeatureExtractor<SentenceExtractor, Sentence, int> {
+    : public EmbeddingFeatureExtractor<WholeSentenceExtractor, Sentence> {
  public:
-  const string ArgPrefix() const override { return "language_identifier"; }
+  const string ArgPrefix() const override;
 };
 
 // Class for detecting the language of a document.
@@ -55,20 +55,9 @@ class NNetLanguageIdentifier {
     float proportion = 0.0;
   };
 
-  NNetLanguageIdentifier()
-      : NNetLanguageIdentifier(kMinNumBytesToConsider, kMaxNumBytesToConsider) {
-  }
-
-  NNetLanguageIdentifier(int min_num_bytes, int max_num_bytes)
-      : num_languages_(TaskContextParams::GetNumLanguages()),
-        min_num_bytes_(min_num_bytes),
-        max_num_bytes_(max_num_bytes) {
-    // Get the model parameters, set up and initialize the model.
-    TaskContext context;
-    TaskContextParams::ToTaskContext(&context);
-    Setup(&context);
-    Init(&context);
-  }
+  NNetLanguageIdentifier();
+  NNetLanguageIdentifier(int min_num_bytes, int max_num_bytes);
+  ~NNetLanguageIdentifier();
 
   // Finds the most likely language for the given text, along with additional
   // information (e.g., probability). The prediction is based on the first N
@@ -111,9 +100,9 @@ class NNetLanguageIdentifier {
   void Setup(TaskContext *context);
   void Init(TaskContext *context);
 
-  // Returns a ragged array of SparseFeatures extracted by the underlying
-  // EmbeddingFeatureExtractor.
-  vector<vector<SparseFeatures>> GetSparseFeatures(Sentence *sentence) const;
+  // Extract features from sentence.  On return, FeatureVector features[i]
+  // contains the features for the embedding space #i.
+  void GetFeatures(Sentence *sentence, vector<FeatureVector> *features) const;
 
   // Finds the most likely language for the given text. Assumes that the text is
   // interchange valid UTF8.
@@ -130,6 +119,9 @@ class NNetLanguageIdentifier {
 
   // The registry of shared workspaces in the feature extractor.
   WorkspaceRegistry workspace_registry_;
+
+  // Parameters for the neural networks.
+  LangIdNNParams nn_params_;
 
   // Neural network to use for scoring.
   EmbeddingNetwork network_;

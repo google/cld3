@@ -52,12 +52,12 @@ class FMLParser {
   // Parses fml specification into feature extractor descriptor.
   void Parse(const string &source, FeatureExtractorDescriptor *result);
 
+  FMLParser();
+  ~FMLParser();
+
  private:
   // Initializes the parser with the source text.
   void Initialize(const string &source);
-
-  // Outputs error message and exits.
-  void Error(const string &error_message);
 
   // Moves to the next input character.
   void Next();

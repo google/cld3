@@ -28,6 +28,9 @@ namespace chrome_lang_id {
 // wrapper around a TaskSpec protocol buffer.
 class TaskContext {
  public:
+  TaskContext();
+  ~TaskContext();
+
   // Returns the underlying task specification protocol buffer for the context.
   const TaskSpec &spec() const { return spec_; }
   TaskSpec *mutable_spec() { return &spec_; }

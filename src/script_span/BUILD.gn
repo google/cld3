@@ -16,39 +16,32 @@
 # TODO(abakalov): The code in script_span was copied from CLD2. It can be
 # simplified and cleaned up.
 
-config("script_span_warnings") {
-  if (is_clang) {
-    cflags = [
-      # offsetmap.cc uses a char as a subscript.
-      "-Wno-char-subscripts",
-    ]
-  }
-}
-
 static_library("script_span") {
   sources = [
     "fixunicodevalue.cc",
+    "fixunicodevalue.h",
     "generated_entities.cc",
     "generated_ulscript.cc",
-    "getonescriptspan.cc",
-    "offsetmap.cc",
-    "utf8statetable.cc",
-    "fixunicodevalue.h",
     "generated_ulscript.h",
+    "getonescriptspan.cc",
     "getonescriptspan.h",
     "integral_types.h",
+    "offsetmap.cc",
     "offsetmap.h",
     "port.h",
-    "stringpiece.h",
     "utf8acceptinterchange.h",
     "utf8prop_lettermarkscriptnum.h",
     "utf8scannot_lettermarkspecial.h",
+    "utf8statetable.cc",
     "utf8statetable.h",
   ]
   deps = [
-    "//base",
+    ":stringpiece",
   ]
-  configs += [
-    ":script_span_warnings",
+}
+
+source_set("stringpiece") {
+  sources = [
+    "stringpiece.h",
   ]
 }

@@ -30,6 +30,7 @@
 #include "third_party/cld_3/src/script_span/integral_types.h"
 #include "third_party/cld_3/src/script_span/utf8statetable.h"
 
+namespace chrome_lang_id {
 namespace CLD2 {
 
 #define X__ (kExitIllegalStructure)
@@ -1449,5 +1450,6 @@ static const UTF8ScanObj utf8scannot_lettermarkspecial_obj = {
 // Table has 14400 bytes, Hash = 9E4D-F2F2
 
 }       // End namespace CLD2
+}       // End namespace chrome_lang_id
 
 #endif  // THIRD_PARTY_CLD_3_SRC_SCRIPT_SPAN_UTF8SCANNOT_LETTERMARKSPECIAL_H_

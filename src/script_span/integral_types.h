@@ -16,6 +16,7 @@
 #define THIRD_PARTY_CLD_3_SRC_SCRIPT_SPAN_INTEGRAL_TYPES_H_
 
 // Cheap version
+namespace chrome_lang_id {
 namespace CLD2 {
 
 typedef unsigned char uint8;
@@ -31,5 +32,6 @@ typedef signed long long int int64;
 typedef int32 char32;
 
 }       // End namespace CLD2
+}       // End namespace chrome_lang_id
 
 #endif // THIRD_PARTY_CLD_3_SRC_SCRIPT_SPAN_INTEGRAL_TYPES_H_

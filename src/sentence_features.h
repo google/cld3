@@ -25,15 +25,13 @@ limitations under the License.
 
 namespace chrome_lang_id {
 
-// Feature function for any component that processes Sentences, whose
-// focus is a token index into the sentence.
-typedef FeatureFunction<Sentence, int> SentenceFeature;
+// Feature function that extracts features for the full Sentence.
+typedef FeatureFunction<Sentence> WholeSentenceFeature;
 
-typedef FeatureExtractor<Sentence, int> SentenceExtractor;
+typedef FeatureExtractor<Sentence> WholeSentenceExtractor;
 
-// Utility to register the sentence_instance::Feature functions.
-#define REGISTER_SENTENCE_IDX_FEATURE(name, type) \
-  REGISTER_FEATURE_FUNCTION(SentenceFeature, name, type)
+#define REGISTER_WHOLE_SENTENCE_FEATURE(name, type) \
+  REGISTER_FEATURE_FUNCTION(WholeSentenceFeature, name, type)
 
 }  // namespace chrome_lang_id
 
