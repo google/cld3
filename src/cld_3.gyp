@@ -18,7 +18,7 @@
     {
       'target_name': 'cld_3',
       'type': 'static_library',
-      'includes': ['../../../build/protoc.gypi'],
+      'includes': ['../../../../build/protoc.gypi'],
       'sources': [
         'feature_extractor.proto',
         'sentence.proto',
@@ -77,7 +77,7 @@
       ],
       'variables': {
         'proto_in_dir': './',
-        'proto_out_dir': 'third_party/cld_3/src',
+        'proto_out_dir': 'third_party/cld_3/src/src',
       },
     },
   ],
