@@ -13,13 +13,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-#include "third_party/cld_3/src/feature_extractor.h"
+#include "third_party/cld_3/src/src/feature_extractor.h"
 
 #include <string>
 
-#include "third_party/cld_3/src/feature_types.h"
-#include "third_party/cld_3/src/fml_parser.h"
-#include "third_party/cld_3/src/utils.h"
+#include "third_party/cld_3/src/src/feature_types.h"
+#include "third_party/cld_3/src/src/fml_parser.h"
+#include "third_party/cld_3/src/src/utils.h"
 
 namespace chrome_lang_id {
 

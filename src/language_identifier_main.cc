@@ -16,8 +16,8 @@ limitations under the License.
 #include <iostream>
 #include <string>
 
-#include "third_party/cld_3/src/base.h"
-#include "third_party/cld_3/src/nnet_language_identifier.h"
+#include "third_party/cld_3/src/src/base.h"
+#include "third_party/cld_3/src/src/nnet_language_identifier.h"
 
 using chrome_lang_id::NNetLanguageIdentifier;
 

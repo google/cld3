@@ -13,10 +13,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-#include "third_party/cld_3/src/lang_id_nn_params.h"
+#include "third_party/cld_3/src/src/lang_id_nn_params.h"
 
-#include "third_party/cld_3/src/base.h"
-#include "third_party/cld_3/src/float16.h"
+#include "third_party/cld_3/src/src/base.h"
+#include "third_party/cld_3/src/src/float16.h"
 
 namespace chrome_lang_id {
 

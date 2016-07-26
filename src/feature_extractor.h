@@ -33,22 +33,22 @@ limitations under the License.
 // A feature function is invoked with a focus. Nested feature function can be
 // invoked with another focus determined by the parent feature function.
 
-#ifndef THIRD_PARTY_CLD_3_SRC_FEATURE_EXTRACTOR_H_
-#define THIRD_PARTY_CLD_3_SRC_FEATURE_EXTRACTOR_H_
+#ifndef THIRD_PARTY_CLD_3_SRC_SRC_FEATURE_EXTRACTOR_H_
+#define THIRD_PARTY_CLD_3_SRC_SRC_FEATURE_EXTRACTOR_H_
 
 #include <stddef.h>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "third_party/cld_3/src/base.h"
-#include "third_party/cld_3/src/feature_extractor.pb.h"
-#include "third_party/cld_3/src/feature_types.h"
-#include "third_party/cld_3/src/registry.h"
-#include "third_party/cld_3/src/script_span/stringpiece.h"
-#include "third_party/cld_3/src/task_context.h"
-#include "third_party/cld_3/src/utils.h"
-#include "third_party/cld_3/src/workspace.h"
+#include "third_party/cld_3/src/src/base.h"
+#include "third_party/cld_3/src/src/feature_extractor.pb.h"
+#include "third_party/cld_3/src/src/feature_types.h"
+#include "third_party/cld_3/src/src/registry.h"
+#include "third_party/cld_3/src/src/script_span/stringpiece.h"
+#include "third_party/cld_3/src/src/task_context.h"
+#include "third_party/cld_3/src/src/utils.h"
+#include "third_party/cld_3/src/src/workspace.h"
 
 namespace chrome_lang_id {
 
@@ -633,4 +633,4 @@ class FeatureExtractor : public GenericFeatureExtractor {
 
 }  // namespace chrome_lang_id
 
-#endif  // THIRD_PARTY_CLD_3_SRC_FEATURE_EXTRACTOR_H_
+#endif  // THIRD_PARTY_CLD_3_SRC_SRC_FEATURE_EXTRACTOR_H_

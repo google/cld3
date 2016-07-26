@@ -19,13 +19,13 @@
 // Author: dsites@google.com (Dick Sites)
 //
 
-#ifndef THIRD_PARTY_CLD_3_SRC_SCRIPT_SPAN_UTF8STATETABLE_H_
-#define THIRD_PARTY_CLD_3_SRC_SCRIPT_SPAN_UTF8STATETABLE_H_
+#ifndef THIRD_PARTY_CLD_3_SRC_SRC_SCRIPT_SPAN_UTF8STATETABLE_H_
+#define THIRD_PARTY_CLD_3_SRC_SRC_SCRIPT_SPAN_UTF8STATETABLE_H_
 
 #include <string>
 
-#include "third_party/cld_3/src/script_span/integral_types.h" // for uint8, uint32, uint16
-#include "third_party/cld_3/src/script_span/stringpiece.h"
+#include "third_party/cld_3/src/src/script_span/integral_types.h" // for uint8, uint32, uint16
+#include "third_party/cld_3/src/src/script_span/stringpiece.h"
 
 namespace chrome_lang_id {
 namespace CLD2 {
@@ -282,4 +282,4 @@ void UTF8TrimToChars(StringPiece* istr);
 }       // End namespace CLD2
 }       // End namespace chrome_lang_id
 
-#endif  // THIRD_PARTY_CLD_3_SRC_SCRIPT_SPAN_UTF8STATETABLE_H_
+#endif  // THIRD_PARTY_CLD_3_SRC_SRC_SCRIPT_SPAN_UTF8STATETABLE_H_

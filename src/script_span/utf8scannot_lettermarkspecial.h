@@ -24,11 +24,11 @@
 //
 //  Table entries are absolute statetable subscripts
 
-#ifndef THIRD_PARTY_CLD_3_SRC_SCRIPT_SPAN_UTF8SCANNOT_LETTERMARKSPECIAL_H_
-#define THIRD_PARTY_CLD_3_SRC_SCRIPT_SPAN_UTF8SCANNOT_LETTERMARKSPECIAL_H_
+#ifndef THIRD_PARTY_CLD_3_SRC_SRC_SCRIPT_SPAN_UTF8SCANNOT_LETTERMARKSPECIAL_H_
+#define THIRD_PARTY_CLD_3_SRC_SRC_SCRIPT_SPAN_UTF8SCANNOT_LETTERMARKSPECIAL_H_
 
-#include "third_party/cld_3/src/script_span/integral_types.h"
-#include "third_party/cld_3/src/script_span/utf8statetable.h"
+#include "third_party/cld_3/src/src/script_span/integral_types.h"
+#include "third_party/cld_3/src/src/script_span/utf8statetable.h"
 
 namespace chrome_lang_id {
 namespace CLD2 {
@@ -1452,4 +1452,4 @@ static const UTF8ScanObj utf8scannot_lettermarkspecial_obj = {
 }       // End namespace CLD2
 }       // End namespace chrome_lang_id
 
-#endif  // THIRD_PARTY_CLD_3_SRC_SCRIPT_SPAN_UTF8SCANNOT_LETTERMARKSPECIAL_H_
+#endif  // THIRD_PARTY_CLD_3_SRC_SRC_SCRIPT_SPAN_UTF8SCANNOT_LETTERMARKSPECIAL_H_

@@ -13,19 +13,19 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-#include "third_party/cld_3/src/language_identifier_features.h"
+#include "third_party/cld_3/src/src/language_identifier_features.h"
 
 #include <sstream>
 #include <unordered_map>
 #include <utility>
 #include <vector>
 
-#include "third_party/cld_3/src/base.h"
-#include "third_party/cld_3/src/feature_extractor.h"
-#include "third_party/cld_3/src/feature_types.h"
-#include "third_party/cld_3/src/sentence_features.h"
-#include "third_party/cld_3/src/task_context.h"
-#include "third_party/cld_3/src/utils.h"
+#include "third_party/cld_3/src/src/base.h"
+#include "third_party/cld_3/src/src/feature_extractor.h"
+#include "third_party/cld_3/src/src/feature_types.h"
+#include "third_party/cld_3/src/src/sentence_features.h"
+#include "third_party/cld_3/src/src/task_context.h"
+#include "third_party/cld_3/src/src/utils.h"
 
 namespace chrome_lang_id {
 NumericFeatureType::NumericFeatureType(const string &name, FeatureValue size)

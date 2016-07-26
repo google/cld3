@@ -18,7 +18,7 @@
 // Declarations for scripts recognized by CLD2
 //
 
-#include "third_party/cld_3/src/script_span/generated_ulscript.h"
+#include "third_party/cld_3/src/src/script_span/generated_ulscript.h"
 
 namespace chrome_lang_id {
 namespace CLD2 {

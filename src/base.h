@@ -13,8 +13,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-#ifndef THIRD_PARTY_CLD_3_SRC_BASE_H_
-#define THIRD_PARTY_CLD_3_SRC_BASE_H_
+#ifndef THIRD_PARTY_CLD_3_SRC_SRC_BASE_H_
+#define THIRD_PARTY_CLD_3_SRC_SRC_BASE_H_
 
 #include <cassert>
 #include <map>
@@ -89,4 +89,4 @@ std::string Int64ToString(int64 input);
 
 }  // namespace chrome_lang_id
 
-#endif  // THIRD_PARTY_CLD_3_SRC_BASE_H_
+#endif  // THIRD_PARTY_CLD_3_SRC_SRC_BASE_H_

@@ -17,12 +17,12 @@
 //
 
 
-#ifndef THIRD_PARTY_CLD_3_SRC_SCRIPT_SPAN_GETONESCRIPTSPAN_H_
-#define THIRD_PARTY_CLD_3_SRC_SCRIPT_SPAN_GETONESCRIPTSPAN_H_
+#ifndef THIRD_PARTY_CLD_3_SRC_SRC_SCRIPT_SPAN_GETONESCRIPTSPAN_H_
+#define THIRD_PARTY_CLD_3_SRC_SRC_SCRIPT_SPAN_GETONESCRIPTSPAN_H_
 
-#include "third_party/cld_3/src/script_span/generated_ulscript.h"
-#include "third_party/cld_3/src/script_span/integral_types.h"
-#include "third_party/cld_3/src/script_span/offsetmap.h"
+#include "third_party/cld_3/src/src/script_span/generated_ulscript.h"
+#include "third_party/cld_3/src/src/script_span/integral_types.h"
+#include "third_party/cld_3/src/src/script_span/offsetmap.h"
 
 namespace chrome_lang_id {
 namespace CLD2 {
@@ -114,4 +114,4 @@ class ScriptScanner {
 }  // namespace CLD2
 }  // namespace chrome_lang_id
 
-#endif  // THIRD_PARTY_CLD_3_SRC_SCRIPT_SPAN_GETONESCRIPTSPAN_H_
+#endif  // THIRD_PARTY_CLD_3_SRC_SRC_SCRIPT_SPAN_GETONESCRIPTSPAN_H_

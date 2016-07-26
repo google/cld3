@@ -18,8 +18,8 @@
 // string to which it points.  A StringPiece is not null-terminated. [subset]
 //
 
-#ifndef THIRD_PARTY_CLD_3_SRC_SCRIPT_SPAN_STRINGPIECE_H_
-#define THIRD_PARTY_CLD_3_SRC_SCRIPT_SPAN_STRINGPIECE_H_
+#ifndef THIRD_PARTY_CLD_3_SRC_SRC_SCRIPT_SPAN_STRINGPIECE_H_
+#define THIRD_PARTY_CLD_3_SRC_SRC_SCRIPT_SPAN_STRINGPIECE_H_
 
 #include <string.h>
 #include <string>
@@ -78,4 +78,4 @@ class StringPiece;
 
 }  // namespace chrome_lang_id
 
-#endif  // THIRD_PARTY_CLD_3_SRC_SCRIPT_SPAN_STRINGPIECE_H__
+#endif  // THIRD_PARTY_CLD_3_SRC_SRC_SCRIPT_SPAN_STRINGPIECE_H__

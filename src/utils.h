@@ -13,8 +13,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-#ifndef THIRD_PARTY_CLD_3_SRC_UTILS_H_
-#define THIRD_PARTY_CLD_3_SRC_UTILS_H_
+#ifndef THIRD_PARTY_CLD_3_SRC_SRC_UTILS_H_
+#define THIRD_PARTY_CLD_3_SRC_SRC_UTILS_H_
 
 #include <stddef.h>
 #include <functional>
@@ -22,8 +22,8 @@ limitations under the License.
 #include <string>
 #include <vector>
 
-#include "third_party/cld_3/src/base.h"
-#include "third_party/cld_3/src/script_span/stringpiece.h"
+#include "third_party/cld_3/src/src/base.h"
+#include "third_party/cld_3/src/src/script_span/stringpiece.h"
 
 namespace chrome_lang_id {
 namespace utils {
@@ -141,4 +141,4 @@ int OneCharLen(const char *src);
 }  // namespace utils
 }  // namespace chrome_lang_id
 
-#endif  // THIRD_PARTY_CLD_3_SRC_UTILS_H_
+#endif  // THIRD_PARTY_CLD_3_SRC_SRC_UTILS_H_

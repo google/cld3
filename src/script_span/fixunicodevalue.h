@@ -20,11 +20,11 @@
 // are mapped to spaces.
 
 
-#ifndef THIRD_PARTY_CLD_3_SRC_SCRIPT_SPAN_FIXUNICODEVALUE_H_
-#define THIRD_PARTY_CLD_3_SRC_SCRIPT_SPAN_FIXUNICODEVALUE_H_
+#ifndef THIRD_PARTY_CLD_3_SRC_SRC_SCRIPT_SPAN_FIXUNICODEVALUE_H_
+#define THIRD_PARTY_CLD_3_SRC_SRC_SCRIPT_SPAN_FIXUNICODEVALUE_H_
 
-#include "third_party/cld_3/src/script_span/integral_types.h" // for char32
-#include "third_party/cld_3/src/script_span/port.h"
+#include "third_party/cld_3/src/src/script_span/integral_types.h" // for char32
+#include "third_party/cld_3/src/src/script_span/port.h"
 
 namespace chrome_lang_id {
 namespace CLD2 {
@@ -66,4 +66,4 @@ char32 FixUnicodeValue(char32 uv);
 }       // End namespace CLD2
 }       // End namespace chrome_lang_id
 
-#endif  // THIRD_PARTY_CLD_3_SRC_SCRIPT_SPAN_FIXUNICODEVALUE_H_
+#endif  // THIRD_PARTY_CLD_3_SRC_SRC_SCRIPT_SPAN_FIXUNICODEVALUE_H_

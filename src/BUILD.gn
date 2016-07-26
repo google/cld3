@@ -95,7 +95,7 @@ static_library("feature_extractor") {
     ":task_context",
     ":utils",
     ":workspace",
-    "//third_party/cld_3/src/script_span:stringpiece",
+    "//third_party/cld_3/src/src/script_span:stringpiece",
   ]
 }
 
@@ -186,7 +186,7 @@ static_library("nnet_language_identifier") {
     ":task_context_params",
     ":task_spec_proto",
     ":workspace",
-    "//third_party/cld_3/src/script_span:script_span",
+    "//third_party/cld_3/src/src/script_span:script_span",
   ]
 }
 

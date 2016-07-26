@@ -13,7 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-#include "third_party/cld_3/src/registry.h"
+#include "third_party/cld_3/src/src/registry.h"
 
 namespace chrome_lang_id {
 

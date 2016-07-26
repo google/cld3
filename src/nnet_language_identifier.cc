@@ -13,7 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-#include "third_party/cld_3/src/nnet_language_identifier.h"
+#include "third_party/cld_3/src/src/nnet_language_identifier.h"
 
 #include <math.h>
 
@@ -21,13 +21,13 @@ limitations under the License.
 #include <limits>
 #include <string>
 
-#include "third_party/cld_3/src/base.h"
-#include "third_party/cld_3/src/embedding_network.h"
-#include "third_party/cld_3/src/script_span/generated_ulscript.h"
-#include "third_party/cld_3/src/script_span/getonescriptspan.h"
-#include "third_party/cld_3/src/sentence.pb.h"
-#include "third_party/cld_3/src/task_context.h"
-#include "third_party/cld_3/src/workspace.h"
+#include "third_party/cld_3/src/src/base.h"
+#include "third_party/cld_3/src/src/embedding_network.h"
+#include "third_party/cld_3/src/src/script_span/generated_ulscript.h"
+#include "third_party/cld_3/src/src/script_span/getonescriptspan.h"
+#include "third_party/cld_3/src/src/sentence.pb.h"
+#include "third_party/cld_3/src/src/task_context.h"
+#include "third_party/cld_3/src/src/workspace.h"
 
 namespace chrome_lang_id {
 namespace {
@@ -61,7 +61,7 @@ bool OrderBySecondDescending(const std::pair<string, float> &x,
 }  // namespace
 
 const int NNetLanguageIdentifier::kMinNumBytesToConsider = 100;
-const int NNetLanguageIdentifier::kMaxNumBytesToConsider = 5000;
+const int NNetLanguageIdentifier::kMaxNumBytesToConsider = 1000;
 const char NNetLanguageIdentifier::kUnknown[] = "<unknown>";
 const float NNetLanguageIdentifier::kReliabilityThreshold = 0.53f;
 
@@ -113,14 +113,15 @@ string NNetLanguageIdentifier::GetLanguageName(int language_id) const {
 
 NNetLanguageIdentifier::Result NNetLanguageIdentifier::FindLanguage(
     const string &text) {
+  const int num_bytes_to_process =
+      std::min(static_cast<int>(text.size()), max_num_bytes_);
   const int num_valid_bytes =
-      CLD2::SpanInterchangeValid(text.c_str(), text.size());
+      CLD2::SpanInterchangeValid(text.c_str(), num_bytes_to_process);
   if (num_valid_bytes < min_num_bytes_) {
     return Result();
   }
 
-  const int num_bytes_to_process = std::min(num_valid_bytes, max_num_bytes_);
-  const string text_to_process(text.c_str(), num_bytes_to_process);
+  std::string text_to_process(text.c_str(), num_valid_bytes);
   return FindLanguageOfValidUTF8(text_to_process);
 }
 
@@ -193,7 +194,9 @@ NNetLanguageIdentifier::FindTopNMostLikelyLangs(const string &text,
 
     const int num_bytes_to_process =
         std::min(script_span.text_bytes, max_num_bytes_);
-    const string span_text(script_span.text, num_bytes_to_process);
+    const int num_valid_bytes =
+        CLD2::SpanInterchangeValid(script_span.text, num_bytes_to_process);
+    const string span_text(script_span.text, num_valid_bytes);
     result = FindLanguageOfValidUTF8(span_text);
     language = result.language;
     lang_stats[language].byte_sum += script_span.text_bytes;

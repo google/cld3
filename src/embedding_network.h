@@ -13,14 +13,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-#ifndef THIRD_PARTY_CLD_3_SRC_EMBEDDING_NETWORK_H_
-#define THIRD_PARTY_CLD_3_SRC_EMBEDDING_NETWORK_H_
+#ifndef THIRD_PARTY_CLD_3_SRC_SRC_EMBEDDING_NETWORK_H_
+#define THIRD_PARTY_CLD_3_SRC_SRC_EMBEDDING_NETWORK_H_
 
 #include <vector>
 
-#include "third_party/cld_3/src/embedding_network_params.h"
-#include "third_party/cld_3/src/feature_extractor.h"
-#include "third_party/cld_3/src/float16.h"
+#include "third_party/cld_3/src/src/embedding_network_params.h"
+#include "third_party/cld_3/src/src/feature_extractor.h"
+#include "third_party/cld_3/src/src/float16.h"
 
 namespace chrome_lang_id {
 
@@ -183,4 +183,4 @@ class EmbeddingNetwork {
 
 }  // namespace chrome_lang_id
 
-#endif  // THIRD_PARTY_CLD_3_SRC_EMBEDDING_NETWORK_H_
+#endif  // THIRD_PARTY_CLD_3_SRC_SRC_EMBEDDING_NETWORK_H_

@@ -13,13 +13,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-#ifndef THIRD_PARTY_CLD_3_SRC_FLOAT16_H_
-#define THIRD_PARTY_CLD_3_SRC_FLOAT16_H_
+#ifndef THIRD_PARTY_CLD_3_SRC_SRC_FLOAT16_H_
+#define THIRD_PARTY_CLD_3_SRC_SRC_FLOAT16_H_
 
 #include <string.h>  // for memcpy
 
-#include "third_party/cld_3/src/base.h"
-#include "third_party/cld_3/src/casts.h"
+#include "third_party/cld_3/src/src/base.h"
+#include "third_party/cld_3/src/src/casts.h"
 
 namespace chrome_lang_id {
 
@@ -55,4 +55,4 @@ static inline float Float16To32(float16 f) {
 
 }  // namespace chrome_lang_id
 
-#endif  // THIRD_PARTY_CLD_3_SRC_FLOAT16_H_
+#endif  // THIRD_PARTY_CLD_3_SRC_SRC_FLOAT16_H_

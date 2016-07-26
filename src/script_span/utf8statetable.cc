@@ -24,15 +24,15 @@
 #pragma warning ( disable : 4309 )
 #endif
 
-#include "third_party/cld_3/src/script_span/utf8statetable.h"
+#include "third_party/cld_3/src/src/script_span/utf8statetable.h"
 
 #include <stdint.h>                     // for uintptr_t
 #include <string.h>                     // for NULL, memcpy, memmove
 
-#include "third_party/cld_3/src/script_span/integral_types.h" // for uint8, uint32, int8
-#include "third_party/cld_3/src/script_span/offsetmap.h"
-#include "third_party/cld_3/src/script_span/port.h"
-#include "third_party/cld_3/src/script_span/stringpiece.h"
+#include "third_party/cld_3/src/src/script_span/integral_types.h" // for uint8, uint32, int8
+#include "third_party/cld_3/src/src/script_span/offsetmap.h"
+#include "third_party/cld_3/src/src/script_span/port.h"
+#include "third_party/cld_3/src/src/script_span/stringpiece.h"
 
 namespace chrome_lang_id {
 namespace CLD2 {

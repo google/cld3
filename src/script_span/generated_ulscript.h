@@ -18,8 +18,8 @@
 // Declarations for scripts recognized by CLD2
 //
 
-#ifndef THIRD_PARTY_CLD_3_SRC_SCRIPT_SPAN_GENERATED_ULSCRIPT_H_
-#define THIRD_PARTY_CLD_3_SRC_SCRIPT_SPAN_GENERATED_ULSCRIPT_H_
+#ifndef THIRD_PARTY_CLD_3_SRC_SRC_SCRIPT_SPAN_GENERATED_ULSCRIPT_H_
+#define THIRD_PARTY_CLD_3_SRC_SRC_SCRIPT_SPAN_GENERATED_ULSCRIPT_H_
 
 namespace chrome_lang_id {
 namespace CLD2 {
@@ -139,4 +139,4 @@ typedef enum {
 }  // namespace CLD2
 }  // namespace chrome_lang_id
 
-#endif   // THIRD_PARTY_CLD_3_SRC_SCRIPT_SPAN_GENERATED_ULSCRIPT_H_
+#endif   // THIRD_PARTY_CLD_3_SRC_SRC_SCRIPT_SPAN_GENERATED_ULSCRIPT_H_

@@ -50,13 +50,13 @@ limitations under the License.
 //   Function *f = Function::Lookup("cos");
 //   double result = f->Evaluate(arg);
 
-#ifndef THIRD_PARTY_CLD_3_SRC_REGISTRY_H_
-#define THIRD_PARTY_CLD_3_SRC_REGISTRY_H_
+#ifndef THIRD_PARTY_CLD_3_SRC_SRC_REGISTRY_H_
+#define THIRD_PARTY_CLD_3_SRC_SRC_REGISTRY_H_
 
 #include <string.h>
 #include <string>
 
-#include "third_party/cld_3/src/base.h"
+#include "third_party/cld_3/src/src/base.h"
 
 namespace chrome_lang_id {
 
@@ -235,4 +235,4 @@ class RegisterableInstance {
 
 }  // namespace chrome_lang_id
 
-#endif  // THIRD_PARTY_CLD_3_SRC_REGISTRY_H_
+#endif  // THIRD_PARTY_CLD_3_SRC_SRC_REGISTRY_H_

@@ -17,9 +17,9 @@ limitations under the License.
 // you update the binary model, you may need to update the variables below as
 // well.
 
-#include "third_party/cld_3/src/task_context_params.h"
+#include "third_party/cld_3/src/src/task_context_params.h"
 
-#include "third_party/cld_3/src/task_context.h"
+#include "third_party/cld_3/src/src/task_context.h"
 
 namespace chrome_lang_id {
 

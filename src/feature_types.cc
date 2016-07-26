@@ -13,14 +13,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-#include "third_party/cld_3/src/feature_types.h"
+#include "third_party/cld_3/src/src/feature_types.h"
 
 #include <algorithm>
 #include <map>
 #include <string>
 #include <utility>
 
-#include "third_party/cld_3/src/base.h"
+#include "third_party/cld_3/src/src/base.h"
 
 namespace chrome_lang_id {
 

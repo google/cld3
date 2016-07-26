@@ -13,12 +13,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-#ifndef THIRD_PARTY_CLD_3_SRC_LANG_ID_NN_PARAMS_H_
-#define THIRD_PARTY_CLD_3_SRC_LANG_ID_NN_PARAMS_H_
+#ifndef THIRD_PARTY_CLD_3_SRC_SRC_LANG_ID_NN_PARAMS_H_
+#define THIRD_PARTY_CLD_3_SRC_SRC_LANG_ID_NN_PARAMS_H_
 
-#include "third_party/cld_3/src/base.h"
-#include "third_party/cld_3/src/embedding_network_params.h"
-#include "third_party/cld_3/src/float16.h"
+#include "third_party/cld_3/src/src/base.h"
+#include "third_party/cld_3/src/src/embedding_network_params.h"
+#include "third_party/cld_3/src/src/float16.h"
 
 namespace chrome_lang_id {
 
@@ -170,4 +170,4 @@ class LangIdNNParams : public EmbeddingNetworkParams {
 
 }  // namespace chrome_lang_id
 
-#endif  // THIRD_PARTY_CLD_3_SRC_LANG_ID_NN_PARAMS_H_
+#endif  // THIRD_PARTY_CLD_3_SRC_SRC_LANG_ID_NN_PARAMS_H_

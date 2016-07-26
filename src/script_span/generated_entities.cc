@@ -17,7 +17,7 @@
 //
 // Declarations for HTML entities recognized by CLD2
 //
-#include "third_party/cld_3/src/script_span/generated_ulscript.h"  // for CharIntPair
+#include "third_party/cld_3/src/src/script_span/generated_ulscript.h"  // for CharIntPair
 
 namespace chrome_lang_id {
 namespace CLD2 {

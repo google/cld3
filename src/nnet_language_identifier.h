@@ -13,22 +13,22 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-#ifndef THIRD_PARTY_CLD_3_SRC_NNET_LANGUAGE_IDENTIFIER_H_
-#define THIRD_PARTY_CLD_3_SRC_NNET_LANGUAGE_IDENTIFIER_H_
+#ifndef THIRD_PARTY_CLD_3_SRC_SRC_NNET_LANGUAGE_IDENTIFIER_H_
+#define THIRD_PARTY_CLD_3_SRC_SRC_NNET_LANGUAGE_IDENTIFIER_H_
 
 #include <string>
 
-#include "third_party/cld_3/src/base.h"
-#include "third_party/cld_3/src/embedding_feature_extractor.h"
-#include "third_party/cld_3/src/embedding_network.h"
-#include "third_party/cld_3/src/lang_id_nn_params.h"
-#include "third_party/cld_3/src/language_identifier_features.h"
-#include "third_party/cld_3/src/sentence.pb.h"
-#include "third_party/cld_3/src/sentence_features.h"
-#include "third_party/cld_3/src/task_context.h"
-#include "third_party/cld_3/src/task_context_params.h"
-#include "third_party/cld_3/src/task_spec.pb.h"
-#include "third_party/cld_3/src/workspace.h"
+#include "third_party/cld_3/src/src/base.h"
+#include "third_party/cld_3/src/src/embedding_feature_extractor.h"
+#include "third_party/cld_3/src/src/embedding_network.h"
+#include "third_party/cld_3/src/src/lang_id_nn_params.h"
+#include "third_party/cld_3/src/src/language_identifier_features.h"
+#include "third_party/cld_3/src/src/sentence.pb.h"
+#include "third_party/cld_3/src/src/sentence_features.h"
+#include "third_party/cld_3/src/src/task_context.h"
+#include "third_party/cld_3/src/src/task_context_params.h"
+#include "third_party/cld_3/src/src/task_spec.pb.h"
+#include "third_party/cld_3/src/src/workspace.h"
 
 namespace chrome_lang_id {
 
@@ -141,4 +141,4 @@ class NNetLanguageIdentifier {
 
 }  // namespace chrome_lang_id
 
-#endif  // THIRD_PARTY_CLD_3_SRC_NNET_LANGUAGE_IDENTIFIER_H_
+#endif  // THIRD_PARTY_CLD_3_SRC_SRC_NNET_LANGUAGE_IDENTIFIER_H_
