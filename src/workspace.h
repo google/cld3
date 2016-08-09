@@ -17,8 +17,8 @@ limitations under the License.
 // specifically, the registry machinery is thread-safe, as long as each thread
 // performs feature extraction on a different Sentence object.
 
-#ifndef THIRD_PARTY_CLD_3_SRC_SRC_WORKSPACE_H_
-#define THIRD_PARTY_CLD_3_SRC_SRC_WORKSPACE_H_
+#ifndef WORKSPACE_H_
+#define WORKSPACE_H_
 
 #include <stddef.h>
 #include <string>
@@ -27,7 +27,7 @@ limitations under the License.
 #include <utility>
 #include <vector>
 
-#include "third_party/cld_3/src/src/base.h"
+#include "base.h"
 
 namespace chrome_lang_id {
 
@@ -174,4 +174,4 @@ class VectorVectorIntWorkspace : public Workspace {
 
 }  // namespace chrome_lang_id
 
-#endif  // THIRD_PARTY_CLD_3_SRC_SRC_WORKSPACE_H_
+#endif  // WORKSPACE_H_

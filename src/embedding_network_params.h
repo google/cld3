@@ -13,13 +13,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-#ifndef THIRD_PARTY_CLD_3_SRC_SRC_EMBEDDING_NETWORK_PARAMS_H_
-#define THIRD_PARTY_CLD_3_SRC_SRC_EMBEDDING_NETWORK_PARAMS_H_
+#ifndef EMBEDDING_NETWORK_PARAMS_H_
+#define EMBEDDING_NETWORK_PARAMS_H_
 
 #include <string>
 
-#include "third_party/cld_3/src/src/base.h"
-#include "third_party/cld_3/src/src/float16.h"
+#include "base.h"
+#include "float16.h"
 
 namespace chrome_lang_id {
 
@@ -105,7 +105,7 @@ class EmbeddingNetworkParams {
   //
   // This is the transpose of the corresponding matrix from the original proto.
   Matrix GetSoftmaxMatrix() const {
-    CLD3_CHECK(HasSoftmax());
+    CLD3_DCHECK(HasSoftmax());
     Matrix matrix;
     matrix.rows = softmax_num_rows(0);
     matrix.cols = softmax_num_cols(0);
@@ -120,7 +120,7 @@ class EmbeddingNetworkParams {
   // to be a row/column vector (i.e., num rows or num cols is 1).  However, we
   // don't CHECK for that: we just provide access to underlying data.
   Matrix GetSoftmaxBias() const {
-    CLD3_CHECK(HasSoftmax());
+    CLD3_DCHECK(HasSoftmax());
     Matrix matrix;
     matrix.rows = softmax_bias_num_rows(0);
     matrix.cols = softmax_bias_num_cols(0);
@@ -275,11 +275,11 @@ class EmbeddingNetworkParams {
  private:
   void CheckMatrixRange(int index, int num_matrices,
                         const string &description) const {
-    CLD3_CHECK_GE(index, 0);
-    CLD3_CHECK_LT(index, num_matrices);
+    CLD3_DCHECK(index >= 0);
+    CLD3_DCHECK(index < num_matrices);
   }
 };  // class EmbeddingNetworkParams
 
 }  // namespace chrome_lang_id
 
-#endif  // THIRD_PARTY_CLD_3_SRC_SRC_EMBEDDING_NETWORK_PARAMS_H_
+#endif  // EMBEDDING_NETWORK_PARAMS_H_

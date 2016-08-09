@@ -17,11 +17,11 @@ limitations under the License.
 // in this header so they may be re-used via composition into other more
 // advanced feature classes.
 
-#ifndef THIRD_PARTY_CLD_3_SRC_SRC_SENTENCE_FEATURES_H_
-#define THIRD_PARTY_CLD_3_SRC_SRC_SENTENCE_FEATURES_H_
+#ifndef SENTENCE_FEATURES_H_
+#define SENTENCE_FEATURES_H_
 
-#include "third_party/cld_3/src/src/feature_extractor.h"
-#include "third_party/cld_3/src/src/sentence.pb.h"
+#include "feature_extractor.h"
+#include "cld_3/protos/sentence.pb.h"
 
 namespace chrome_lang_id {
 
@@ -35,4 +35,4 @@ typedef FeatureExtractor<Sentence> WholeSentenceExtractor;
 
 }  // namespace chrome_lang_id
 
-#endif  // THIRD_PARTY_CLD_3_SRC_SRC_SENTENCE_FEATURES_H_
+#endif  // SENTENCE_FEATURES_H_

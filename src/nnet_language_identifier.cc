@@ -13,7 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-#include "third_party/cld_3/src/src/nnet_language_identifier.h"
+#include "nnet_language_identifier.h"
 
 #include <math.h>
 
@@ -21,13 +21,13 @@ limitations under the License.
 #include <limits>
 #include <string>
 
-#include "third_party/cld_3/src/src/base.h"
-#include "third_party/cld_3/src/src/embedding_network.h"
-#include "third_party/cld_3/src/src/script_span/generated_ulscript.h"
-#include "third_party/cld_3/src/src/script_span/getonescriptspan.h"
-#include "third_party/cld_3/src/src/sentence.pb.h"
-#include "third_party/cld_3/src/src/task_context.h"
-#include "third_party/cld_3/src/src/workspace.h"
+#include "base.h"
+#include "embedding_network.h"
+#include "script_span/generated_ulscript.h"
+#include "script_span/getonescriptspan.h"
+#include "cld_3/protos/sentence.pb.h"
+#include "task_context.h"
+#include "workspace.h"
 
 namespace chrome_lang_id {
 namespace {
@@ -37,9 +37,6 @@ namespace {
 struct LangChunksStats {
   // Sum of probabilities across subsequences.
   float prob_sum = 0.0;
-
-  // Whether the predictions for the subsequences are reliable.
-  bool is_reliable = true;
 
   // Total number of bytes corresponding to the language.
   int byte_sum = 0;
@@ -61,8 +58,9 @@ bool OrderBySecondDescending(const std::pair<string, float> &x,
 }  // namespace
 
 const int NNetLanguageIdentifier::kMinNumBytesToConsider = 100;
-const int NNetLanguageIdentifier::kMaxNumBytesToConsider = 1000;
-const char NNetLanguageIdentifier::kUnknown[] = "<unknown>";
+const int NNetLanguageIdentifier::kMaxNumBytesToConsider = 512;
+const int NNetLanguageIdentifier::kMaxNumInputBytesToConsider = 10000;
+const char NNetLanguageIdentifier::kUnknown[] = "unknown";
 const float NNetLanguageIdentifier::kReliabilityThreshold = 0.53f;
 
 const string LanguageIdEmbeddingFeatureExtractor::ArgPrefix() const {
@@ -107,7 +105,8 @@ void NNetLanguageIdentifier::GetFeatures(
 
 // Returns the language name corresponding to the given id.
 string NNetLanguageIdentifier::GetLanguageName(int language_id) const {
-  CLD3_CHECK((language_id >= 0) && (language_id < num_languages_));
+  CLD3_CHECK(language_id >= 0);
+  CLD3_CHECK(language_id < num_languages_);
   return TaskContextParams::language_names(language_id);
 }
 
@@ -130,10 +129,6 @@ NNetLanguageIdentifier::Result NNetLanguageIdentifier::FindLanguageOfValidUTF8(
   // Create a Sentence storing the input text.
   Sentence sentence;
   sentence.set_text(text);
-  Token *token = sentence.add_token();
-  token->set_word(text);
-  token->set_start(0);
-  token->set_end(text.length() - 1);
 
   // Predict language.
   // TODO(salcianu): reuse vector<FeatureVector>.
@@ -167,11 +162,12 @@ NNetLanguageIdentifier::Result NNetLanguageIdentifier::FindLanguageOfValidUTF8(
 }
 
 std::vector<NNetLanguageIdentifier::Result>
-NNetLanguageIdentifier::FindTopNMostLikelyLangs(const string &text,
-                                                int num_langs) {
+NNetLanguageIdentifier::FindTopNMostFreqLangs(const string &text,
+                                              int num_langs) {
   std::vector<Result> results;
-  const int num_valid_bytes =
-      CLD2::SpanInterchangeValid(text.c_str(), text.size());
+  const int num_valid_bytes = CLD2::SpanInterchangeValid(
+      text.c_str(),
+      std::min(kMaxNumInputBytesToConsider, static_cast<int>(text.size())));
   if (num_valid_bytes == 0) {
     while (num_langs-- > 0) {
       results.emplace_back();
@@ -200,39 +196,45 @@ NNetLanguageIdentifier::FindTopNMostLikelyLangs(const string &text,
     result = FindLanguageOfValidUTF8(span_text);
     language = result.language;
     lang_stats[language].byte_sum += script_span.text_bytes;
-    lang_stats[language].prob_sum += result.probability;
-    lang_stats[language].is_reliable =
-        (lang_stats[language].is_reliable && result.is_reliable);
+    lang_stats[language].prob_sum +=
+        result.probability * script_span.text_bytes;
     lang_stats[language].num_chunks++;
   }
 
-  // Sort the languages based on the average probability.
+  // Sort the languages based on the number of bytes associated with them.
   // TODO(abakalov): Consider alternative possibly more efficient portable
   // approaches for finding the top N languages. Given that on average, there
   // aren't that many languages in the input, it's likely that the benefits will
   // be negligible (if any).
-  std::vector<std::pair<string, float>> langs_and_avrg_probs;
+  std::vector<std::pair<string, float>> langs_and_byte_counts;
   for (const auto &entry : lang_stats) {
-    const float avrg_prob = entry.second.prob_sum / entry.second.num_chunks;
-    langs_and_avrg_probs.emplace_back(entry.first, avrg_prob);
+    langs_and_byte_counts.emplace_back(entry.first, entry.second.byte_sum);
   }
-  std::sort(langs_and_avrg_probs.begin(), langs_and_avrg_probs.end(),
+  std::sort(langs_and_byte_counts.begin(), langs_and_byte_counts.end(),
             OrderBySecondDescending);
 
   const float byte_sum = static_cast<float>(total_num_bytes);
   const int num_langs_to_save =
-      std::min(num_langs, static_cast<int>(langs_and_avrg_probs.size()));
+      std::min(num_langs, static_cast<int>(langs_and_byte_counts.size()));
   for (int indx = 0; indx < num_langs_to_save; ++indx) {
     Result result;
-    const string &language = langs_and_avrg_probs.at(indx).first;
+    const string &language = langs_and_byte_counts.at(indx).first;
+    const LangChunksStats &stats = lang_stats.at(language);
     result.language = language;
-    result.probability = langs_and_avrg_probs.at(indx).second;
-    result.is_reliable = lang_stats.at(language).is_reliable;
-    result.proportion = lang_stats.at(language).byte_sum / byte_sum;
+    result.probability = stats.prob_sum / stats.byte_sum;
+    result.proportion = stats.byte_sum / byte_sum;
+
+    // The reliability threshold does not help "hr" and "bs", so the predictions
+    // are always marked as reliable.
+    if (language == "hr" || language == "bs") {
+      result.is_reliable = true;
+    } else {
+      result.is_reliable = (result.probability >= kReliabilityThreshold);
+    }
     results.push_back(result);
   }
 
-  int padding_size = num_langs - langs_and_avrg_probs.size();
+  int padding_size = num_langs - langs_and_byte_counts.size();
   while (padding_size-- > 0) {
     results.emplace_back();
   }

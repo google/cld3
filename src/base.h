@@ -13,8 +13,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-#ifndef THIRD_PARTY_CLD_3_SRC_SRC_BASE_H_
-#define THIRD_PARTY_CLD_3_SRC_SRC_BASE_H_
+#ifndef BASE_H_
+#define BASE_H_
 
 #include <cassert>
 #include <map>
@@ -43,13 +43,21 @@ typedef unsigned int uint32;
   TypeName &operator=(const TypeName &)
 #endif  // LANG_CXX11
 
-#define CLD3_CHECK(condition) assert(condition)
-#define CLD3_CHECK_EQ(val1, val2) assert((val1) == (val2))
-#define CLD3_CHECK_NE(val1, val2) assert((val1) != (val2))
-#define CLD3_CHECK_LE(val1, val2) assert((val1) <= (val2))
-#define CLD3_CHECK_LT(val1, val2) assert((val1) < (val2))
-#define CLD3_CHECK_GE(val1, val2) assert((val1) >= (val2))
-#define CLD3_CHECK_GT(val1, val2) assert((val1) > (val2))
+#ifndef CLD3_IMMEDIATE_CRASH
+#if defined(__GNUC__) || defined(__clang__)
+#define CLD3_IMMEDIATE_CRASH() __builtin_trap()
+#else
+#define CLD3_IMMEDIATE_CRASH() ((void)(*(volatile char *)0 = 0))
+#endif
+#endif  // CLD3_IMMEDIATE_CRASH
+
+#define CLD3_CHECK(f) (!(f) ? CLD3_IMMEDIATE_CRASH() : (void)0)
+
+#if defined(NDEBUG) && !defined(DCHECK_ALWAYS_ON)
+#define CLD3_DCHECK(f) ((void)0)
+#else
+#define CLD3_DCHECK(f) CLD3_CHECK(f)
+#endif
 
 #ifndef SWIG
 typedef int int32;
@@ -89,4 +97,4 @@ std::string Int64ToString(int64 input);
 
 }  // namespace chrome_lang_id
 
-#endif  // THIRD_PARTY_CLD_3_SRC_SRC_BASE_H_
+#endif  // BASE_H_

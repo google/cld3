@@ -18,8 +18,8 @@ limitations under the License.
 // any changes here, make sure that you're not breaking any platforms.
 //
 
-#ifndef THIRD_PARTY_CLD_3_SRC_SRC_CASTS_H_
-#define THIRD_PARTY_CLD_3_SRC_SRC_CASTS_H_
+#ifndef CASTS_H_
+#define CASTS_H_
 
 #include <string.h>  // for memcpy
 
@@ -95,4 +95,4 @@ inline Dest lang_id_bit_cast(const Source &source) {
 
 }  // namespace chrome_lang_id
 
-#endif  // THIRD_PARTY_CLD_3_SRC_SRC_CASTS_H_
+#endif  // CASTS_H_

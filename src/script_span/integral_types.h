@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef THIRD_PARTY_CLD_3_SRC_SRC_SCRIPT_SPAN_INTEGRAL_TYPES_H_
-#define THIRD_PARTY_CLD_3_SRC_SRC_SCRIPT_SPAN_INTEGRAL_TYPES_H_
+#ifndef SCRIPT_SPAN_INTEGRAL_TYPES_H_
+#define SCRIPT_SPAN_INTEGRAL_TYPES_H_
 
 // Cheap version
 namespace chrome_lang_id {
@@ -34,4 +34,4 @@ typedef int32 char32;
 }       // End namespace CLD2
 }       // End namespace chrome_lang_id
 
-#endif // THIRD_PARTY_CLD_3_SRC_SRC_SCRIPT_SPAN_INTEGRAL_TYPES_H_
+#endif // SCRIPT_SPAN_INTEGRAL_TYPES_H_

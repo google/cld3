@@ -17,16 +17,16 @@
 //
 
 
-#include "third_party/cld_3/src/src/script_span/getonescriptspan.h"
+#include "getonescriptspan.h"
 
 #include <string.h>
 
-#include "third_party/cld_3/src/src/script_span/fixunicodevalue.h"
-#include "third_party/cld_3/src/src/script_span/port.h"
-#include "third_party/cld_3/src/src/script_span/utf8acceptinterchange.h"
-#include "third_party/cld_3/src/src/script_span/utf8prop_lettermarkscriptnum.h"
-#include "third_party/cld_3/src/src/script_span/utf8scannot_lettermarkspecial.h"
-#include "third_party/cld_3/src/src/script_span/utf8statetable.h"
+#include "fixunicodevalue.h"
+#include "port.h"
+#include "utf8acceptinterchange.h"
+#include "utf8prop_lettermarkscriptnum.h"
+#include "utf8scannot_lettermarkspecial.h"
+#include "utf8statetable.h"
 
 namespace chrome_lang_id {
 namespace CLD2 {

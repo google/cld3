@@ -37,13 +37,13 @@ limitations under the License.
 // <parameter name> ::= NAME
 // <parameter value> ::= NUMBER | STRING | NAME
 
-#ifndef THIRD_PARTY_CLD_3_SRC_SRC_FML_PARSER_H_
-#define THIRD_PARTY_CLD_3_SRC_SRC_FML_PARSER_H_
+#ifndef FML_PARSER_H_
+#define FML_PARSER_H_
 
 #include <string>
 
-#include "third_party/cld_3/src/src/base.h"
-#include "third_party/cld_3/src/src/feature_extractor.pb.h"
+#include "base.h"
+#include "cld_3/protos/feature_extractor.pb.h"
 
 namespace chrome_lang_id {
 
@@ -110,4 +110,4 @@ class FMLParser {
 
 }  // namespace chrome_lang_id
 
-#endif  // THIRD_PARTY_CLD_3_SRC_SRC_FML_PARSER_H_
+#endif  // FML_PARSER_H_

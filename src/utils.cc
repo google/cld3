@@ -13,12 +13,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-#include "third_party/cld_3/src/src/utils.h"
+#include "utils.h"
 
 #include <ctype.h>
 #include <stdlib.h>
 
-#include "third_party/cld_3/src/src/script_span/stringpiece.h"
+#include "script_span/stringpiece.h"
 
 namespace chrome_lang_id {
 namespace utils {

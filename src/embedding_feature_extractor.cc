@@ -13,15 +13,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-#include "third_party/cld_3/src/src/embedding_feature_extractor.h"
+#include "embedding_feature_extractor.h"
 
 #include <stddef.h>
 #include <vector>
 
-#include "third_party/cld_3/src/src/feature_extractor.h"
-#include "third_party/cld_3/src/src/feature_types.h"
-#include "third_party/cld_3/src/src/task_context.h"
-#include "third_party/cld_3/src/src/utils.h"
+#include "feature_extractor.h"
+#include "feature_types.h"
+#include "task_context.h"
+#include "utils.h"
 
 namespace chrome_lang_id {
 

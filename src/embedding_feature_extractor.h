@@ -13,16 +13,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-#ifndef THIRD_PARTY_CLD_3_SRC_SRC_EMBEDDING_FEATURE_EXTRACTOR_H_
-#define THIRD_PARTY_CLD_3_SRC_SRC_EMBEDDING_FEATURE_EXTRACTOR_H_
+#ifndef EMBEDDING_FEATURE_EXTRACTOR_H_
+#define EMBEDDING_FEATURE_EXTRACTOR_H_
 
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "third_party/cld_3/src/src/feature_extractor.h"
-#include "third_party/cld_3/src/src/task_context.h"
-#include "third_party/cld_3/src/src/workspace.h"
+#include "feature_extractor.h"
+#include "task_context.h"
+#include "workspace.h"
 
 namespace chrome_lang_id {
 
@@ -178,4 +178,4 @@ class EmbeddingFeatureExtractor : public GenericEmbeddingFeatureExtractor {
 
 }  // namespace chrome_lang_id
 
-#endif  // THIRD_PARTY_CLD_3_SRC_SRC_EMBEDDING_FEATURE_EXTRACTOR_H_
+#endif  // EMBEDDING_FEATURE_EXTRACTOR_H_

@@ -13,7 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-#include "third_party/cld_3/src/src/base.h"
+#include "base.h"
 
 #include <string>
 #ifdef COMPILER_MSVC

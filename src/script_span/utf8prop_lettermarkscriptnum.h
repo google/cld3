@@ -25,11 +25,11 @@
 //  Table entries are absolute statetable subscripts
 //  Table entries are two bytes each
 
-#ifndef THIRD_PARTY_CLD_3_SRC_SRC_SCRIPT_SPAN_UTF8PROP_LETTERMARKSCRIPTNUM_H_
-#define THIRD_PARTY_CLD_3_SRC_SRC_SCRIPT_SPAN_UTF8PROP_LETTERMARKSCRIPTNUM_H_
+#ifndef SCRIPT_SPAN_UTF8PROP_LETTERMARKSCRIPTNUM_H_
+#define SCRIPT_SPAN_UTF8PROP_LETTERMARKSCRIPTNUM_H_
 
-#include "third_party/cld_3/src/src/script_span/integral_types.h"
-#include "third_party/cld_3/src/src/script_span/utf8statetable.h"
+#include "integral_types.h"
+#include "utf8statetable.h"
 
 namespace chrome_lang_id {
 namespace CLD2 {
@@ -1628,4 +1628,4 @@ static const UTF8PropObj_2 utf8prop_lettermarkscriptnum_obj = {
 }       // End namespace CLD2
 }       // End namespace chrome_lang_id
 
-#endif  // THIRD_PARTY_CLD_3_SRC_SRC_SCRIPT_SPAN_UTF8PROP_LETTERMARKSCRIPTNUM_H_
+#endif  // SCRIPT_SPAN_UTF8PROP_LETTERMARKSCRIPTNUM_H_

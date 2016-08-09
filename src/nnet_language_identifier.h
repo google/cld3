@@ -13,22 +13,22 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-#ifndef THIRD_PARTY_CLD_3_SRC_SRC_NNET_LANGUAGE_IDENTIFIER_H_
-#define THIRD_PARTY_CLD_3_SRC_SRC_NNET_LANGUAGE_IDENTIFIER_H_
+#ifndef NNET_LANGUAGE_IDENTIFIER_H_
+#define NNET_LANGUAGE_IDENTIFIER_H_
 
 #include <string>
 
-#include "third_party/cld_3/src/src/base.h"
-#include "third_party/cld_3/src/src/embedding_feature_extractor.h"
-#include "third_party/cld_3/src/src/embedding_network.h"
-#include "third_party/cld_3/src/src/lang_id_nn_params.h"
-#include "third_party/cld_3/src/src/language_identifier_features.h"
-#include "third_party/cld_3/src/src/sentence.pb.h"
-#include "third_party/cld_3/src/src/sentence_features.h"
-#include "third_party/cld_3/src/src/task_context.h"
-#include "third_party/cld_3/src/src/task_context_params.h"
-#include "third_party/cld_3/src/src/task_spec.pb.h"
-#include "third_party/cld_3/src/src/workspace.h"
+#include "base.h"
+#include "embedding_feature_extractor.h"
+#include "embedding_network.h"
+#include "lang_id_nn_params.h"
+#include "language_identifier_features.h"
+#include "cld_3/protos/sentence.pb.h"
+#include "sentence_features.h"
+#include "task_context.h"
+#include "task_context_params.h"
+#include "cld_3/protos/task_spec.pb.h"
+#include "workspace.h"
 
 namespace chrome_lang_id {
 
@@ -49,9 +49,8 @@ class NNetLanguageIdentifier {
     float probability = 0.0;   // Language probability.
     bool is_reliable = false;  // Whether the prediction is reliable.
 
-    // Proportion of bytes associated with the language. This metric is
-    // computed with respect to the number of languages requested, not the
-    // number of languages in the input.
+    // Proportion of bytes associated with the language. If FindLanguage is
+    // called, this variable is set to 1.
     float proportion = 0.0;
   };
 
@@ -64,19 +63,21 @@ class NNetLanguageIdentifier {
   // bytes where N is the minumum between the number of interchange valid UTF8
   // bytes and max_num_bytes_. If N is less than min_num_bytes_ long, then this
   // function returns kUnknown.
+  // TODO(abakalov): This function should remove punctuation.
+  // FindTopNMostFreqLangs does it using the code in script_span/.
   Result FindLanguage(const string &text);
 
   // Splits the input text (up to the first byte, if any, that is not
   // interchange valid UTF8) into spans based on the script, predicts a language
-  // for each span, and returns a vector storing the top num_langs most likely
+  // for each span, and returns a vector storing the top num_langs most frequent
   // languages along with additional information (e.g., proportions). The number
   // of bytes considered for each span is the minimum between the size of the
   // span and max_num_bytes_. If more languages are requested than what is
   // available in the input, then for those cases kUnknown is returned. Also, if
   // the size of the span is less than min_num_bytes_ long, then the span is
-  // skipped.
-  std::vector<Result> FindTopNMostLikelyLangs(const string &text,
-                                              int num_langs);
+  // skipped. If the input text is too long, only the first
+  // kMaxNumInputBytesToConsider bytes are processed.
+  std::vector<Result> FindTopNMostFreqLangs(const string &text, int num_langs);
 
   // String returned when a language is unknown or prediction cannot be made.
   static const char kUnknown[];
@@ -88,6 +89,9 @@ class NNetLanguageIdentifier {
   // Max number of bytes to consider to make a prediction if the default
   // constructor is called.
   static const int kMaxNumBytesToConsider;
+
+  // Max number of input bytes to process.
+  static const int kMaxNumInputBytesToConsider;
 
   // Predictions with probability greater than or equal to this threshold are
   // marked as reliable. This threshold was optimized on a set of text segments
@@ -141,4 +145,4 @@ class NNetLanguageIdentifier {
 
 }  // namespace chrome_lang_id
 
-#endif  // THIRD_PARTY_CLD_3_SRC_SRC_NNET_LANGUAGE_IDENTIFIER_H_
+#endif  // NNET_LANGUAGE_IDENTIFIER_H_

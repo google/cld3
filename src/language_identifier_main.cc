@@ -16,8 +16,8 @@ limitations under the License.
 #include <iostream>
 #include <string>
 
-#include "third_party/cld_3/src/src/base.h"
-#include "third_party/cld_3/src/src/nnet_language_identifier.h"
+#include "base.h"
+#include "nnet_language_identifier.h"
 
 using chrome_lang_id::NNetLanguageIdentifier;
 
@@ -42,7 +42,7 @@ int main(int argc, char **argv) {
       "This piece of text is in English. Този текст е на Български.";
   std::cout << "text: " << text << std::endl;
   const std::vector<NNetLanguageIdentifier::Result> results =
-      lang_id.FindTopNMostLikelyLangs(text, /*num_langs*/ 3);
+      lang_id.FindTopNMostFreqLangs(text, /*num_langs*/ 3);
   for (const NNetLanguageIdentifier::Result &result : results) {
     std::cout << "  language: " << result.language << std::endl
               << "  probability: " << result.probability << std::endl

@@ -13,10 +13,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-#ifndef THIRD_PARTY_CLD_3_SRC_SRC_SIMPLE_ADDER_H_
-#define THIRD_PARTY_CLD_3_SRC_SRC_SIMPLE_ADDER_H_
+#ifndef SIMPLE_ADDER_H_
+#define SIMPLE_ADDER_H_
 
-#include "third_party/cld_3/src/src/base.h"
+#include "base.h"
 
 namespace chrome_lang_id {
 
@@ -30,7 +30,7 @@ class SimpleAdder {
 
   CLD3_ATTRIBUTE_ALWAYS_INLINE ~SimpleAdder() {
     // Should call Finalize function before destruction.
-    CLD3_CHECK_EQ(dest_, nullptr);
+    CLD3_DCHECK(dest_ == nullptr);
   }
 
   // Caller must call this function before calling deconstruct this object.
@@ -69,4 +69,4 @@ class SimpleAdder {
 
 }  // namespace chrome_lang_id
 
-#endif  // THIRD_PARTY_CLD_3_SRC_SRC_SIMPLE_ADDER_H_
+#endif  // SIMPLE_ADDER_H_

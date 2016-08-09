@@ -17,7 +17,7 @@
 //
 //
 
-#include "third_party/cld_3/src/src/script_span/offsetmap.h"
+#include "offsetmap.h"
 
 #include <string.h>                     // for strcmp
 #include <algorithm>                    // for min

@@ -33,22 +33,22 @@ limitations under the License.
 // A feature function is invoked with a focus. Nested feature function can be
 // invoked with another focus determined by the parent feature function.
 
-#ifndef THIRD_PARTY_CLD_3_SRC_SRC_FEATURE_EXTRACTOR_H_
-#define THIRD_PARTY_CLD_3_SRC_SRC_FEATURE_EXTRACTOR_H_
+#ifndef FEATURE_EXTRACTOR_H_
+#define FEATURE_EXTRACTOR_H_
 
 #include <stddef.h>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "third_party/cld_3/src/src/base.h"
-#include "third_party/cld_3/src/src/feature_extractor.pb.h"
-#include "third_party/cld_3/src/src/feature_types.h"
-#include "third_party/cld_3/src/src/registry.h"
-#include "third_party/cld_3/src/src/script_span/stringpiece.h"
-#include "third_party/cld_3/src/src/task_context.h"
-#include "third_party/cld_3/src/src/utils.h"
-#include "third_party/cld_3/src/src/workspace.h"
+#include "base.h"
+#include "cld_3/protos/feature_extractor.pb.h"
+#include "feature_types.h"
+#include "registry.h"
+#include "script_span/stringpiece.h"
+#include "task_context.h"
+#include "utils.h"
+#include "workspace.h"
 
 namespace chrome_lang_id {
 
@@ -294,7 +294,7 @@ class GenericFeatureFunction {
   // Sets the feature type for single-type feature functions.  This takes
   // ownership of feature_type.  Can only be called once.
   void set_feature_type(FeatureType *feature_type) {
-    CLD3_CHECK_EQ(feature_type_, nullptr);
+    CLD3_DCHECK(feature_type_ == nullptr);
     feature_type_ = feature_type;
   }
 
@@ -398,7 +398,7 @@ class NestedFeatureFunction : public FeatureFunction<OBJ, ARGS...> {
   // By default, just appends the nested feature types.
   void GetFeatureTypes(vector<FeatureType *> *types) const override {
     // Nested features require nested features to be defined.
-    CLD3_CHECK(!this->nested().empty());
+    CLD3_DCHECK(!this->nested().empty());
     for (auto *function : nested_) function->GetFeatureTypes(types);
   }
 
@@ -521,7 +521,7 @@ class FeatureLocator : public MetaFeatureFunction<OBJ, ARGS...> {
   // Feature locators have an additional check that there is no intrinsic type.
   void GetFeatureTypes(vector<FeatureType *> *types) const override {
     // FeatureLocators should not have an intrinsic type.
-    CLD3_CHECK_EQ(this->feature_type(), nullptr);
+    CLD3_DCHECK(this->feature_type() == nullptr);
     MetaFeatureFunction<OBJ, ARGS...>::GetFeatureTypes(types);
   }
 
@@ -633,4 +633,4 @@ class FeatureExtractor : public GenericFeatureExtractor {
 
 }  // namespace chrome_lang_id
 
-#endif  // THIRD_PARTY_CLD_3_SRC_SRC_FEATURE_EXTRACTOR_H_
+#endif  // FEATURE_EXTRACTOR_H_

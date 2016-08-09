@@ -13,13 +13,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-#include "third_party/cld_3/src/src/fml_parser.h"
+#include "fml_parser.h"
 
 #include <ctype.h>
 #include <string>
 
-#include "third_party/cld_3/src/src/base.h"
-#include "third_party/cld_3/src/src/utils.h"
+#include "base.h"
+#include "utils.h"
 
 namespace chrome_lang_id {
 
@@ -88,7 +88,7 @@ void FMLParser::NextItem() {
     Next();
     string::iterator start = current_;
     while (*current_ != '"') {
-      CLD3_CHECK(!eos());
+      CLD3_DCHECK(!eos());
       Next();
     }
     item_text_.assign(start, current_);
@@ -121,12 +121,12 @@ void FMLParser::Parse(const string &source,
 
   while (item_type_ != END) {
     // Parse either a parameter name or a feature.
-    CLD3_CHECK_EQ(item_type_, NAME);
+    CLD3_DCHECK(item_type_ == NAME);
     string name = item_text_;
     NextItem();
 
     // Feature expected.
-    CLD3_CHECK_NE(static_cast<char>(item_type_), '=');
+    CLD3_DCHECK(static_cast<char>(item_type_) != '=');
 
     // Parse feature.
     FeatureFunctionDescriptor *descriptor = result->add_feature();
@@ -145,7 +145,7 @@ void FMLParser::ParseFeature(FeatureFunctionDescriptor *result) {
       ParseParameter(result);
     }
 
-    CLD3_CHECK_EQ(item_type_, ')');
+    CLD3_DCHECK(item_type_ == ')');
     NextItem();
   }
 
@@ -154,7 +154,7 @@ void FMLParser::ParseFeature(FeatureFunctionDescriptor *result) {
     NextItem();
 
     // Feature name expected.
-    CLD3_CHECK(item_type_ == NAME || item_type_ == STRING);
+    CLD3_DCHECK((item_type_ == NAME) || (item_type_ == STRING));
     string name = item_text_;
     NextItem();
 
@@ -166,7 +166,7 @@ void FMLParser::ParseFeature(FeatureFunctionDescriptor *result) {
   if (item_type_ == '.') {
     // Parse dotted sub-feature.
     NextItem();
-    CLD3_CHECK_EQ(item_type_, NAME);
+    CLD3_DCHECK(item_type_ == NAME);
     string type = item_text_;
     NextItem();
 
@@ -178,7 +178,7 @@ void FMLParser::ParseFeature(FeatureFunctionDescriptor *result) {
     // Parse sub-feature block.
     NextItem();
     while (item_type_ != '}') {
-      CLD3_CHECK_EQ(item_type_, NAME);
+      CLD3_DCHECK(item_type_ == NAME);
       string type = item_text_;
       NextItem();
 
@@ -192,7 +192,7 @@ void FMLParser::ParseFeature(FeatureFunctionDescriptor *result) {
 }
 
 void FMLParser::ParseParameter(FeatureFunctionDescriptor *result) {
-  CLD3_CHECK(item_type_ == NUMBER || item_type_ == NAME);
+  CLD3_DCHECK((item_type_ == NUMBER) || (item_type_ == NAME));
   if (item_type_ == NUMBER) {
     int argument = utils::ParseUsing<int>(item_text_, utils::ParseInt32);
     NextItem();
@@ -202,11 +202,11 @@ void FMLParser::ParseParameter(FeatureFunctionDescriptor *result) {
   } else {  // item_type_ == NAME
     string name = item_text_;
     NextItem();
-    CLD3_CHECK_EQ(item_type_, '=');
+    CLD3_DCHECK(item_type_ == '=');
     NextItem();
 
     // Parameter value expected.
-    CLD3_CHECK_LT(item_type_, END);
+    CLD3_DCHECK(item_type_ < END);
     string value = item_text_;
     NextItem();
 

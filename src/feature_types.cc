@@ -13,14 +13,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-#include "third_party/cld_3/src/src/feature_types.h"
+#include "feature_types.h"
 
 #include <algorithm>
 #include <map>
 #include <string>
 #include <utility>
 
-#include "third_party/cld_3/src/src/base.h"
+#include "base.h"
 
 namespace chrome_lang_id {
 
@@ -38,7 +38,7 @@ ResourceBasedFeatureType<Resource>::ResourceBasedFeatureType(
     : FeatureType(name), resource_(resource), values_(values) {
   max_value_ = resource->NumValues() - 1;
   for (const auto &pair : values) {
-    CLD3_CHECK_GE(pair.first, resource->NumValues());
+    CLD3_DCHECK(pair.first >= resource->NumValues());
     max_value_ = pair.first > max_value_ ? pair.first : max_value_;
   }
 }
@@ -52,7 +52,7 @@ EnumFeatureType::EnumFeatureType(const string &name,
                                  const map<FeatureValue, string> &value_names)
     : FeatureType(name), value_names_(value_names) {
   for (const auto &pair : value_names) {
-    CLD3_CHECK_GE(pair.first, 0);
+    CLD3_DCHECK(pair.first >= 0);
     domain_size_ = std::max(domain_size_, pair.first + 1);
   }
 }

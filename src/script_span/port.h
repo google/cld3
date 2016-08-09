@@ -16,12 +16,12 @@
 // These are weird things we need to do to get this compiling on
 // random systems [subset].
 
-#ifndef THIRD_PARTY_CLD_3_SRC_SRC_SCRIPT_SPAN_PORT_H_
-#define THIRD_PARTY_CLD_3_SRC_SRC_SCRIPT_SPAN_PORT_H_
+#ifndef SCRIPT_SPAN_PORT_H_
+#define SCRIPT_SPAN_PORT_H_
 
 #include <string.h>         // for memcpy()
 
-#include "third_party/cld_3/src/src/script_span/integral_types.h"
+#include "integral_types.h"
 
 namespace chrome_lang_id {
 namespace CLD2 {
@@ -140,4 +140,4 @@ inline void UNALIGNED_STORE64(void *p, uint64 v) {
 }       // End namespace CLD2
 }       // End namespace chrome_lang_id
 
-#endif  // THIRD_PARTY_CLD_3_SRC_SRC_SCRIPT_SPAN_PORT_H_
+#endif  // SCRIPT_SPAN_PORT_H_

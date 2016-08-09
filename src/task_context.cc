@@ -13,9 +13,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-#include "third_party/cld_3/src/src/task_context.h"
+#include "task_context.h"
 
-#include "third_party/cld_3/src/src/utils.h"
+#include "utils.h"
 
 namespace chrome_lang_id {
 
@@ -125,7 +125,7 @@ bool TaskContext::Get(const string &name, bool defval) const {
 }
 
 string TaskContext::InputFile(const TaskInput &input) {
-  CLD3_CHECK_EQ(input.part_size(), 1);
+  CLD3_CHECK(input.part_size() == 1);
   return input.part(0).file_pattern();
 }
 

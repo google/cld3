@@ -50,13 +50,13 @@ limitations under the License.
 //   Function *f = Function::Lookup("cos");
 //   double result = f->Evaluate(arg);
 
-#ifndef THIRD_PARTY_CLD_3_SRC_SRC_REGISTRY_H_
-#define THIRD_PARTY_CLD_3_SRC_SRC_REGISTRY_H_
+#ifndef REGISTRY_H_
+#define REGISTRY_H_
 
 #include <string.h>
 #include <string>
 
-#include "third_party/cld_3/src/src/base.h"
+#include "base.h"
 
 namespace chrome_lang_id {
 
@@ -157,7 +157,7 @@ struct ComponentRegistry {
   const Registrar *GetComponent(const char *type) const {
     Registrar *r = components;
     while (r != NULL && strcmp(type, r->type()) != 0) r = r->next();
-    CLD3_CHECK_NE(r, NULL);
+    CLD3_DCHECK(r != nullptr);
 
     return r;
   }
@@ -235,4 +235,4 @@ class RegisterableInstance {
 
 }  // namespace chrome_lang_id
 
-#endif  // THIRD_PARTY_CLD_3_SRC_SRC_REGISTRY_H_
+#endif  // REGISTRY_H_

@@ -13,13 +13,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-#ifndef THIRD_PARTY_CLD_3_SRC_SRC_TASK_CONTEXT_PARAMS_H_
-#define THIRD_PARTY_CLD_3_SRC_SRC_TASK_CONTEXT_PARAMS_H_
+#ifndef TASK_CONTEXT_PARAMS_H_
+#define TASK_CONTEXT_PARAMS_H_
 
 #include <string>
 
-#include "third_party/cld_3/src/src/base.h"
-#include "third_party/cld_3/src/src/task_context.h"
+#include "base.h"
+#include "task_context.h"
 
 namespace chrome_lang_id {
 
@@ -51,4 +51,4 @@ class TaskContextParams {
 };
 }  // namespace chrome_lang_id
 
-#endif  // THIRD_PARTY_CLD_3_SRC_SRC_TASK_CONTEXT_PARAMS_H_
+#endif  // TASK_CONTEXT_PARAMS_H_

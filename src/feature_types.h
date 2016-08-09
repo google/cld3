@@ -15,15 +15,15 @@ limitations under the License.
 
 // Common feature types for parser components.
 
-#ifndef THIRD_PARTY_CLD_3_SRC_SRC_FEATURE_TYPES_H_
-#define THIRD_PARTY_CLD_3_SRC_SRC_FEATURE_TYPES_H_
+#ifndef FEATURE_TYPES_H_
+#define FEATURE_TYPES_H_
 
 #include <algorithm>
 #include <map>
 #include <string>
 #include <utility>
 
-#include "third_party/cld_3/src/src/base.h"
+#include "base.h"
 
 namespace chrome_lang_id {
 
@@ -155,4 +155,4 @@ class EnumFeatureType : public FeatureType {
 
 }  // namespace chrome_lang_id
 
-#endif  // THIRD_PARTY_CLD_3_SRC_SRC_FEATURE_TYPES_H_
+#endif  // FEATURE_TYPES_H_

@@ -15,271 +15,113 @@
 
 import("//third_party/protobuf/proto_library.gni")
 
-proto_library("feature_extractor_proto") {
+proto_library("protos") {
   sources = [
     "feature_extractor.proto",
-  ]
-}
-
-proto_library("sentence_proto") {
-  sources = [
     "sentence.proto",
-  ]
-}
-
-proto_library("task_spec_proto") {
-  sources = [
     "task_spec.proto",
   ]
+  proto_out_dir = "cld_3/protos"
 }
 
-static_library("base") {
+static_library("cld_3") {
   sources = [
     "base.cc",
     "base.h",
-  ]
-}
-
-static_library("embedding_feature_extractor") {
-  sources = [
+    "casts.h",
     "embedding_feature_extractor.cc",
     "embedding_feature_extractor.h",
-  ]
-  deps = [
-    ":base",
-    ":feature_extractor",
-    ":task_context",
-    ":utils",
-    ":workspace",
-  ]
-}
-
-static_library("embedding_network") {
-  sources = [
     "embedding_network.cc",
     "embedding_network.h",
-  ]
-  deps = [
-    ":base",
-    ":embedding_network_params",
-    ":feature_extractor",
-    ":simple_adder",
-    ":task_context_params",
-  ]
-}
-
-source_set("embedding_network_params") {
-  sources = [
     "embedding_network_params.h",
-  ]
-  deps = [
-    ":base",
-    ":float16",
-  ]
-}
-
-static_library("feature_extractor") {
-  sources = [
     "feature_extractor.cc",
     "feature_extractor.h",
-  ]
-  public_deps = [
-    "//third_party/protobuf:protobuf_lite",
-  ]
-  deps = [
-    ":base",
-    ":feature_extractor_proto",
-    ":feature_types",
-    ":fml_parser",
-    ":registry",
-    ":task_context",
-    ":utils",
-    ":workspace",
-    "//third_party/cld_3/src/src/script_span:stringpiece",
-  ]
-}
-
-static_library("feature_types") {
-  sources = [
     "feature_types.cc",
     "feature_types.h",
-  ]
-  deps = [
-    ":base",
-  ]
-}
-
-source_set("float16") {
-  sources = [
-    "casts.h",
     "float16.h",
-  ]
-  deps = [
-    ":base",
-  ]
-}
-
-static_library("fml_parser") {
-  sources = [
     "fml_parser.cc",
     "fml_parser.h",
-  ]
-  public_deps = [
-    "//third_party/protobuf:protobuf_lite",
-  ]
-  deps = [
-    ":base",
-    ":feature_extractor_proto",
-    ":utils",
-  ]
-}
-
-static_library("language_identifier_features") {
-  sources = [
     "language_identifier_features.cc",
     "language_identifier_features.h",
-  ]
-  public_deps = [
-    "//third_party/protobuf:protobuf_lite",
-  ]
-  deps = [
-    ":base",
-    ":feature_extractor",
-    ":feature_types",
-    ":sentence_features",
-    ":sentence_proto",
-    ":task_context",
-    ":utils",
-    ":workspace",
-  ]
-}
-
-static_library("lang_id_nn_params") {
-  sources = [
     "lang_id_nn_params.cc",
     "lang_id_nn_params.h",
-  ]
-  deps = [
-    ":base",
-    ":embedding_network_params",
-    ":float16",
-  ]
-}
-
-static_library("nnet_language_identifier") {
-  sources = [
     "nnet_language_identifier.cc",
     "nnet_language_identifier.h",
-  ]
-  public_deps = [
-    "//third_party/protobuf:protobuf_lite",
-  ]
-  deps = [
-    ":base",
-    ":embedding_feature_extractor",
-    ":embedding_network",
-    ":lang_id_nn_params",
-    ":language_identifier_features",
-    ":sentence_features",
-    ":sentence_proto",
-    ":task_context",
-    ":task_context_params",
-    ":task_spec_proto",
-    ":workspace",
-    "//third_party/cld_3/src/src/script_span:script_span",
-  ]
-}
-
-static_library("registry") {
-  sources = [
     "registry.cc",
     "registry.h",
-  ]
-  deps = [
-    ":base",
-  ]
-}
-
-static_library("sentence_features") {
-  sources = [
     "sentence_features.cc",
     "sentence_features.h",
-  ]
-  public_deps = [
-    "//third_party/protobuf:protobuf_lite",
-  ]
-  deps = [
-    ":feature_extractor",
-    ":registry",
-    ":sentence_proto",
-  ]
-}
-
-source_set("simple_adder") {
-  sources = [
     "simple_adder.h",
-  ]
-  deps = [
-    ":base",
-  ]
-}
-
-static_library("task_context") {
-  sources = [
+    "script_span/fixunicodevalue.cc",
+    "script_span/fixunicodevalue.h",
+    "script_span/generated_entities.cc",
+    "script_span/generated_ulscript.cc",
+    "script_span/generated_ulscript.h",
+    "script_span/getonescriptspan.cc",
+    "script_span/getonescriptspan.h",
+    "script_span/integral_types.h",
+    "script_span/offsetmap.cc",
+    "script_span/offsetmap.h",
+    "script_span/port.h",
+    "script_span/utf8acceptinterchange.h",
+    "script_span/utf8prop_lettermarkscriptnum.h",
+    "script_span/utf8scannot_lettermarkspecial.h",
+    "script_span/utf8statetable.cc",
+    "script_span/utf8statetable.h",
+    "script_span/stringpiece.h",
     "task_context.cc",
     "task_context.h",
-  ]
-  public_deps = [
-    "//third_party/protobuf:protobuf_lite",
-  ]
-  deps = [
-    ":base",
-    ":task_spec_proto",
-    ":utils",
-  ]
-}
-
-static_library("task_context_params") {
-  sources = [
     "task_context_params.cc",
     "task_context_params.h",
-  ]
-  public_deps = [
-    "//third_party/protobuf:protobuf_lite",
-  ]
-  deps = [
-    ":base",
-    ":task_context",
-    ":task_spec_proto",
-  ]
-}
-
-static_library("utils") {
-  sources = [
     "utils.cc",
     "utils.h",
-  ]
-  deps = [
-    ":base",
-  ]
-}
-
-static_library("workspace") {
-  sources = [
     "workspace.cc",
     "workspace.h",
   ]
+  public_deps = [
+    "//third_party/protobuf:protobuf_lite",
+  ]
   deps = [
-    ":base",
+    ":protos",
   ]
 }
 
-executable("language_identifier_main") {
-  sources = [
-    "language_identifier_main.cc",
-  ]
-  deps = [
-    ":base",
-    ":nnet_language_identifier",
-  ]
-}
+# The executables below are functional. Uncomment to use.
+
+#executable("language_identifier_main") {
+#  sources = [
+#    "language_identifier_main.cc",
+#  ]
+#  deps = [
+#    ":cld_3",
+#  ]
+#}
+
+#executable("getonescriptspan_test") {
+#  sources = [
+#    "script_span/getonescriptspan_test.cc",
+#  ]
+#  deps = [
+#    ":cld_3",
+#  ]
+#}
+
+#executable("language_identifier_features_test") {
+#  sources = [
+#    "language_identifier_features_test.cc",
+#  ]
+#  deps = [
+#    ":cld_3",
+#  ]
+#}
+
+#executable("nnet_lang_id_test") {
+#  sources = [
+#    "nnet_lang_id_test.cc",
+#    "nnet_lang_id_test_data.cc",
+#    "nnet_lang_id_test_data.h",
+#  ]
+#  deps = [
+#    ":cld_3",
+#  ]
+#}

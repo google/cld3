@@ -13,14 +13,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-#ifndef THIRD_PARTY_CLD_3_SRC_SRC_EMBEDDING_NETWORK_H_
-#define THIRD_PARTY_CLD_3_SRC_SRC_EMBEDDING_NETWORK_H_
+#ifndef EMBEDDING_NETWORK_H_
+#define EMBEDDING_NETWORK_H_
 
 #include <vector>
 
-#include "third_party/cld_3/src/src/embedding_network_params.h"
-#include "third_party/cld_3/src/src/feature_extractor.h"
-#include "third_party/cld_3/src/src/float16.h"
+#include "embedding_network_params.h"
+#include "feature_extractor.h"
+#include "float16.h"
 
 namespace chrome_lang_id {
 
@@ -69,8 +69,8 @@ class EmbeddingNetwork {
     // point to the embedding weights and *scale to the quantization scale (1.0
     // if no quantization).
     void get_embedding(int k, const void **data, float *scale) const {
-      CLD3_CHECK_GE(k, 0);
-      CLD3_CHECK_LT(k, size());
+      CLD3_CHECK(k >= 0);
+      CLD3_CHECK(k < size());
       *data = reinterpret_cast<const char *>(data_) + k * row_size_in_bytes_;
       if (quant_type_ == QuantizationType::NONE) {
         *scale = 1.0;
@@ -81,8 +81,8 @@ class EmbeddingNetwork {
 
    private:
     static int GetRowSizeInBytes(int cols, QuantizationType quant_type) {
-      CLD3_CHECK(quant_type == QuantizationType::NONE ||
-                 quant_type == QuantizationType::UINT8);
+      CLD3_DCHECK((quant_type == QuantizationType::NONE) ||
+                  (quant_type == QuantizationType::UINT8));
       if (quant_type == QuantizationType::NONE) {
         return cols * sizeof(float);
       } else {  // QuantizationType::UINT8
@@ -183,4 +183,4 @@ class EmbeddingNetwork {
 
 }  // namespace chrome_lang_id
 
-#endif  // THIRD_PARTY_CLD_3_SRC_SRC_EMBEDDING_NETWORK_H_
+#endif  // EMBEDDING_NETWORK_H_

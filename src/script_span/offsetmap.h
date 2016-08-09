@@ -16,12 +16,12 @@
 // Author: dsites@google.com (Dick Sites)
 //
 
-#ifndef THIRD_PARTY_CLD_3_SRC_SRC_SCRIPT_SPAN_OFFSETMAP_H_
-#define THIRD_PARTY_CLD_3_SRC_SRC_SCRIPT_SPAN_OFFSETMAP_H_
+#ifndef SCRIPT_SPAN_OFFSETMAP_H_
+#define SCRIPT_SPAN_OFFSETMAP_H_
 
 #include <string>                       // for string
 
-#include "third_party/cld_3/src/src/script_span/integral_types.h"             // for uint32
+#include "integral_types.h"             // for uint32
 
 // ***************************** OffsetMap **************************
 //
@@ -165,4 +165,4 @@ class OffsetMap {
 }  // namespace CLD2
 }  // namespace chrome_lang_id
 
-#endif  // THIRD_PARTY_CLD_3_SRC_SRC_SCRIPT_SPAN_OFFSETMAP_H_
+#endif  // SCRIPT_SPAN_OFFSETMAP_H_

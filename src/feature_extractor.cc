@@ -13,13 +13,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-#include "third_party/cld_3/src/src/feature_extractor.h"
+#include "feature_extractor.h"
 
 #include <string>
 
-#include "third_party/cld_3/src/src/feature_types.h"
-#include "third_party/cld_3/src/src/fml_parser.h"
-#include "third_party/cld_3/src/src/utils.h"
+#include "feature_types.h"
+#include "fml_parser.h"
+#include "utils.h"
 
 namespace chrome_lang_id {
 
@@ -55,12 +55,12 @@ void GenericFeatureExtractor::InitializeFeatureTypes() {
     ft->set_base(i);
 
     // Check for feature space overflow.
-    CLD3_CHECK_GE(ft->GetDomainSize(), 0);
+    CLD3_DCHECK(ft->GetDomainSize() >= 0);
   }
 
   vector<string> types_names;
   GetFeatureTypeNames(&types_names);
-  CLD3_CHECK_EQ(feature_types_.size(), types_names.size());
+  CLD3_DCHECK(feature_types_.size() == types_names.size());
 }
 
 void GenericFeatureExtractor::GetFeatureTypeNames(

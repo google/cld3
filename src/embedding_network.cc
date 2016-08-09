@@ -13,12 +13,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-#include "third_party/cld_3/src/src/embedding_network.h"
+#include "embedding_network.h"
 
-#include "third_party/cld_3/src/src/base.h"
-#include "third_party/cld_3/src/src/embedding_network_params.h"
-#include "third_party/cld_3/src/src/float16.h"
-#include "third_party/cld_3/src/src/simple_adder.h"
+#include "base.h"
+#include "embedding_network_params.h"
+#include "float16.h"
+#include "simple_adder.h"
 
 namespace chrome_lang_id {
 namespace {
@@ -27,8 +27,8 @@ using VectorWrapper = EmbeddingNetwork::VectorWrapper;
 
 void CheckNoQuantization(const EmbeddingNetworkParams::Matrix matrix) {
   // Quantization not allowed here.
-  CLD3_CHECK_EQ(static_cast<int>(QuantizationType::NONE),
-                static_cast<int>(matrix.quant_type));
+  CLD3_DCHECK(static_cast<int>(QuantizationType::NONE) ==
+              static_cast<int>(matrix.quant_type));
 }
 
 // Fills a Matrix object with the parameters in the given MatrixParams.  This
@@ -81,7 +81,7 @@ void EmbeddingNetwork::ConcatEmbeddings(
     const int embedding_dim = model_->embedding_dim(es_index);
 
     const EmbeddingMatrix &embedding_matrix = embedding_matrices_[es_index];
-    CLD3_CHECK_EQ(embedding_matrix.dim(), embedding_dim);
+    CLD3_DCHECK(embedding_matrix.dim() == embedding_dim);
 
     const bool is_quantized =
         embedding_matrix.quant_type() != QuantizationType::NONE;
@@ -91,8 +91,8 @@ void EmbeddingNetwork::ConcatEmbeddings(
     for (int fi = 0; fi < num_features; ++fi) {
       const FeatureType *feature_type = feature_vector.type(fi);
       int feature_offset = concat_offset + feature_type->base() * embedding_dim;
-      CLD3_CHECK_LE(feature_offset + embedding_dim,
-                    static_cast<int>(concat->size()));
+      CLD3_DCHECK(feature_offset + embedding_dim <=
+                  static_cast<int>(concat->size()));
 
       // Weighted embeddings will be added starting from this address.
       float *concat_ptr = concat->data() + feature_offset;
@@ -139,7 +139,7 @@ void EmbeddingNetwork::FinishComputeFinalScores(const Vector &concat,
   SparseReluProductPlusBias<ScaleAdderClass>(false, hidden_weights_[0],
                                              hidden_bias_[0], concat, &h0);
 
-  CLD3_CHECK(hidden_weights_.size() == 1 || hidden_weights_.size() == 2);
+  CLD3_DCHECK((hidden_weights_.size() == 1) || (hidden_weights_.size() == 2));
   if (hidden_weights_.size() == 1) {  // 1 hidden layer
     SparseReluProductPlusBias<ScaleAdderClass>(true, softmax_weights_,
                                                softmax_bias_, h0, scores);
@@ -165,28 +165,28 @@ EmbeddingNetwork::EmbeddingNetwork(const EmbeddingNetworkParams *model)
     : model_(model) {
   int offset_sum = 0;
   for (int i = 0; i < model_->embedding_dim_size(); ++i) {
-    CLD3_CHECK_EQ(offset_sum, model_->concat_offset(i));
+    CLD3_DCHECK(offset_sum == model_->concat_offset(i));
     offset_sum += model_->embedding_dim(i) * model_->embedding_num_features(i);
     embedding_matrices_.emplace_back(model_->GetEmbeddingMatrix(i));
   }
 
-  CLD3_CHECK_EQ(model_->hidden_size(), model_->hidden_bias_size());
+  CLD3_DCHECK(model_->hidden_size() == model_->hidden_bias_size());
   hidden_weights_.resize(model_->hidden_size());
   hidden_bias_.resize(model_->hidden_size());
   for (int i = 0; i < model_->hidden_size(); ++i) {
     FillMatrixParams(model_->GetHiddenLayerMatrix(i), &hidden_weights_[i]);
     EmbeddingNetworkParams::Matrix bias = model_->GetHiddenLayerBias(i);
-    CLD3_CHECK_EQ(1, bias.cols);
+    CLD3_DCHECK(1 == bias.cols);
     CheckNoQuantization(bias);
     hidden_bias_[i] = VectorWrapper(
         reinterpret_cast<const float *>(bias.elements), bias.rows);
   }
 
-  CLD3_CHECK(model_->HasSoftmax());
+  CLD3_DCHECK(model_->HasSoftmax());
   FillMatrixParams(model_->GetSoftmaxMatrix(), &softmax_weights_);
 
   EmbeddingNetworkParams::Matrix softmax_bias = model_->GetSoftmaxBias();
-  CLD3_CHECK_EQ(1, softmax_bias.cols);
+  CLD3_DCHECK(1 == softmax_bias.cols);
   CheckNoQuantization(softmax_bias);
   softmax_bias_ =
       VectorWrapper(reinterpret_cast<const float *>(softmax_bias.elements),
