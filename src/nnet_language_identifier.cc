@@ -82,19 +82,18 @@ NNetLanguageIdentifier::NNetLanguageIdentifier(int min_num_bytes,
       network_(&nn_params_),
       min_num_bytes_(min_num_bytes),
       max_num_bytes_(max_num_bytes) {
-
-  // Create registry for our WholeSentenceFeature(s).
-  RegisterableClass<WholeSentenceFeature>::CreateRegistry(
-      "sentence feature function", "WholeSentenceFeature",
-      __FILE__, __LINE__);
+  if (WholeSentenceFeature::registry() == nullptr) {
+    // Create registry for our WholeSentenceFeature(s).
+    RegisterableClass<WholeSentenceFeature>::CreateRegistry(
+        "sentence feature function", "WholeSentenceFeature", __FILE__,
+        __LINE__);
+  }
 
   // Register our WholeSentenceFeature(s).
   // Register ContinuousBagOfNgramsFunction feature function.
   static WholeSentenceFeature::Registry::Registrar cbog_registrar(
-      WholeSentenceFeature::registry(),
-      "continuous-bag-of-ngrams", "ContinuousBagOfNgramsFunction",
-      __FILE__, __LINE__,
-      cbog_factory);
+      WholeSentenceFeature::registry(), "continuous-bag-of-ngrams",
+      "ContinuousBagOfNgramsFunction", __FILE__, __LINE__, cbog_factory);
 
   // Get the model parameters, set up and initialize the model.
   TaskContext context;
