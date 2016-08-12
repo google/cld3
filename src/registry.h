@@ -54,6 +54,7 @@ limitations under the License.
 #define REGISTRY_H_
 
 #include <string.h>
+
 #include <string>
 
 #include "base.h"
@@ -190,15 +191,38 @@ class RegisterableClass {
   // Registry type.
   typedef ComponentRegistry<Factory> Registry;
 
+  // Should be called before any call to Create() or registry(), i.e., before
+  // using the registration mechanism to register and or instantiate subclasses
+  // of T.
+  static void CreateRegistry(
+      const char *name,
+      const char *class_name,
+      const char *file,
+      int line) {
+    registry_ = new Registry();
+    registry_->name = name;
+    registry_->class_name = class_name;
+    registry_->file = file;
+    registry_->line = line;
+    registry_->components = nullptr;
+  }
+
+  // Should be called when one is done using the registration mechanism for
+  // class T.
+  static void DeleteRegistry() {
+    delete registry_;
+    registry_ = nullptr;
+  }
+
   // Creates a new component instance.
   static T *Create(const string &type) { return registry()->Lookup(type)(); }
 
   // Returns registry for class.
-  static Registry *registry() { return &registry_; }
+  static Registry *registry() { return registry_; }
 
  private:
   // Registry for class.
-  static Registry registry_;
+  static Registry *registry_;
 };
 
 // Base class for registerable instance-based components.
@@ -212,26 +236,6 @@ class RegisterableInstance {
   // Registry for class.
   static Registry registry_;
 };
-
-#define REGISTER_CLASS_COMPONENT(base, type, component)             \
-  static base *__##component##__factory() { return new component; } \
-  static base::Registry::Registrar __##component##__##registrar(    \
-      base::registry(), type, #component, __FILE__, __LINE__,       \
-      __##component##__factory)
-
-#define REGISTER_CLASS_REGISTRY(type, classname)                  \
-  template <>                                                     \
-  classname::Registry RegisterableClass<classname>::registry_ = { \
-      type, #classname, __FILE__, __LINE__, NULL}
-
-#define REGISTER_INSTANCE_COMPONENT(base, type, component)       \
-  static base::Registry::Registrar __##component##__##registrar( \
-      base::registry(), type, #component, __FILE__, __LINE__, new component)
-
-#define REGISTER_INSTANCE_REGISTRY(type, classname)                  \
-  template <>                                                        \
-  classname::Registry RegisterableInstance<classname>::registry_ = { \
-      type, #classname, __FILE__, __LINE__, NULL}
 
 }  // namespace chrome_lang_id
 

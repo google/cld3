@@ -628,9 +628,6 @@ class FeatureExtractor : public GenericFeatureExtractor {
   vector<Function *> functions_;
 };
 
-#define REGISTER_FEATURE_FUNCTION(base, name, component) \
-  REGISTER_CLASS_COMPONENT(base, name, component)
-
 }  // namespace chrome_lang_id
 
 #endif  // FEATURE_EXTRACTOR_H_

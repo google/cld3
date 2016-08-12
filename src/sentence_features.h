@@ -30,9 +30,6 @@ typedef FeatureFunction<Sentence> WholeSentenceFeature;
 
 typedef FeatureExtractor<Sentence> WholeSentenceExtractor;
 
-#define REGISTER_WHOLE_SENTENCE_FEATURE(name, type) \
-  REGISTER_FEATURE_FUNCTION(WholeSentenceFeature, name, type)
-
 }  // namespace chrome_lang_id
 
 #endif  // SENTENCE_FEATURES_H_

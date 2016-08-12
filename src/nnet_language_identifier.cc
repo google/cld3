@@ -23,9 +23,11 @@ limitations under the License.
 
 #include "base.h"
 #include "embedding_network.h"
+#include "registry.h"
 #include "script_span/generated_ulscript.h"
 #include "script_span/getonescriptspan.h"
 #include "cld_3/protos/sentence.pb.h"
+#include "sentence_features.h"
 #include "task_context.h"
 #include "workspace.h"
 
@@ -70,12 +72,30 @@ const string LanguageIdEmbeddingFeatureExtractor::ArgPrefix() const {
 NNetLanguageIdentifier::NNetLanguageIdentifier()
     : NNetLanguageIdentifier(kMinNumBytesToConsider, kMaxNumBytesToConsider) {}
 
+static WholeSentenceFeature *cbog_factory() {
+  return new ContinuousBagOfNgramsFunction;
+}
+
 NNetLanguageIdentifier::NNetLanguageIdentifier(int min_num_bytes,
                                                int max_num_bytes)
     : num_languages_(TaskContextParams::GetNumLanguages()),
       network_(&nn_params_),
       min_num_bytes_(min_num_bytes),
       max_num_bytes_(max_num_bytes) {
+
+  // Create registry for our WholeSentenceFeature(s).
+  RegisterableClass<WholeSentenceFeature>::CreateRegistry(
+      "sentence feature function", "WholeSentenceFeature",
+      __FILE__, __LINE__);
+
+  // Register our WholeSentenceFeature(s).
+  // Register ContinuousBagOfNgramsFunction feature function.
+  static WholeSentenceFeature::Registry::Registrar cbog_registrar(
+      WholeSentenceFeature::registry(),
+      "continuous-bag-of-ngrams", "ContinuousBagOfNgramsFunction",
+      __FILE__, __LINE__,
+      cbog_factory);
+
   // Get the model parameters, set up and initialize the model.
   TaskContext context;
   TaskContextParams::ToTaskContext(&context);
@@ -83,7 +103,9 @@ NNetLanguageIdentifier::NNetLanguageIdentifier(int min_num_bytes,
   Init(&context);
 }
 
-NNetLanguageIdentifier::~NNetLanguageIdentifier() {}
+NNetLanguageIdentifier::~NNetLanguageIdentifier() {
+  RegisterableClass<WholeSentenceFeature>::DeleteRegistry();
+}
 
 void NNetLanguageIdentifier::Setup(TaskContext *context) {
   feature_extractor_.Setup(context);

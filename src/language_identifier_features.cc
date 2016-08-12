@@ -106,7 +106,4 @@ void ContinuousBagOfNgramsFunction::Evaluate(const WorkspaceSet &workspaces,
   }
 }
 
-REGISTER_WHOLE_SENTENCE_FEATURE("continuous-bag-of-ngrams",
-                                ContinuousBagOfNgramsFunction);
-
 }  // namespace chrome_lang_id

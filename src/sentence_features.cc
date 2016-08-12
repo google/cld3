@@ -19,7 +19,11 @@ limitations under the License.
 
 namespace chrome_lang_id {
 
-// Registry for the whole Sentence feature functions.
-REGISTER_CLASS_REGISTRY("sentence feature function", WholeSentenceFeature);
+// Declare registry for the whole Sentence feature functions.  NOTE: this is not
+// yet set to anything meaningful.  It will be set so in NNetLanguageIdentifier
+// constructor, *before* we use any feature.
+template <>
+WholeSentenceFeature::Registry*
+    RegisterableClass<WholeSentenceFeature>::registry_ = nullptr;
 
 }  // namespace chrome_lang_id
