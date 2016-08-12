@@ -102,9 +102,7 @@ NNetLanguageIdentifier::NNetLanguageIdentifier(int min_num_bytes,
   Init(&context);
 }
 
-NNetLanguageIdentifier::~NNetLanguageIdentifier() {
-  RegisterableClass<WholeSentenceFeature>::DeleteRegistry();
-}
+NNetLanguageIdentifier::~NNetLanguageIdentifier() {}
 
 void NNetLanguageIdentifier::Setup(TaskContext *context) {
   feature_extractor_.Setup(context);
