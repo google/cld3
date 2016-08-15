@@ -29,10 +29,27 @@ limitations under the License.
 namespace chrome_lang_id {
 namespace language_identifier_features_test {
 
+static WholeSentenceFeature *cbog_factory() {
+  return new ContinuousBagOfNgramsFunction;
+}
+
 // Class for calculating the feature weights and ids.
 class FeatureIdWeightCalculator {
  public:
   explicit FeatureIdWeightCalculator(TaskContext *context) {
+  if (WholeSentenceFeature::registry() == nullptr) {
+    // Create registry for our WholeSentenceFeature(s).
+    RegisterableClass<WholeSentenceFeature>::CreateRegistry(
+        "sentence feature function", "WholeSentenceFeature", __FILE__,
+        __LINE__);
+  }
+
+  // Register our WholeSentenceFeature(s).
+  // Register ContinuousBagOfNgramsFunction feature function.
+  static WholeSentenceFeature::Registry::Registrar cbog_registrar(
+      WholeSentenceFeature::registry(), "continuous-bag-of-ngrams",
+      "ContinuousBagOfNgramsFunction", __FILE__, __LINE__, cbog_factory);
+
     sentence_.set_text("aa aab");
     feature_extractor_.Setup(context);
     feature_extractor_.Init(context);
