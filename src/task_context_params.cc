@@ -41,14 +41,16 @@ int TaskContextParams::GetNumLanguages() {
 }
 
 const char *const TaskContextParams::kLanguageNames[] = {
-    "eo", "eu", "ta", "de", "mt", "te", "su", "uz", "ne", "nl", "sw", "sq",
-    "hmn", "ja", "no", "mn", "so", "ko", "th", "kk", "sl", "ig", "mr", "zu",
-    "ml", "hr", "bs", "lo", "cy", "hy", "uk", "pt", "yi", "lv", "iw", "cs",
-    "vi", "jv", "be", "km", "mk", "tr", "zh", "da", "sv", "fi", "ht", "af",
-    "la", "id", "ca", "el", "ka", "sr", "it", "sk", "ru", "bg", "ny", "fa",
-    "gl", "et", "ms", "is", "ur", "ha", "mi", "hi", "bn", "fr", "hu", "my",
-    "tg", "ro", "ar", "st", "kn", "az", "si", "mg", "fil", "en", "gu", "es",
-    "pl", "ga", "lt", "yo", "ceb", "pa",
+    "eo", "co", "eu", "ta", "de", "mt", "ps", "te", "su", "uz", "zh-Latn", "ne",
+    "nl", "sw", "sq", "hmn", "ja", "no", "mn", "so", "ko", "th", "kk", "sl",
+    "ig", "mr", "zu", "ml", "hr", "bs", "lo", "sd", "cy", "hy", "uk", "pt",
+    "yi", "lv", "iw", "cs", "vi", "jv", "be", "km", "mk", "tr", "am", "zh",
+    "da", "sv", "fi", "ht", "af", "la", "id", "fil", "sm", "ca", "el", "ka",
+    "sr", "it", "sk", "ru", "ru-Latn", "bg", "ny", "fa", "fy", "haw", "gl",
+    "et", "ms", "gd", "bg-Latn", "ha", "is", "ur", "mi", "hi", "bn", "hi-Latn",
+    "fr", "hu", "xh", "my", "tg", "ro", "ar", "lb", "el-Latn", "st", "ceb",
+    "kn", "az", "si", "ky", "mg", "en", "gu", "es", "pl", "ja-Latn", "ga", "lt",
+    "sn", "yo", "pa", "ku",
 
     // last element must be nullptr
     nullptr,

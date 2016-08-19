@@ -23,7 +23,7 @@ namespace chrome_lang_id {
 // yet set to anything meaningful.  It will be set so in NNetLanguageIdentifier
 // constructor, *before* we use any feature.
 template <>
-WholeSentenceFeature::Registry*
-    RegisterableClass<WholeSentenceFeature>::registry_ = nullptr;
+WholeSentenceFeature::Registry
+    *RegisterableClass<WholeSentenceFeature>::registry_ = nullptr;
 
 }  // namespace chrome_lang_id
