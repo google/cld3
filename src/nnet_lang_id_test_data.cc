@@ -192,7 +192,8 @@ const char *const NNetLangIdTestData::kTestStrHR =
     "Kijaksar je modernizirao svoju vojsku i uništio Ninivu 612. prije Krista. "
     "Naslijedio ga je njegov sin, posljednji medijski kralj, Astijag, kojega "
     "je detronizirao (srušio sa vlasti) njegov unuk Kir Veliki. Zemljom su "
-    "zavladali Perzijanci.";
+    "zavladali Perzijanci. Hrvatska je zemlja situacija u Europi. Ona ima "
+    "bogatu kulturu i ukusna jela.";
 
 const char *const NNetLangIdTestData::kTestStrHT =
     " ak pitit tout sosyete a chita se pou sa leta dwe pwoteje yo nimewo leta "
