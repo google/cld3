@@ -184,6 +184,9 @@ std::vector<NNetLanguageIdentifier::Result>
 NNetLanguageIdentifier::FindTopNMostFreqLangs(const string &text,
                                               int num_langs) {
   std::vector<Result> results;
+
+  // Truncate the input text if it is too long and find the span containing
+  // interchange-valid UTF8.
   const int num_valid_bytes = CLD2::SpanInterchangeValid(
       text.c_str(),
       std::min(kMaxNumInputBytesToConsider, static_cast<int>(text.size())));
@@ -207,11 +210,25 @@ NNetLanguageIdentifier::FindTopNMostFreqLangs(const string &text,
     }
     total_num_bytes += script_span.text_bytes;
 
-    const int num_bytes_to_process =
-        std::min(script_span.text_bytes, max_num_bytes_);
-    const int num_valid_bytes =
-        CLD2::SpanInterchangeValid(script_span.text, num_bytes_to_process);
-    const string span_text(script_span.text, num_valid_bytes);
+    // If the text is longer than max_num_bytes_, find the middle snippet of
+    // length max_num_bytes_.
+    std::string span_text;
+    if (script_span.text_bytes > max_num_bytes_) {
+      // Offset of the middle snippet. Using SpanInterchangeValid to ensure that
+      // we are not splitting a character in two. This function is used on the
+      // following line for the same reason.
+      const int offset = CLD2::SpanInterchangeValid(
+          script_span.text, (script_span.text_bytes - max_num_bytes_) / 2);
+      const int num_valid_snippet_bytes =
+          CLD2::SpanInterchangeValid(script_span.text + offset, max_num_bytes_);
+      const std::string middle_snippet(script_span.text + offset,
+                                       num_valid_snippet_bytes);
+      span_text = middle_snippet;
+    } else {
+      const std::string snippet(script_span.text, script_span.text_bytes);
+      span_text = snippet;
+    }
+
     result = FindLanguageOfValidUTF8(span_text);
     language = result.language;
     lang_stats[language].byte_sum += script_span.text_bytes;
