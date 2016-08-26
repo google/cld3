@@ -26,6 +26,7 @@ limitations under the License.
 #include "registry.h"
 #include "script_span/generated_ulscript.h"
 #include "script_span/getonescriptspan.h"
+#include "script_span/text_processing.h"
 #include "cld_3/protos/sentence.pb.h"
 #include "sentence_features.h"
 #include "task_context.h"
@@ -139,8 +140,20 @@ NNetLanguageIdentifier::Result NNetLanguageIdentifier::FindLanguage(
     return Result();
   }
 
-  std::string text_to_process(text.c_str(), num_valid_bytes);
-  return FindLanguageOfValidUTF8(text_to_process);
+  // Copy to a vector because a non-const char* will be needed.
+  std::vector<char> text_to_process;
+  for (int i = 0; i < num_valid_bytes; ++i) {
+    text_to_process.push_back(text[i]);
+  }
+  text_to_process.push_back('\0');
+
+  // Remove repetitive chunks or ones containing mostly spaces.
+  const int chunk_size = 0;  // Use the default.
+  char *text_start = &text_to_process[0];
+  const int new_length = CLD2::CheapSqueezeInplace(
+      text_start, text_to_process.size() - 1, chunk_size);
+  std::string squeezed_text_to_process(text_start, new_length);
+  return FindLanguageOfValidUTF8(squeezed_text_to_process);
 }
 
 NNetLanguageIdentifier::Result NNetLanguageIdentifier::FindLanguageOfValidUTF8(
@@ -204,11 +217,19 @@ NNetLanguageIdentifier::FindTopNMostFreqLangs(const string &text,
   int total_num_bytes = 0;
   Result result;
   string language;
+  int chunk_size = 0;  // Use the default.
   while (ss.GetOneScriptSpan(&script_span)) {
+    const int num_original_span_bytes = script_span.text_bytes;
+
+    // Remove repetitive chunks or ones containing mostly spaces.
+    const int new_length = CLD2::CheapSqueezeInplace(
+        script_span.text, script_span.text_bytes, chunk_size);
+    script_span.text_bytes = new_length;
+
     if (script_span.text_bytes < min_num_bytes_) {
       continue;
     }
-    total_num_bytes += script_span.text_bytes;
+    total_num_bytes += num_original_span_bytes;
 
     // If the text is longer than max_num_bytes_, find the middle snippet of
     // length max_num_bytes_.
@@ -231,9 +252,9 @@ NNetLanguageIdentifier::FindTopNMostFreqLangs(const string &text,
 
     result = FindLanguageOfValidUTF8(span_text);
     language = result.language;
-    lang_stats[language].byte_sum += script_span.text_bytes;
+    lang_stats[language].byte_sum += num_original_span_bytes;
     lang_stats[language].prob_sum +=
-        result.probability * script_span.text_bytes;
+        result.probability * num_original_span_bytes;
     lang_stats[language].num_chunks++;
   }
 

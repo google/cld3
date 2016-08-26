@@ -69,6 +69,8 @@ static_library("cld_3") {
     "script_span/utf8statetable.cc",
     "script_span/utf8statetable.h",
     "script_span/stringpiece.h",
+    "script_span/text_processing.cc",
+    "script_span/text_processing.h",
     "task_context.cc",
     "task_context.h",
     "task_context_params.cc",
