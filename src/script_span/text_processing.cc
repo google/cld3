@@ -21,9 +21,9 @@ namespace chrome_lang_id {
 namespace CLD2 {
 namespace {
 
-static const int kMaxSpaceScan = 32;          // Bytes
+static const int kMaxSpaceScan = 32;  // Bytes
 
-int minint(int a, int b) {return (a < b) ? a: b;}
+int minint(int a, int b) { return (a < b) ? a : b; }
 
 // Counts number of spaces; a little faster than one-at-a-time
 // Doesn't count odd bytes at end
@@ -31,9 +31,9 @@ int CountSpaces4(const char* src, int src_len) {
   int s_count = 0;
   for (int i = 0; i < (src_len & ~3); i += 4) {
     s_count += (src[i] == ' ');
-    s_count += (src[i+1] == ' ');
-    s_count += (src[i+2] == ' ');
-    s_count += (src[i+3] == ' ');
+    s_count += (src[i + 1] == ' ');
+    s_count += (src[i + 2] == ' ');
+    s_count += (src[i + 3] == ' ');
   }
   return s_count;
 }
@@ -85,10 +85,10 @@ int CountPredictedBytes(const char* isrc, int src_len, int* hash, int* tbl) {
     }
     src += incr;
 
-    int p = tbl[local_hash];            // Prediction
-    tbl[local_hash] = c;                // Update prediction
+    int p = tbl[local_hash];  // Prediction
+    tbl[local_hash] = c;      // Update prediction
     if (c == p) {
-      p_count += incr;                  // Count bytes of good predictions
+      p_count += incr;  // Count bytes of good predictions
     }
 
     local_hash = ((local_hash << 4) ^ c) & 0xfff;
@@ -104,12 +104,16 @@ int BackscanToSpace(const char* src, int limit) {
   int n = 0;
   limit = minint(limit, kMaxSpaceScan);
   while (n < limit) {
-    if (src[-n - 1] == ' ') {return n;}    // We are at _X
+    if (src[-n - 1] == ' ') {
+      return n;
+    }  // We are at _X
     ++n;
   }
   n = 0;
   while (n < limit) {
-    if ((src[-n] & 0xc0) != 0x80) {return n;}    // We are at char begin
+    if ((src[-n] & 0xc0) != 0x80) {
+      return n;
+    }  // We are at char begin
     ++n;
   }
   return 0;
@@ -122,24 +126,28 @@ int ForwardscanToSpace(const char* src, int limit) {
   int n = 0;
   limit = minint(limit, kMaxSpaceScan);
   while (n < limit) {
-    if (src[n] == ' ') {return n + 1;}    // We are at _X
+    if (src[n] == ' ') {
+      return n + 1;
+    }  // We are at _X
     ++n;
   }
   n = 0;
   while (n < limit) {
-    if ((src[n] & 0xc0) != 0x80) {return n;}    // We are at char begin
+    if ((src[n] & 0xc0) != 0x80) {
+      return n;
+    }  // We are at char begin
     ++n;
   }
   return 0;
 }
 
-} // namespace
+}  // namespace
 
-static const int kPredictionTableSize = 4096;   // Must be exactly 4096 for
-                                                // cheap compressor
-static const int kChunksizeDefault = 48;        // Squeeze 48-byte chunks
-static const int kSpacesThreshPercent = 25;     // Squeeze if >=25% spaces
-static const int kPredictThreshPercent = 40;    // Squeeze if >=40% predicted
+static const int kPredictionTableSize = 4096;  // Must be exactly 4096 for
+                                               // cheap compressor
+static const int kChunksizeDefault = 48;       // Squeeze 48-byte chunks
+static const int kSpacesThreshPercent = 30;    // Squeeze if >=30% spaces
+static const int kPredictThreshPercent = 40;   // Squeeze if >=40% predicted
 
 // Remove portions of text that have a high density of spaces, or that are
 // overly repetitive, squeezing the remaining text in-place to the front of the
@@ -153,9 +161,7 @@ static const int kPredictThreshPercent = 40;    // Squeeze if >=40% predicted
 // Result Buffer ALWAYS has leading space and trailing space space space NUL,
 // if input does
 //
-int CheapSqueezeInplace(char* isrc,
-                                            int src_len,
-                                            int ichunksize) {
+int CheapSqueezeInplace(char* isrc, int src_len, int ichunksize) {
   char* src = isrc;
   char* dst = src;
   char* srclimit = src + src_len;
@@ -167,7 +173,9 @@ int CheapSqueezeInplace(char* isrc,
   memset(predict_tbl, 0, kPredictionTableSize * sizeof(predict_tbl[0]));
 
   int chunksize = ichunksize;
-  if (chunksize == 0) {chunksize = kChunksizeDefault;}
+  if (chunksize == 0) {
+    chunksize = kChunksizeDefault;
+  }
   int space_thresh = (chunksize * kSpacesThreshPercent) / 100;
   int predict_thresh = (chunksize * kPredictThreshPercent) / 100;
 
@@ -177,7 +185,9 @@ int CheapSqueezeInplace(char* isrc,
     // Make len land us on a UTF-8 character boundary.
     // Ah. Also fixes mispredict because we could get out of phase
     // Loop always terminates at trailing space in buffer
-    while ((src[len] & 0xc0) == 0x80) {++len;}  // Move past continuation bytes
+    while ((src[len] & 0xc0) == 0x80) {
+      ++len;
+    }  // Move past continuation bytes
 
     int space_n = CountSpaces4(src, len);
     int predb_n = CountPredictedBytes(src, len, &hash, predict_tbl);
@@ -199,7 +209,7 @@ int CheapSqueezeInplace(char* isrc,
         // Skipping-to-keeping transition; do it at a space
         int n = ForwardscanToSpace(src, len);
         src += n;
-        remaining_bytes -= n;   // Shrink remaining length
+        remaining_bytes -= n;  // Shrink remaining length
         len -= n;
         skipping = false;
       }
@@ -218,7 +228,7 @@ int CheapSqueezeInplace(char* isrc,
     dst[1] = ' ';
     dst[2] = ' ';
     dst[3] = '\0';
-  } else   if ((dst - isrc) < src_len) {
+  } else if ((dst - isrc) < src_len) {
     // Make last char clean UTF-8 by putting following space off the end
     dst[0] = ' ';
   }
