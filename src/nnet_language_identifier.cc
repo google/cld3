@@ -64,7 +64,8 @@ const int NNetLanguageIdentifier::kMinNumBytesToConsider = 100;
 const int NNetLanguageIdentifier::kMaxNumBytesToConsider = 512;
 const int NNetLanguageIdentifier::kMaxNumInputBytesToConsider = 10000;
 const char NNetLanguageIdentifier::kUnknown[] = "unknown";
-const float NNetLanguageIdentifier::kReliabilityThreshold = 0.53f;
+const float NNetLanguageIdentifier::kReliabilityThreshold = 0.7f;
+const float NNetLanguageIdentifier::kReliabilityHrBsThreshold = 0.5f;
 
 const string LanguageIdEmbeddingFeatureExtractor::ArgPrefix() const {
   return "language_identifier";
@@ -136,14 +137,28 @@ NNetLanguageIdentifier::Result NNetLanguageIdentifier::FindLanguage(
       std::min(static_cast<int>(text.size()), max_num_bytes_);
   const int num_valid_bytes =
       CLD2::SpanInterchangeValid(text.c_str(), num_bytes_to_process);
-  if (num_valid_bytes < min_num_bytes_) {
+
+  // Iterate over the input with ScriptScanner to clean up the text (e.g.,
+  // removing digits, punctuation, brackets).
+  // TODO(abakalov): Extract the code that does the clean-up out of
+  // ScriptScanner.
+  CLD2::ScriptScanner ss(text.c_str(), num_valid_bytes, /*is_plain_text=*/true);
+  CLD2::LangSpan script_span;
+  std::string cleaned;
+  while (ss.GetOneScriptSpan(&script_span)) {
+    // script_span has spaces at the beginning and the end, so there is no need
+    // for a delimiter.
+    cleaned.append(script_span.text, script_span.text_bytes);
+  }
+
+  if (cleaned.size() < min_num_bytes_) {
     return Result();
   }
 
   // Copy to a vector because a non-const char* will be needed.
   std::vector<char> text_to_process;
-  for (int i = 0; i < num_valid_bytes; ++i) {
-    text_to_process.push_back(text[i]);
+  for (int i = 0; i < cleaned.size(); ++i) {
+    text_to_process.push_back(cleaned[i]);
   }
   text_to_process.push_back('\0');
 
@@ -152,6 +167,10 @@ NNetLanguageIdentifier::Result NNetLanguageIdentifier::FindLanguage(
   char *text_start = &text_to_process[0];
   const int new_length = CLD2::CheapSqueezeInplace(
       text_start, text_to_process.size() - 1, chunk_size);
+  if (new_length < min_num_bytes_) {
+    return Result();
+  }
+
   std::string squeezed_text_to_process(text_start, new_length);
   return FindLanguageOfValidUTF8(squeezed_text_to_process);
 }
@@ -281,10 +300,8 @@ NNetLanguageIdentifier::FindTopNMostFreqLangs(const string &text,
     result.probability = stats.prob_sum / stats.byte_sum;
     result.proportion = stats.byte_sum / byte_sum;
 
-    // The reliability threshold does not help "hr" and "bs", so the predictions
-    // are always marked as reliable.
     if (language == "hr" || language == "bs") {
-      result.is_reliable = true;
+      result.is_reliable = (result.probability >= kReliabilityHrBsThreshold);
     } else {
       result.is_reliable = (result.probability >= kReliabilityThreshold);
     }

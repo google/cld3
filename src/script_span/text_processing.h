@@ -22,7 +22,7 @@ namespace CLD2 {
 // overly repetitive, squeezing the remaining text in-place to the front
 // of the input buffer.
 // Return the new, possibly-shorter length
-int CheapSqueezeInplace(char* isrc, int srclen, int ichunksize);
+int CheapSqueezeInplace(char *isrc, int srclen, int ichunksize);
 
 }  // namespace CLD2
 }  // namespace chrome_lang_id

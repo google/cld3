@@ -27,7 +27,7 @@ int minint(int a, int b) { return (a < b) ? a : b; }
 
 // Counts number of spaces; a little faster than one-at-a-time
 // Doesn't count odd bytes at end
-int CountSpaces4(const char* src, int src_len) {
+int CountSpaces4(const char *src, int src_len) {
   int s_count = 0;
   for (int i = 0; i < (src_len & ~3); i += 4) {
     s_count += (src[i] == ' ');
@@ -54,12 +54,12 @@ int CountSpaces4(const char* src, int src_len) {
 
 // TODO(dsites) make this use just one byte per UTF-8 char and incr by charlen
 
-int CountPredictedBytes(const char* isrc, int src_len, int* hash, int* tbl) {
+int CountPredictedBytes(const char *isrc, int src_len, int *hash, int *tbl) {
   typedef unsigned char uint8;
 
   int p_count = 0;
-  const uint8* src = reinterpret_cast<const uint8*>(isrc);
-  const uint8* srclimit = src + src_len;
+  const uint8 *src = reinterpret_cast<const uint8 *>(isrc);
+  const uint8 *srclimit = src + src_len;
   int local_hash = *hash;
 
   while (src < srclimit) {
@@ -100,7 +100,7 @@ int CountPredictedBytes(const char* isrc, int src_len, int* hash, int* tbl) {
 // Backscan to word boundary, returning how many bytes n to go back
 // so that src - n is non-space ans src - n - 1 is space.
 // If not found in kMaxSpaceScan bytes, return 0..3 to a clean UTF-8 boundary
-int BackscanToSpace(const char* src, int limit) {
+int BackscanToSpace(const char *src, int limit) {
   int n = 0;
   limit = minint(limit, kMaxSpaceScan);
   while (n < limit) {
@@ -122,7 +122,7 @@ int BackscanToSpace(const char* src, int limit) {
 // Forwardscan to word boundary, returning how many bytes n to go forward
 // so that src + n is non-space ans src + n - 1 is space.
 // If not found in kMaxSpaceScan bytes, return 0..3 to a clean UTF-8 boundary
-int ForwardscanToSpace(const char* src, int limit) {
+int ForwardscanToSpace(const char *src, int limit) {
   int n = 0;
   limit = minint(limit, kMaxSpaceScan);
   while (n < limit) {
@@ -143,11 +143,11 @@ int ForwardscanToSpace(const char* src, int limit) {
 
 }  // namespace
 
-static const int kPredictionTableSize = 4096;  // Must be exactly 4096 for
-                                               // cheap compressor
-static const int kChunksizeDefault = 48;       // Squeeze 48-byte chunks
-static const int kSpacesThreshPercent = 30;    // Squeeze if >=30% spaces
-static const int kPredictThreshPercent = 40;   // Squeeze if >=40% predicted
+// Must be exactly 4096 for cheap compressor.
+static const int kPredictionTableSize = 4096;
+static const int kChunksizeDefault = 48;      // Squeeze 48-byte chunks
+static const int kSpacesThreshPercent = 30;   // Squeeze if >=30% spaces
+static const int kPredictThreshPercent = 40;  // Squeeze if >=40% predicted
 
 // Remove portions of text that have a high density of spaces, or that are
 // overly repetitive, squeezing the remaining text in-place to the front of the
@@ -161,15 +161,16 @@ static const int kPredictThreshPercent = 40;   // Squeeze if >=40% predicted
 // Result Buffer ALWAYS has leading space and trailing space space space NUL,
 // if input does
 //
-int CheapSqueezeInplace(char* isrc, int src_len, int ichunksize) {
-  char* src = isrc;
-  char* dst = src;
-  char* srclimit = src + src_len;
+int CheapSqueezeInplace(char *isrc, int src_len, int ichunksize) {
+  char *src = isrc;
+  char *dst = src;
+  char *srclimit = src + src_len;
   bool skipping = false;
 
   int hash = 0;
+
   // Allocate local prediction table.
-  int* predict_tbl = new int[kPredictionTableSize];
+  int *predict_tbl = new int[kPredictionTableSize];
   memset(predict_tbl, 0, kPredictionTableSize * sizeof(predict_tbl[0]));
 
   int chunksize = ichunksize;
@@ -182,6 +183,7 @@ int CheapSqueezeInplace(char* isrc, int src_len, int ichunksize) {
   while (src < srclimit) {
     int remaining_bytes = srclimit - src;
     int len = minint(chunksize, remaining_bytes);
+
     // Make len land us on a UTF-8 character boundary.
     // Ah. Also fixes mispredict because we could get out of phase
     // Loop always terminates at trailing space in buffer
@@ -213,6 +215,7 @@ int CheapSqueezeInplace(char* isrc, int src_len, int ichunksize) {
         len -= n;
         skipping = false;
       }
+
       // "len" can be negative in some cases
       if (len > 0) {
         memmove(dst, src, len);

@@ -99,6 +99,9 @@ class NNetLanguageIdentifier {
   // and f1 equal to 0.9760, 0.9624, and 0.9692, respectively.
   static const float kReliabilityThreshold;
 
+  // Reliability threshold for the languages hr and bs.
+  static const float kReliabilityHrBsThreshold;
+
  private:
   // Sets up and initializes the model.
   void Setup(TaskContext *context);
