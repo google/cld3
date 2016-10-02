@@ -151,13 +151,13 @@ NNetLanguageIdentifier::Result NNetLanguageIdentifier::FindLanguage(
     cleaned.append(script_span.text, script_span.text_bytes);
   }
 
-  if (cleaned.size() < min_num_bytes_) {
+  if (static_cast<int>(cleaned.size()) < min_num_bytes_) {
     return Result();
   }
 
   // Copy to a vector because a non-const char* will be needed.
   std::vector<char> text_to_process;
-  for (int i = 0; i < cleaned.size(); ++i) {
+  for (size_t i = 0; i < cleaned.size(); ++i) {
     text_to_process.push_back(cleaned[i]);
   }
   text_to_process.push_back('\0');
