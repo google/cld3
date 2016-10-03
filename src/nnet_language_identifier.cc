@@ -60,7 +60,7 @@ bool OrderBySecondDescending(const std::pair<string, float> &x,
 
 }  // namespace
 
-const int NNetLanguageIdentifier::kMinNumBytesToConsider = 150;
+const int NNetLanguageIdentifier::kMinNumBytesToConsider = 140;
 const int NNetLanguageIdentifier::kMaxNumBytesToConsider = 512;
 const int NNetLanguageIdentifier::kMaxNumInputBytesToConsider = 10000;
 const char NNetLanguageIdentifier::kUnknown[] = "unknown";
