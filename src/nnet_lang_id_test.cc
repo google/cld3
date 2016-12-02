@@ -28,6 +28,8 @@ namespace nnet_lang_id_test {
 
 // Tests the model on all supported languages. Returns "true" if the test is
 // successful and "false" otherwise.
+// TODO(abakalov): Add a test for random input that should be labeled as
+// "unknown" due to low confidence.
 bool TestPredictions() {
   std::cout << "Running " << __FUNCTION__ << std::endl;
 

@@ -20,6 +20,7 @@ limitations under the License.
 
 #include "feature_extractor.h"
 #include "feature_types.h"
+#include "script_span/generated_ulscript.h"
 #include "cld_3/protos/sentence.pb.h"
 #include "sentence_features.h"
 #include "task_context.h"
@@ -87,6 +88,27 @@ class ContinuousBagOfNgramsFunction : public WholeSentenceFeature {
 
   // Only ngrams of size ngram_size_ will be extracted.
   int ngram_size_;
+};
+
+// Class for detecting the script of a piece of text. The list of supported
+// scripts is chrome_lang_id::CLD2::ULScript. This class uses the script
+// recognition code ported from CLD2. ULScript_Hani is split into non-Korean
+// script and Korean script (Hangul). In the former case, the function emits
+// ULScript_Hani. In the latter case, the function emits NUM_ULSCRIPTS. The
+// class assumes that the input is (1) interchange valid UTF8, and (2) contains
+// only one chrome_lang_id::CLD2::ULScript.
+class ScriptFeature : public WholeSentenceFeature {
+ public:
+  void Init(TaskContext *context) override {
+    // The dimension is incremented by 1 because ULScript_Hani is split into two
+    // as mentioned in the class description.
+    set_feature_type(new NumericFeatureType(
+        name(), chrome_lang_id::CLD2::NUM_ULSCRIPTS + 1));
+  }
+
+  // Computes the feature and saves it in the feature vector.
+  FeatureValue Compute(const WorkspaceSet &workspaces, const Sentence &sentence,
+                       const FeatureVector *result) const override;
 };
 
 }  // namespace chrome_lang_id

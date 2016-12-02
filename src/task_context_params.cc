@@ -42,13 +42,13 @@ int TaskContextParams::GetNumLanguages() {
 
 const char *const TaskContextParams::kLanguageNames[] = {
     "eo", "co", "eu", "ta", "de", "mt", "ps", "te", "su", "uz", "zh-Latn", "ne",
-    "nl", "sw", "sq", "hmn", "ja", "no", "mn", "so", "ko", "th", "kk", "sl",
-    "ig", "mr", "zu", "ml", "hr", "bs", "lo", "sd", "cy", "hy", "uk", "pt",
-    "yi", "lv", "iw", "cs", "vi", "jv", "be", "km", "mk", "tr", "am", "zh",
+    "nl", "sw", "sq", "hmn", "ja", "no", "mn", "so", "ko", "kk", "sl", "ig",
+    "mr", "th", "zu", "ml", "hr", "bs", "lo", "sd", "cy", "hy", "uk", "pt",
+    "lv", "iw", "cs", "vi", "jv", "be", "km", "mk", "tr", "fy", "am", "zh",
     "da", "sv", "fi", "ht", "af", "la", "id", "fil", "sm", "ca", "el", "ka",
-    "sr", "it", "sk", "ru", "ru-Latn", "bg", "ny", "fa", "fy", "haw", "gl",
-    "et", "ms", "gd", "bg-Latn", "ha", "is", "ur", "mi", "hi", "bn", "hi-Latn",
-    "fr", "hu", "xh", "my", "tg", "ro", "ar", "lb", "el-Latn", "st", "ceb",
+    "sr", "it", "sk", "ru", "ru-Latn", "bg", "ny", "fa", "haw", "gl", "et",
+    "ms", "gd", "bg-Latn", "ha", "is", "ur", "mi", "hi", "bn", "hi-Latn", "fr",
+    "yi", "hu", "xh", "my", "tg", "ro", "ar", "lb", "el-Latn", "st", "ceb",
     "kn", "az", "si", "ky", "mg", "en", "gu", "es", "pl", "ja-Latn", "ga", "lt",
     "sn", "yo", "pa", "ku",
 
@@ -57,19 +57,20 @@ const char *const TaskContextParams::kLanguageNames[] = {
 };
 
 const char TaskContextParams::kLanguageIdentifierFeatures[] = R"(
-continuous-bag-of-ngrams(include_terminators=true,
-include_spaces=false,use_equal_weight=false,id_dim=1000,size=2);
-continuous-bag-of-ngrams(include_terminators=true,
-include_spaces=false,use_equal_weight=false,id_dim=5000,size=4);
-continuous-bag-of-ngrams(include_terminators=true,
-include_spaces=false,use_equal_weight=false,id_dim=5000,size=3);
-continuous-bag-of-ngrams(include_terminators=true,
-include_spaces=false,use_equal_weight=false,id_dim=100,size=1)
+continuous-bag-of-ngrams(include_terminators=true,include_spaces=false,
+use_equal_weight=false,id_dim=1000,size=2);continuous-bag-of-ngrams(
+include_terminators=true,include_spaces=false,use_equal_weight=false,
+id_dim=5000,size=4);continuous-bag-of-relevant-scripts;script;
+continuous-bag-of-ngrams(include_terminators=true,include_spaces=false,
+use_equal_weight=false,id_dim=5000,size=3);continuous-bag-of-ngrams(
+include_terminators=true,include_spaces=false,use_equal_weight=false,
+id_dim=100,size=1)
 )";
 
 const char TaskContextParams::kLanguageIdentifierEmbeddingNames[] =
-    "bigrams;quadgrams;trigrams;unigrams";
+    "bigrams;quadgrams;relevant-scripts;text-script;trigrams;unigrams";
 
 const char TaskContextParams::kLanguageIdentifierEmbeddingDims[] =
-    "16;16;16;16";
+    "16;16;8;8;16;16";
+
 }  // namespace chrome_lang_id

@@ -34,7 +34,7 @@ FeatureType::~FeatureType() {}
 template <class Resource>
 ResourceBasedFeatureType<Resource>::ResourceBasedFeatureType(
     const string &name, const Resource *resource,
-    const map<FeatureValue, string> &values)
+    const std::map<FeatureValue, string> &values)
     : FeatureType(name), resource_(resource), values_(values) {
   max_value_ = resource->NumValues() - 1;
   for (const auto &pair : values) {
@@ -48,8 +48,8 @@ ResourceBasedFeatureType<Resource>::ResourceBasedFeatureType(
     const string &name, const Resource *resource)
     : ResourceBasedFeatureType(name, resource, {}) {}
 
-EnumFeatureType::EnumFeatureType(const string &name,
-                                 const map<FeatureValue, string> &value_names)
+EnumFeatureType::EnumFeatureType(
+    const string &name, const std::map<FeatureValue, string> &value_names)
     : FeatureType(name), value_names_(value_names) {
   for (const auto &pair : value_names) {
     CLD3_DCHECK(pair.first >= 0);

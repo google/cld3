@@ -71,6 +71,13 @@ class ScriptScanner {
   // Copy next run of same-script non-tag letters to buffer [NUL terminated]
   bool GetOneScriptSpan(LangSpan* span);
 
+  // Force Latin and Cyrillic scripts to be lowercase
+  void LowerScriptSpan(LangSpan* span);
+
+  // Copy next run of same-script non-tag letters to buffer [NUL terminated]
+  // Force Latin and Cyrillic scripts to be lowercase
+  bool GetOneScriptSpanLower(LangSpan* span);
+
   // Copy next run of non-tag characters to buffer [NUL terminated]
   // This just removes tags and removes entities
   // Buffer has leading space

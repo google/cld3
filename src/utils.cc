@@ -215,7 +215,7 @@ void NormalizeDigits(string *form) {
   }
 }
 
-void GetUTF8Chars(const string &text, vector<string> *chars) {
+void GetUTF8Chars(const string &text, std::vector<string> *chars) {
   const char *start = text.c_str();
   const char *end = text.c_str() + text.size();
   while (start < end) {
@@ -231,7 +231,10 @@ int UTF8FirstLetterNumBytes(const char *utf8_str) {
 }
 
 int OneCharLen(const char *src) {
-  return "\1\1\1\1\1\1\1\1\1\1\1\1\2\2\3\4"[(*src & 0xFF) >> 4];
+  // On most platforms, char is unsigned by default, but iOS is an exception.
+  // The cast below makes sure we always interpret *src as an unsigned char.
+  return "\1\1\1\1\1\1\1\1\1\1\1\1\2\2\3\4"
+      [(*(reinterpret_cast<const unsigned char *>(src)) & 0xFF) >> 4];
 }
 
 }  // namespace utils

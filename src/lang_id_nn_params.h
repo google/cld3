@@ -27,7 +27,7 @@ class LangIdNNParams : public EmbeddingNetworkParams {
   ~LangIdNNParams() override {}
 
   // Access methods for embeddings:
-  int embeddings_size() const override { return 4; }
+  int embeddings_size() const override { return 6; }
   int embeddings_num_rows(int i) const override {
     return kEmbeddingsNumRows[i];
   }
@@ -85,28 +85,28 @@ class LangIdNNParams : public EmbeddingNetworkParams {
   }
 
   // Access methods for embedding_dim:
-  int embedding_dim_size() const override { return 4; }
+  int embedding_dim_size() const override { return 6; }
   int32 embedding_dim(int i) const override { return kEmbeddingDimValues[i]; }
 
   // Access methods for embedding_num_features:
-  int embedding_num_features_size() const override { return 4; }
+  int embedding_num_features_size() const override { return 6; }
   int32 embedding_num_features(int i) const override {
     return kEmbeddingNumFeaturesValues[i];
   }
 
   // Access methods for embedding_features_domain_size:
-  int embedding_features_domain_size_size() const override { return 4; }
+  int embedding_features_domain_size_size() const override { return 6; }
   int32 embedding_features_domain_size(int i) const override {
     return kEmbeddingFeaturesDomainSizeValues[i];
   }
 
   // Access methods for concat_offset:
-  int concat_offset_size() const override { return 4; }
+  int concat_offset_size() const override { return 6; }
   int32 concat_offset(int i) const override { return kConcatOffsetValues[i]; }
 
   // Access methods for concat_layer_size:
   bool has_concat_layer_size() const override { return true; }
-  int32 concat_layer_size() const override { return 64; }
+  int32 concat_layer_size() const override { return 80; }
 
   // Access methods for is_precomputed:
   bool has_is_precomputed() const override { return false; }
@@ -120,16 +120,21 @@ class LangIdNNParams : public EmbeddingNetworkParams {
   static const uint8 kEmbeddingsWeights1[];
   static const uint8 kEmbeddingsWeights2[];
   static const uint8 kEmbeddingsWeights3[];
-  const void *embeddings_weights_[4] = {
+  static const uint8 kEmbeddingsWeights4[];
+  static const uint8 kEmbeddingsWeights5[];
+  const void *embeddings_weights_[6] = {
       kEmbeddingsWeights0, kEmbeddingsWeights1, kEmbeddingsWeights2,
-      kEmbeddingsWeights3};
+      kEmbeddingsWeights3, kEmbeddingsWeights4, kEmbeddingsWeights5};
   static const float16 kEmbeddingsQuantScales0[];
   static const float16 kEmbeddingsQuantScales1[];
   static const float16 kEmbeddingsQuantScales2[];
   static const float16 kEmbeddingsQuantScales3[];
-  const float16 *embeddings_quant_scales_[4] = {
-      kEmbeddingsQuantScales0, kEmbeddingsQuantScales1, kEmbeddingsQuantScales2,
-      kEmbeddingsQuantScales3};
+  static const float16 kEmbeddingsQuantScales4[];
+  static const float16 kEmbeddingsQuantScales5[];
+  const float16 *embeddings_quant_scales_[6] = {
+      kEmbeddingsQuantScales0, kEmbeddingsQuantScales1,
+      kEmbeddingsQuantScales2, kEmbeddingsQuantScales3,
+      kEmbeddingsQuantScales4, kEmbeddingsQuantScales5};
 
   // Private fields for hidden:
   static const int kHiddenNumRows[];

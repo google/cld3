@@ -150,7 +150,7 @@ class EmbeddingNetwork {
 
   // Runs forward computation to fill scores with unnormalized output unit
   // scores. This is useful for making predictions.
-  void ComputeFinalScores(const vector<FeatureVector> &features,
+  void ComputeFinalScores(const std::vector<FeatureVector> &features,
                           Vector *scores) const;
 
  private:
@@ -161,7 +161,7 @@ class EmbeddingNetwork {
 
   // Constructs the concatenated input embedding vector in place in output
   // vector concat.
-  void ConcatEmbeddings(const vector<FeatureVector> &features,
+  void ConcatEmbeddings(const std::vector<FeatureVector> &features,
                         Vector *concat) const;
 
   // Pointer to the model object passed to the constructor.  Not owned.
@@ -170,11 +170,11 @@ class EmbeddingNetwork {
   // Network parameters.
 
   // One weight matrix for each embedding.
-  vector<EmbeddingMatrix> embedding_matrices_;
+  std::vector<EmbeddingMatrix> embedding_matrices_;
 
   // One weight matrix and one vector of bias weights for each hiden layer.
-  vector<Matrix> hidden_weights_;
-  vector<VectorWrapper> hidden_bias_;
+  std::vector<Matrix> hidden_weights_;
+  std::vector<VectorWrapper> hidden_bias_;
 
   // Weight matrix and bias vector for the softmax layer.
   Matrix softmax_weights_;

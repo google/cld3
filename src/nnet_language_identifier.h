@@ -23,6 +23,7 @@ limitations under the License.
 #include "embedding_network.h"
 #include "lang_id_nn_params.h"
 #include "language_identifier_features.h"
+#include "script_span/getonescriptspan.h"
 #include "cld_3/protos/sentence.pb.h"
 #include "sentence_features.h"
 #include "task_context.h"
@@ -63,8 +64,6 @@ class NNetLanguageIdentifier {
   // bytes where N is the minumum between the number of interchange valid UTF8
   // bytes and max_num_bytes_. If N is less than min_num_bytes_ long, then this
   // function returns kUnknown.
-  // TODO(abakalov): This function should remove punctuation.
-  // FindTopNMostFreqLangs does it using the code in script_span/.
   Result FindLanguage(const string &text);
 
   // Splits the input text (up to the first byte, if any, that is not
@@ -109,7 +108,8 @@ class NNetLanguageIdentifier {
 
   // Extract features from sentence.  On return, FeatureVector features[i]
   // contains the features for the embedding space #i.
-  void GetFeatures(Sentence *sentence, vector<FeatureVector> *features) const;
+  void GetFeatures(Sentence *sentence,
+                   std::vector<FeatureVector> *features) const;
 
   // Finds the most likely language for the given text. Assumes that the text is
   // interchange valid UTF8.
@@ -117,6 +117,13 @@ class NNetLanguageIdentifier {
 
   // Returns the language name corresponding to the given id.
   string GetLanguageName(int language_id) const;
+
+  // Concatenates snippets of text equally spread out throughout the input if
+  // the size of the input is greater than the maximum number of bytes needed to
+  // make a prediction. The resulting string is used for language
+  // identification.
+  string SelectTextGivenScriptSpan(const CLD2::LangSpan &script_span);
+  string SelectTextGivenBeginAndSize(const char *text_begin, int text_size);
 
   // Number of languages.
   const int num_languages_;
@@ -144,6 +151,23 @@ class NNetLanguageIdentifier {
   // Maximum number of bytes to use to make a prediction. If the default
   // constructor is called, this variable is equal to kMaxNumBytesToConsider.
   int max_num_bytes_;
+
+  // Number of snippets to concatenate to produce the string used for language
+  // identification. If max_num_bytes_ <= kNumSnippets (i.e., the maximum number
+  // of bytes needed to make a prediction is smaller or equal to the number of
+  // default snippets), then this variable is equal to 1. Otherwise, it is set
+  // to kNumSnippets.
+  int num_snippets_;
+
+  // The string used to make a prediction is created by concatenating
+  // num_snippets_ snippets of size snippet_size_ = (max_num_bytes_ /
+  // num_snippets_) that are equaly spread out throughout the input.
+  int snippet_size_;
+
+  // Default number of snippets to concatenate to produce the string used for
+  // language identification. For the actual number of snippets, see
+  // num_snippets_.
+  static const int kNumSnippets;
 };
 
 }  // namespace chrome_lang_id

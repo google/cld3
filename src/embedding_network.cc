@@ -72,7 +72,7 @@ void SparseReluProductPlusBias(bool apply_relu,
 }  // namespace
 
 void EmbeddingNetwork::ConcatEmbeddings(
-    const vector<FeatureVector> &feature_vectors, Vector *concat) const {
+    const std::vector<FeatureVector> &feature_vectors, Vector *concat) const {
   concat->resize(model_->concat_layer_size());
 
   // "es_index" stands for "embedding space index".
@@ -152,8 +152,8 @@ void EmbeddingNetwork::FinishComputeFinalScores(const Vector &concat,
   }
 }
 
-void EmbeddingNetwork::ComputeFinalScores(const vector<FeatureVector> &features,
-                                          Vector *scores) const {
+void EmbeddingNetwork::ComputeFinalScores(
+    const std::vector<FeatureVector> &features, Vector *scores) const {
   Vector concat;
   ConcatEmbeddings(features, &concat);
 

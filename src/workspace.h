@@ -53,7 +53,7 @@ class WorkspaceRegistry {
   WorkspaceRegistry();
   ~WorkspaceRegistry();
 
-  const std::unordered_map<std::type_index, vector<std::string>>
+  const std::unordered_map<std::type_index, std::vector<std::string>>
       &WorkspaceNames() const {
     return workspace_names_;
   }
@@ -66,7 +66,7 @@ class WorkspaceRegistry {
   std::unordered_map<std::type_index, string> workspace_types_;
 
   // Workspace names, indexed as workspace_names_[typeid][workspace].
-  std::unordered_map<std::type_index, vector<string>> workspace_names_;
+  std::unordered_map<std::type_index, std::vector<string>> workspace_names_;
 
   CLD3_DISALLOW_COPY_AND_ASSIGN(WorkspaceRegistry);
 };
@@ -96,7 +96,7 @@ class WorkspaceSet {
 
  private:
   // The set of workspaces, indexed as workspaces_[typeid][index].
-  std::unordered_map<std::type_index, vector<Workspace *>> workspaces_;
+  std::unordered_map<std::type_index, std::vector<Workspace *>> workspaces_;
 };
 
 // A workspace that wraps around a single int.
@@ -129,7 +129,7 @@ class VectorIntWorkspace : public Workspace {
   explicit VectorIntWorkspace(int size);
 
   // Creates a vector initialized with the given array.
-  explicit VectorIntWorkspace(const vector<int> &elements);
+  explicit VectorIntWorkspace(const std::vector<int> &elements);
 
   // Creates a vector of the given size, with each element initialized to the
   // given value.
@@ -148,7 +148,7 @@ class VectorIntWorkspace : public Workspace {
 
  private:
   // The enclosed vector.
-  vector<int> elements_;
+  std::vector<int> elements_;
 };
 
 // A workspace that wraps around a vector of vector of int.
@@ -162,14 +162,14 @@ class VectorVectorIntWorkspace : public Workspace {
   static string TypeName();
 
   // Returns the i'th vector of elements.
-  const vector<int> &elements(int i) const { return elements_[i]; }
+  const std::vector<int> &elements(int i) const { return elements_[i]; }
 
   // Mutable access to the i'th vector of elements.
-  vector<int> *mutable_elements(int i) { return &(elements_[i]); }
+  std::vector<int> *mutable_elements(int i) { return &(elements_[i]); }
 
  private:
   // The enclosed vector of vector of elements.
-  vector<vector<int>> elements_;
+  std::vector<std::vector<int>> elements_;
 };
 
 }  // namespace chrome_lang_id

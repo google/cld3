@@ -124,7 +124,7 @@ void NormalizeDigits(string *form);
 
 // Takes a text and convert it into a vector, where each element is a utf8
 // character.
-void GetUTF8Chars(const string &text, vector<string> *chars);
+void GetUTF8Chars(const string &text, std::vector<string> *chars);
 
 // Returns the number of bytes in the first UTF-8 char at the beginning
 // of the string. It is assumed that the string is valid UTF-8.  If
@@ -132,10 +132,10 @@ void GetUTF8Chars(const string &text, vector<string> *chars);
 // compatibility only; this use is discouraged).
 int UTF8FirstLetterNumBytes(const char *in_buf);
 
-// Returns the length (number of bytes) of the Unicode code point
-// starting at src, based on inspecting just that one byte. This
-// requires that src point to a well-formed UTF-8 string; the result
-// is undefined otherwise.
+// Returns the length (number of bytes) of the Unicode code point starting at
+// src, based on inspecting just that one byte.  Preconditions: src != NULL,
+// *src can be read, and *src is not '\0', and src points to a well-formed UTF-8
+// string.
 int OneCharLen(const char *src);
 
 }  // namespace utils

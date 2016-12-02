@@ -23,8 +23,11 @@ limitations under the License.
 #include "base.h"
 #include "feature_extractor.h"
 #include "feature_types.h"
+#include "script_span/generated_ulscript.h"
+#include "script_span/getonescriptspan.h"
 #include "sentence_features.h"
 #include "task_context.h"
+#include "unicodetext.h"
 #include "utils.h"
 
 namespace chrome_lang_id {
@@ -55,10 +58,10 @@ void ContinuousBagOfNgramsFunction::Evaluate(const WorkspaceSet &workspaces,
                                              FeatureVector *result) const {
   // Include terminators for each token. Tokens are discovered by splitting the
   // text on spaces.
-  vector<string> chars;
+  std::vector<string> chars;
   utils::GetUTF8Chars(sentence.text(), &chars);
   if (include_terminators_) {
-    vector<string> new_chars{"^"};
+    std::vector<string> new_chars{"^"};
     for (size_t index = 0; index < chars.size(); ++index) {
       if (chars.at(index) == " ") {
         new_chars.push_back("$");
@@ -103,6 +106,59 @@ void ContinuousBagOfNgramsFunction::Evaluate(const WorkspaceSet &workspaces,
             ngram_id_dimension_,
         weight);
     result->add(feature_type(), value.discrete_value);
+  }
+}
+
+FeatureValue ScriptFeature::Compute(const WorkspaceSet &workspaces,
+                                    const Sentence &sentence,
+                                    const FeatureVector *result) const {
+  const string &text = sentence.text();
+  CLD2::ScriptScanner ss(text.c_str(), text.size(),
+                         /*is_plain_text=*/true);
+
+  // GetOneScriptSpan() is called only once because of the assumption that the
+  // input contains one script. This function also cleans up the input (e.g.,
+  // removes digits, punctuation).
+  // TODO(abakalov): Extract the clean-up and script detection code out of
+  // GetOneScriptSpan() because we don't have to iterate over the whole text,
+  // just look at the first codepoint after clean-up.
+  CLD2::LangSpan script_span;
+  ss.GetOneScriptSpan(&script_span);
+  const CLD2::ULScript ulscript = script_span.ulscript;
+  if (ulscript != CLD2::ULScript_Hani) {
+    return ulscript;
+  } else {
+    // Out of the codepoints captured by ULScript_Hani, separately count those
+    // in Hangul (Korean script) and those in a script other than Hangul.
+    int num_hangul = 0;
+    int num_non_hangul = 0;
+    UnicodeText unicode_text;
+    unicode_text.PointToUTF8(script_span.text, script_span.text_bytes);
+    for (int codepoint : unicode_text) {
+      // If the current codepoint is space, continue.
+      if (codepoint == 0x20) {
+        continue;
+      }
+
+      // Check if the current codepoint is within the ranges associated with
+      // Hangul.
+      if ((codepoint >= 0x1100 && codepoint <= 0x11FF) ||  // Hangul Jamo
+          (codepoint >= 0xA960 && codepoint <= 0xA97F) ||  // Jamo Extended A
+          (codepoint >= 0xD7B0 && codepoint <= 0xD7FF) ||  // Jamo Extended B
+          (codepoint >= 0x3130 && codepoint <= 0x318F) ||  // Compatibility Jamo
+          (codepoint >= 0xFFA0 && codepoint <= 0xFFDC) ||  // Halfwidth Jamo
+          (codepoint >= 0xAC00 && codepoint <= 0xD7AF)) {  // Hangul Syllables
+        num_hangul++;
+      } else {
+        num_non_hangul++;
+      }
+    }
+
+    if (num_hangul > num_non_hangul) {
+      return static_cast<FeatureValue>(CLD2::NUM_ULSCRIPTS);
+    } else {
+      return static_cast<FeatureValue>(CLD2::ULScript_Hani);
+    }
   }
 }
 

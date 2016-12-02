@@ -24,6 +24,7 @@
 #include "fixunicodevalue.h"
 #include "port.h"
 #include "utf8acceptinterchange.h"
+#include "utf8repl_lettermarklower.h"
 #include "utf8prop_lettermarkscriptnum.h"
 #include "utf8scannot_lettermarkspecial.h"
 #include "utf8statetable.h"
@@ -1042,6 +1043,44 @@ bool ScriptScanner::GetOneScriptSpan(LangSpan* span) {
 
   span->text_bytes = put;       // Does not include the last four chars above
   return true;
+}
+
+// Force Latin, Cyrillic, Armenian, Greek scripts to be lowercase
+// List changes with each version of Unicode, so just always lowercase
+// Unicode 6.2.0:
+//   ARMENIAN COPTIC CYRILLIC DESERET GEORGIAN GLAGOLITIC GREEK LATIN
+void ScriptScanner::LowerScriptSpan(LangSpan* span) {
+  // If needed, lowercase all the text. If we do it sooner, might miss
+  // lowercasing an entity such as &Aacute;
+  // We only need to do this for Latn and Cyrl scripts
+  map2uplow_.Clear();
+  // Full Unicode lowercase of the entire buffer, including
+  // four pad bytes off the end.
+  // Ahhh. But the last byte 0x00 is not interchange-valid, so we do 3 pad
+  // bytes and put the 0x00 in explicitly.
+  // Build an offset map from script_buffer_lower_ back to script_buffer_
+  int consumed, filled, changed;
+  StringPiece istr(span->text, span->text_bytes + 3);
+  StringPiece ostr(script_buffer_lower_, kMaxScriptLowerBuffer);
+
+  UTF8GenericReplace(&utf8repl_lettermarklower_obj,
+                            istr, ostr, is_plain_text_,
+                            &consumed, &filled, &changed, &map2uplow_);
+  script_buffer_lower_[filled] = '\0';
+  span->text = script_buffer_lower_;
+  span->text_bytes = filled - 3;
+  map2uplow_.Reset();
+}
+
+// Copy next run of same-script non-tag letters to buffer [NUL terminated]
+// Force Latin, Cyrillic, Greek scripts to be lowercase
+// Buffer ALWAYS has leading space and trailing space space space NUL
+bool ScriptScanner::GetOneScriptSpanLower(LangSpan* span) {
+  bool ok = GetOneScriptSpan(span);
+  if (ok) {
+    LowerScriptSpan(span);
+  }
+  return ok;
 }
 
 // Maps byte offset in most recent GetOneScriptSpan/Lower

@@ -72,9 +72,9 @@ class GenericEmbeddingFeatureExtractor {
   int EmbeddingDims(int index) const { return embedding_dims_[index]; }
 
   // Accessor for embedding dims (dimensions of the embedding spaces).
-  const vector<int> &embedding_dims() const { return embedding_dims_; }
+  const std::vector<int> &embedding_dims() const { return embedding_dims_; }
 
-  const vector<string> &embedding_fml() const { return embedding_fml_; }
+  const std::vector<string> &embedding_fml() const { return embedding_fml_; }
 
   // Get parameter name by concatenating the prefix and the original name.
   string GetParamName(const string &param_name) const {
@@ -93,16 +93,16 @@ class GenericEmbeddingFeatureExtractor {
 
  private:
   // Embedding space names for parameter sharing.
-  vector<string> embedding_names_;
+  std::vector<string> embedding_names_;
 
   // FML strings for each feature extractor.
-  vector<string> embedding_fml_;
+  std::vector<string> embedding_fml_;
 
   // Size of each of the embedding spaces (maximum predicate id).
-  vector<int> embedding_sizes_;
+  std::vector<int> embedding_sizes_;
 
   // Embedding dimensions of the embedding spaces (i.e. 32, 64 etc.)
-  vector<int> embedding_dims_;
+  std::vector<int> embedding_dims_;
 
   // Whether or not to add string descriptions to converted examples.
   bool add_strings_;
@@ -156,7 +156,8 @@ class EmbeddingFeatureExtractor : public GenericEmbeddingFeatureExtractor {
   // be initialized to the correct number of feature extractors. No predicate
   // mapping is applied.
   void ExtractFeatures(const WorkspaceSet &workspaces, const OBJ &obj,
-                       ARGS... args, vector<FeatureVector> *features) const {
+                       ARGS... args,
+                       std::vector<FeatureVector> *features) const {
     for (size_t i = 0; i < feature_extractors_.size(); ++i) {
       features->at(i).clear();
       feature_extractors_.at(i).ExtractFeatures(workspaces, obj, args...,
@@ -173,7 +174,7 @@ class EmbeddingFeatureExtractor : public GenericEmbeddingFeatureExtractor {
 
  private:
   // Templated feature extractor class.
-  vector<EXTRACTOR> feature_extractors_;
+  std::vector<EXTRACTOR> feature_extractors_;
 };
 
 }  // namespace chrome_lang_id

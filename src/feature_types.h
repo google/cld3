@@ -87,7 +87,7 @@ class ResourceBasedFeatureType : public FeatureType {
   // resource->NumValues() so as to avoid collisions; this is verified with
   // CHECK at creation.
   ResourceBasedFeatureType(const string &name, const Resource *resource,
-                           const map<FeatureValue, string> &values);
+                           const std::map<FeatureValue, string> &values);
 
   // Creates a new type with no special values.
   ResourceBasedFeatureType(const string &name, const Resource *resource);
@@ -117,7 +117,7 @@ class ResourceBasedFeatureType : public FeatureType {
   FeatureValue max_value_;
 
   // Mapping for extra feature values not in the resource.
-  map<FeatureValue, string> values_;
+  std::map<FeatureValue, string> values_;
 };
 
 // Feature type that is defined using an explicit map from FeatureValue to
@@ -135,7 +135,7 @@ class ResourceBasedFeatureType : public FeatureType {
 class EnumFeatureType : public FeatureType {
  public:
   EnumFeatureType(const string &name,
-                  const map<FeatureValue, string> &value_names);
+                  const std::map<FeatureValue, string> &value_names);
   ~EnumFeatureType() override;
 
   // Returns the feature name for a given feature value.
@@ -150,7 +150,7 @@ class EnumFeatureType : public FeatureType {
   FeatureValue domain_size_ = 0;
 
   // Names of feature values.
-  map<FeatureValue, string> value_names_;
+  std::map<FeatureValue, string> value_names_;
 };
 
 }  // namespace chrome_lang_id

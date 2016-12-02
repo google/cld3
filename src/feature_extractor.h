@@ -113,7 +113,7 @@ class FeatureVector {
   };
 
   // Array for storing feature vector elements.
-  vector<Element> features_;
+  std::vector<Element> features_;
 
   CLD3_DISALLOW_COPY_AND_ASSIGN(FeatureVector);
 };
@@ -146,7 +146,7 @@ class GenericFeatureExtractor {
 
   // Returns all feature types names used by the extractor. The names are
   // added to the types_names array.  Invalid before Init() has been called.
-  void GetFeatureTypeNames(vector<string> *type_names) const;
+  void GetFeatureTypeNames(std::vector<string> *type_names) const;
 
   // Returns a feature type used in the extractor.  Invalid before Init() has
   // been called.
@@ -170,7 +170,7 @@ class GenericFeatureExtractor {
 
   // Returns all feature types used by the extractor. The feature types are
   // added to the result array.
-  virtual void GetFeatureTypes(vector<FeatureType *> *types) const = 0;
+  virtual void GetFeatureTypes(std::vector<FeatureType *> *types) const = 0;
 
   // Descriptor for the feature extractor. This is a protocol buffer that
   // contains all the information about the feature extractor. The feature
@@ -180,7 +180,7 @@ class GenericFeatureExtractor {
   // All feature types used by the feature extractor. The collection of all the
   // feature types describes the feature space of the feature set produced by
   // the feature extractor.  Not owned.
-  vector<FeatureType *> feature_types_;
+  std::vector<FeatureType *> feature_types_;
 };
 
 // The generic feature function is the type-independent part of a feature
@@ -211,7 +211,7 @@ class GenericFeatureFunction {
   // Appends the feature types produced by the feature function to types.  The
   // default implementation appends feature_type(), if non-null.  Invalid
   // before Init() has been called.
-  virtual void GetFeatureTypes(vector<FeatureType *> *types) const;
+  virtual void GetFeatureTypes(std::vector<FeatureType *> *types) const;
 
   // Returns the feature type for feature produced by this feature function. If
   // the feature function produces features of different types this returns
@@ -396,7 +396,7 @@ class NestedFeatureFunction : public FeatureFunction<OBJ, ARGS...> {
   ~NestedFeatureFunction() override { utils::STLDeleteElements(&nested_); }
 
   // By default, just appends the nested feature types.
-  void GetFeatureTypes(vector<FeatureType *> *types) const override {
+  void GetFeatureTypes(std::vector<FeatureType *> *types) const override {
     // Nested features require nested features to be defined.
     CLD3_DCHECK(!this->nested().empty());
     for (auto *function : nested_) function->GetFeatureTypes(types);
@@ -519,7 +519,7 @@ template <class DER, class OBJ, class... ARGS>
 class FeatureLocator : public MetaFeatureFunction<OBJ, ARGS...> {
  public:
   // Feature locators have an additional check that there is no intrinsic type.
-  void GetFeatureTypes(vector<FeatureType *> *types) const override {
+  void GetFeatureTypes(std::vector<FeatureType *> *types) const override {
     // FeatureLocators should not have an intrinsic type.
     CLD3_DCHECK(this->feature_type() == nullptr);
     MetaFeatureFunction<OBJ, ARGS...>::GetFeatureTypes(types);
@@ -617,7 +617,7 @@ class FeatureExtractor : public GenericFeatureExtractor {
   }
 
   // Collect all feature types used in the feature extractor.
-  void GetFeatureTypes(vector<FeatureType *> *types) const override {
+  void GetFeatureTypes(std::vector<FeatureType *> *types) const override {
     for (size_t i = 0; i < functions_.size(); ++i) {
       functions_[i]->GetFeatureTypes(types);
     }
@@ -625,7 +625,7 @@ class FeatureExtractor : public GenericFeatureExtractor {
 
   // Top-level feature functions (and variables) in the feature extractor.
   // Owned.
-  vector<Function *> functions_;
+  std::vector<Function *> functions_;
 };
 
 }  // namespace chrome_lang_id
