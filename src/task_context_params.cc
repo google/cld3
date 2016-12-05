@@ -56,16 +56,14 @@ const char *const TaskContextParams::kLanguageNames[] = {
     nullptr,
 };
 
-const char TaskContextParams::kLanguageIdentifierFeatures[] = R"(
-continuous-bag-of-ngrams(include_terminators=true,include_spaces=false,
-use_equal_weight=false,id_dim=1000,size=2);continuous-bag-of-ngrams(
-include_terminators=true,include_spaces=false,use_equal_weight=false,
-id_dim=5000,size=4);continuous-bag-of-relevant-scripts;script;
-continuous-bag-of-ngrams(include_terminators=true,include_spaces=false,
-use_equal_weight=false,id_dim=5000,size=3);continuous-bag-of-ngrams(
-include_terminators=true,include_spaces=false,use_equal_weight=false,
-id_dim=100,size=1)
-)";
+const char TaskContextParams::kLanguageIdentifierFeatures[] =
+    "continuous-bag-of-ngrams(include_terminators=true,include_spaces=false,"
+    "use_equal_weight=false,id_dim=1000,size=2);continuous-bag-of-ngrams("
+    "include_terminators=true,include_spaces=false,use_equal_weight=false,id_"
+    "dim=5000,size=4);continuous-bag-of-relevant-scripts;script;continuous-bag-"
+    "of-ngrams(include_terminators=true,include_spaces=false,use_equal_weight="
+    "false,id_dim=5000,size=3);continuous-bag-of-ngrams(include_terminators="
+    "true,include_spaces=false,use_equal_weight=false,id_dim=100,size=1)";
 
 const char TaskContextParams::kLanguageIdentifierEmbeddingNames[] =
     "bigrams;quadgrams;relevant-scripts;text-script;trigrams;unigrams";
