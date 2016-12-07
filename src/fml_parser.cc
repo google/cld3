@@ -23,6 +23,27 @@ limitations under the License.
 
 namespace chrome_lang_id {
 
+namespace {
+
+inline bool IsValidCharAtStartOfIdentifier(char c) {
+  return isalpha(c) || (c == '_') || (c == '/');
+}
+
+// Returns true iff character c can appear inside an identifier.
+inline bool IsValidCharInsideIdentifier(char c) {
+  return isalnum(c) || (c == '_') || (c == '-') || (c == '/');
+}
+
+// Returns true iff character c can appear at the beginning of a number.
+inline bool IsValidCharAtStartOfNumber(char c) {
+  return isdigit(c) || (c == '+') || (c == '-');
+}
+
+// Returns true iff character c can appear inside a number.
+inline bool IsValidCharInsideNumber(char c) { return isdigit(c) || (c == '.'); }
+
+}  // namespace
+
 FMLParser::FMLParser() {}
 FMLParser::~FMLParser() {}
 
@@ -40,7 +61,7 @@ void FMLParser::Initialize(const string &source) {
 void FMLParser::Next() {
   // Move to the next input character. If we are at a line break update line
   // number and line start position.
-  if (*current_ == '\n') {
+  if (CurrentChar() == '\n') {
     ++line_number_;
     ++current_;
     line_start_ = current_;
@@ -52,12 +73,12 @@ void FMLParser::Next() {
 void FMLParser::NextItem() {
   // Skip white space and comments.
   while (!eos()) {
-    if (*current_ == '#') {
+    if (CurrentChar() == '#') {
       // Skip comment.
-      while (!eos() && *current_ != '\n') Next();
-    } else if (isspace(*current_)) {
+      while (!eos() && CurrentChar() != '\n') Next();
+    } else if (isspace(CurrentChar())) {
       // Skip whitespace.
-      while (!eos() && isspace(*current_)) Next();
+      while (!eos() && isspace(CurrentChar())) Next();
     } else {
       break;
     }
@@ -74,20 +95,20 @@ void FMLParser::NextItem() {
   }
 
   // Parse number.
-  if (isdigit(*current_) || *current_ == '+' || *current_ == '-') {
+  if (IsValidCharAtStartOfNumber(CurrentChar())) {
     string::iterator start = current_;
     Next();
-    while (isdigit(*current_) || *current_ == '.') Next();
+    while (!eos() && IsValidCharInsideNumber(CurrentChar())) Next();
     item_text_.assign(start, current_);
     item_type_ = NUMBER;
     return;
   }
 
   // Parse string.
-  if (*current_ == '"') {
+  if (CurrentChar() == '"') {
     Next();
     string::iterator start = current_;
-    while (*current_ != '"') {
+    while (CurrentChar() != '"') {
       CLD3_DCHECK(!eos());
       Next();
     }
@@ -98,10 +119,9 @@ void FMLParser::NextItem() {
   }
 
   // Parse identifier name.
-  if (isalpha(*current_) || *current_ == '_' || *current_ == '/') {
+  if (IsValidCharAtStartOfIdentifier(CurrentChar())) {
     string::iterator start = current_;
-    while (isalnum(*current_) || *current_ == '_' || *current_ == '-' ||
-           *current_ == '/') {
+    while (!eos() && IsValidCharInsideIdentifier(CurrentChar())) {
       Next();
     }
     item_text_.assign(start, current_);
@@ -110,7 +130,7 @@ void FMLParser::NextItem() {
   }
 
   // Single character item.
-  item_type_ = *current_;
+  item_type_ = CurrentChar();
   Next();
 }
 
