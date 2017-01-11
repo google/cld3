@@ -134,7 +134,7 @@ FeatureValue ScriptFeature::Compute(const WorkspaceSet &workspaces,
     int num_non_hangul = 0;
     UnicodeText unicode_text;
     unicode_text.PointToUTF8(script_span.text, script_span.text_bytes);
-    for (int codepoint : unicode_text) {
+    for (chrome_lang_id::char32 codepoint : unicode_text) {
       // If the current codepoint is space, continue.
       if (codepoint == 0x20) {
         continue;

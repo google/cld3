@@ -20,6 +20,8 @@
 #include <iterator>
 #include <utility>
 
+#include "base.h"
+
 namespace chrome_lang_id {
 
 // ***************************** UnicodeText **************************
@@ -79,7 +81,7 @@ class UnicodeText {
     const_iterator(const const_iterator &other);
     const_iterator &operator=(const const_iterator &other);
 
-    int operator*() const;  // Dereference
+    char32 operator*() const;  // Dereference
 
     const_iterator &operator++();  // Advance (++iter)
 

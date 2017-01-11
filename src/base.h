@@ -63,7 +63,13 @@ typedef unsigned int uint32;
 typedef int int32;
 typedef unsigned char uint8;    // NOLINT
 typedef unsigned short uint16;  // NOLINT
-#endif                          // SWIG
+
+// A type to represent a Unicode code-point value. As of Unicode 4.0,
+// such values require up to 21 bits.
+// (For type-checking on pointers, make this explicitly signed,
+// and it should always be the signed version of whatever int32 is.)
+typedef signed int char32;
+#endif  // SWIG
 
 #ifdef COMPILER_MSVC
 typedef __int64 int64;

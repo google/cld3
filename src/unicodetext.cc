@@ -16,6 +16,7 @@
 
 #include "unicodetext.h"
 
+#include "base.h"
 #include "utils.h"
 
 namespace chrome_lang_id {
@@ -64,25 +65,25 @@ UnicodeText::const_iterator UnicodeText::end() const {
   return const_iterator(repr_.data_ + repr_.size_);
 }
 
-int UnicodeText::const_iterator::operator*() const {
+char32 UnicodeText::const_iterator::operator*() const {
   // (We could call chartorune here, but that does some
   // error-checking, and we're guaranteed that our data is valid
   // UTF-8. Also, we expect this routine to be called very often. So
   // for speed, we do the calculation ourselves.)
 
   // Convert from UTF-8
-  int byte1 = it_[0];
+  unsigned char byte1 = static_cast<unsigned char>(it_[0]);
   if (byte1 < 0x80) return byte1;
 
-  int byte2 = it_[1];
+  unsigned char byte2 = static_cast<unsigned char>(it_[1]);
   if (byte1 < 0xE0) return ((byte1 & 0x1F) << 6) | (byte2 & 0x3F);
 
-  int byte3 = it_[2];
+  unsigned char byte3 = static_cast<unsigned char>(it_[2]);
   if (byte1 < 0xF0) {
     return ((byte1 & 0x0F) << 12) | ((byte2 & 0x3F) << 6) | (byte3 & 0x3F);
   }
 
-  int byte4 = it_[3];
+  unsigned char byte4 = static_cast<unsigned char>(it_[3]);
   return ((byte1 & 0x07) << 18) | ((byte2 & 0x3F) << 12) |
          ((byte3 & 0x3F) << 6) | (byte4 & 0x3F);
 }
