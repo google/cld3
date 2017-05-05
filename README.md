@@ -29,16 +29,17 @@ To get a language prediction for the input text, we simply perform a forward
 ### Installation
 CLD3 is designed to run in the Chrome browser, so it relies on code in
 [Chromium](http://www.chromium.org/).
-The steps for building and running the language detection model are:
+The steps for building and running the demo of the language detection model are:
 
 - [check out](http://www.chromium.org/developers/how-tos/get-the-code) the
   Chromium repository.
 - copy the code to `//third_party/cld_3`
+- Uncomment `language_identifier_main` executable in `src/BUILD.gn`.
 - build and run the model using the commands:
 
 ```shell
 gn gen out/Default
-ninja -C out/Default third_party/cld_3/src:language_identifier_main
+ninja -C out/Default third_party/cld_3/src/src:language_identifier_main
 out/Default/language_identifier_main
 ```
 ### Contact
