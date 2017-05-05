@@ -38,7 +38,7 @@ The steps for building and running the language detection model are:
 
 ```shell
 gn gen out/Default
-ninja -C out/Default third_party/cld_3/src:language_identifier_main
+ninja -C out/Default third_party/cld_3/src/src:language_identifier_main
 out/Default/language_identifier_main
 ```
 ### Contact
