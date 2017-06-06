@@ -44,7 +44,7 @@ out/Default/language_identifier_main
 ```
 ### Bugs and Feature Requests
 
-Open a GitHub issue for this repository to file bugs and feature requests.
+Open a [GitHub issue](https://github.com/google/cld3/issues) for this repository to file bugs and feature requests.
 
 ### Announcements and Discussion
 
