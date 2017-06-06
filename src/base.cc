@@ -18,7 +18,7 @@ limitations under the License.
 #include <string>
 #ifdef _WIN32
 #include <sstream>
-#endif  // COMPILER_MSVC
+#endif  // _WIN32
 
 namespace chrome_lang_id {
 
@@ -31,6 +31,6 @@ std::string Int64ToString(int64 input) {
 }
 #else
 std::string Int64ToString(int64 input) { return std::to_string(input); }
-#endif  // COMPILER_MSVC
+#endif  // _WIN32
 
 }  // namespace chrome_lang_id
