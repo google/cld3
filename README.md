@@ -42,9 +42,14 @@ gn gen out/Default
 ninja -C out/Default third_party/cld_3/src/src:language_identifier_main
 out/Default/language_identifier_main
 ```
-### Contact
+### Bugs and Feature Requests
 
-To ask questions or report issues please contact cld3-users@google.com.
+Open a [GitHub issue](https://github.com/google/cld3/issues) for this repository to file bugs and feature requests.
+
+### Announcements and Discussion
+
+For announcements regarding major updates as well as general discussion list, please subscribe to:
+[cld3-users@googlegroups.com](https://groups.google.com/forum/#!forum/cld3-users)
 
 ### Credits
 
