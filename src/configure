@@ -1,0 +1,35 @@
+#!/bin/bash
+# Jeroen Ooms 2017 / jeroen@berkeley.edu
+# Running this script is optional. Usually the default 'make' should work
+PKG_CONFIG_NAME="protobuf"
+
+# Look for 'protoc' compiler
+if [ $(command -v protoc) ]; then
+  PROTOC_VERSION=$(protoc --version)
+  echo "Using ${PROTOC_VERSION} from $(command -v protoc)"
+else
+  echo "Failed to find protoc"
+  echo "Please install the 'protobuf-compiler' package for your system."
+  exit 1
+fi
+
+# Test if pkg-config info is available
+pkg-config --exists ${PKG_CONFIG_NAME}
+if [ $? -eq 0 ]; then
+	CFLAGS=$(pkg-config --cflags ${PKG_CONFIG_NAME})
+	LIBS=$(pkg-config --libs ${PKG_CONFIG_NAME})
+	MODVERSION=$(pkg-config --modversion ${PKG_CONFIG_NAME})
+	echo "Using CFLAGS=$CFLAGS"
+	echo "Using LIBS=$LIBS"
+	sed -i.bak "s#^PROTOBUF_INCLUDE.*#PROTOBUF_INCLUDE ?= ${CFLAGS}#" Makefile
+	sed -i.bak "s#^PROTOBUF_LIBS.*#PROTOBUF_LIBS ?= ${LIBS}#" Makefile	
+else
+	echo "Either 'pkg-config' or '${PKG_CONFIG_NAME}.pc' could not be found."
+	echo "Don't worry; the default 'make' flags probably work."
+	exit 0
+fi
+
+# Try to check if protoc version matches libproto
+if [[ $PROTOC_VERSION != *"$MODVERSION"* ]]; then
+  echo "Warning: protoc version $PROTOC_VERSION might not match libproto version $MODVERSION.";
+fi
