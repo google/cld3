@@ -1,4 +1,5 @@
 # This cmake scripts only builds a static cld3 lib and the unittests.
+
 project(cld3)
 
 # Old versions of cmake dont search/find protobuf lite
