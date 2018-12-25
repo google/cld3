@@ -26,9 +26,16 @@ limitations under the License.
 namespace chrome_lang_id {
 
 // Feature function that extracts features for the full Sentence.
-typedef FeatureFunction<Sentence> WholeSentenceFeature;
+using WholeSentenceFeature = FeatureFunction<Sentence>;
 
-typedef FeatureExtractor<Sentence> WholeSentenceExtractor;
+using WholeSentenceExtractor = FeatureExtractor<Sentence>;
+
+// Declare registry for the whole Sentence feature functions.  NOTE: this is not
+// yet set to anything meaningful.  It will be set so in NNetLanguageIdentifier
+// constructor, *before* we use any feature.
+template <>
+WholeSentenceFeature::Registry
+    *RegisterableClass<WholeSentenceFeature>::registry_ = nullptr;
 
 }  // namespace chrome_lang_id
 

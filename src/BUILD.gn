@@ -52,7 +52,6 @@ static_library("cld_3") {
     "relevant_script_feature.cc",
     "relevant_script_feature.h",
     "script_detector.h",
-    "sentence_features.cc",
     "sentence_features.h",
     "simple_adder.h",
     "script_span/fixunicodevalue.cc",
