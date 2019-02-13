@@ -88,8 +88,6 @@ static_library("cld_3") {
   ]
   public_deps = [
     "//third_party/protobuf:protobuf_lite",
-  ]
-  deps = [
     ":protos",
   ]
 }
