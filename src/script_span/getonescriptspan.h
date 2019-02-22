@@ -93,7 +93,7 @@ class ScriptScanner {
   // again with the first byte of the following range.
   int MapBack(int text_offset);
 
-  const char* GetBufferStart() {return start_byte_;};
+  const char* GetBufferStart() {return start_byte_;}
 
  private:
   // Skip over tags and non-letters
