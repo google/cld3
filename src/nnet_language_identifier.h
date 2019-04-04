@@ -53,6 +53,9 @@ class NNetLanguageIdentifier {
     // Proportion of bytes associated with the language. If FindLanguage is
     // called, this variable is set to 1.
     float proportion = 0.0;
+
+    // Specifies the ranges of text that this.language applies to.
+    std::vector<std::pair<int,int>> ranges;
   };
 
   NNetLanguageIdentifier();
