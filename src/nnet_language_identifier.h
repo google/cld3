@@ -55,7 +55,7 @@ class NNetLanguageIdentifier {
     float proportion = 0.0;
 
     // Specifies the ranges of input text that this.language applies to.
-    std::vector<std::pair<int,int>> ranges;
+    std::vector<std::pair<int, int>> ranges;
   };
 
   NNetLanguageIdentifier();
