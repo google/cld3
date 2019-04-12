@@ -33,8 +33,6 @@ limitations under the License.
 #include "task_context.h"
 #include "workspace.h"
 
-#include <iostream>
-
 namespace chrome_lang_id {
 namespace {
 
@@ -303,7 +301,6 @@ NNetLanguageIdentifier::FindTopNMostFreqLangs(const string &text,
     total_num_bytes += num_original_span_bytes;
 
     const string selected_text = SelectTextGivenScriptSpan(script_span);
-
     result = FindLanguageOfValidUTF8(selected_text);
     language = result.language;
     lang_stats[language].byte_sum += num_original_span_bytes;
