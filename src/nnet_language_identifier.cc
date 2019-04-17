@@ -48,8 +48,8 @@ struct LangChunksStats {
   // Number chunks corresponding to the language.
   int num_chunks = 0;
 
-  // Specifies the ranges of text that language applies to.
-  std::vector<std::pair<int, int>> ranges;
+  // Specifies the spans of text that language applies to.
+  std::vector<NNetLanguageIdentifier::SpanInfo> ranges;
 };
 
 // Compares two pairs based on their values.
@@ -307,9 +307,9 @@ NNetLanguageIdentifier::FindTopNMostFreqLangs(const string &text,
     lang_stats[language].prob_sum +=
         result.probability * num_original_span_bytes;
     lang_stats[language].num_chunks++;
-    // Set start and end indices relative to the original input.
-    lang_stats[language].ranges.push_back(std::make_pair(
-        ss.MapBack(0), ss.MapBack(script_span.text_bytes)));
+    // Add SpanInfo. Start and end indices are relative to original input.
+    lang_stats[language].ranges.push_back(SpanInfo(
+        ss.MapBack(0), ss.MapBack(script_span.text_bytes), result.probability));
   }
 
   // Sort the languages based on the number of bytes associated with them.

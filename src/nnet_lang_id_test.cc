@@ -219,8 +219,8 @@ bool TestMultipleLanguagesInInput() {
       return false;
     }
     // Check that specified ranges for language are correct.
-    int start_index = result.ranges[0].first;
-    int end_index = result.ranges[0].second;
+    int start_index = result.ranges[0].start_index;
+    int end_index = result.ranges[0].end_index;
     std::string ranges_text = text.substr(start_index, end_index - start_index);
     if (result.language.compare("bg") == 0) {
       if (ranges_text.compare("Този текст е на Български.") != 0) {
