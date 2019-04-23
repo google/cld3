@@ -67,8 +67,8 @@ class NNetLanguageIdentifier {
     // called, this variable is set to 1.
     float proportion = 0.0;
 
-    // Specifies the spans of input text that |language| applies to.
-    std::vector<SpanInfo> ranges;
+    // Specifies the byte ranges that |language| applies to.
+    std::vector<SpanInfo> byte_ranges;
   };
 
   NNetLanguageIdentifier();
