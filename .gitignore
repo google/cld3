@@ -1,1 +1,7 @@
 build
+CMakeCache.txt
+CMakeFiles
+Makefile
+cld_3
+cmake_install.cmake
+*.a

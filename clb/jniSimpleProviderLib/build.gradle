@@ -1,0 +1,20 @@
+plugins {
+    id 'cpp-library'
+}
+
+apply from: "$gradleRootDir/jni.gradle"
+apply from: "$gradleDir/native.gradle"
+
+library {
+    tasks.withType(CppCompile).configureEach {
+        dependsOn(javaProviderPrj.generateJavacpp)
+        includes.from(javaInclude, javaPlatformInclude)
+        source.from(
+            "$javacppGenDir/jnijavacpp.cpp",
+            "$javacppGenDir/jniSimpleProviderLib.cpp"
+        )
+    }
+
+    // TODO: use relative path here
+    privateHeaders.from("/data/wrk/clb/cld3/src")
+}

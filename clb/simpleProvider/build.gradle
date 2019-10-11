@@ -1,0 +1,73 @@
+buildscript {
+    ext {
+        gradleRootDir = "${rootProject.getRootDir()}/gradle"
+    }
+
+    apply from: "$gradleRootDir/repositories.gradle"
+    apply from: "$gradleRootDir/dependencies.gradle"
+    apply from: "$gradleRootDir/jni.gradle"
+
+    dependencies {
+        classpath libraries.javacpp
+    }
+}
+
+plugins {
+    id 'java-library'
+}
+
+ext {
+    nativeProviderPrj = project(':jniSimpleProviderLib')
+    nativeProviderLibDir = "${nativeProviderPrj.buildDir}/lib/main/release"
+    nativeProviderBuildTasks = nativeProviderPrj.getTasksByName('assembleRelease', false)
+}
+
+apply from: "$gradleRootDir/repositories.gradle"
+apply from: "$gradleRootDir/dependencies.gradle"
+apply from: "$gradleRootDir/junit.gradle"
+apply from: "$gradleDir/native.gradle"
+
+dependencies {
+    // javacpp
+    api             libraries.javacpp
+
+    // junit
+    testCompile     libraries.junit_jupiter
+    // assertj
+    // testCompile     libraries.commons_io
+    testCompile     libraries.assertj_core
+}
+
+def mainClassName = 'simple.SimpleProviderLib'
+
+// called by jniSimpleProviderLib
+task generateJavacpp(dependsOn: compileJava) {
+    ext.headerDir = javacppGenFile
+    ext.sourceDir = javacppGenFile
+    doLast {
+        new org.bytedeco.javacpp.tools.Builder()
+            .classPaths(compileJava.destinationDir.toString())
+            .classesOrPackages(mainClassName)
+            .outputDirectory(javacppGenDir)
+            .deleteJniFiles(false)
+            .compile(false)
+            .build() // returns the array of produced files
+    }
+}
+
+jar {
+    dependsOn nativeProviderBuildTasks
+    from (nativeProviderLibDir) {
+        into ('simple/linux-x86_64')
+    }
+}
+
+test {
+    dependsOn nativeProviderBuildTasks
+    def testJavaCP = [nativeProviderLibDir].join(File.pathSeparator)
+
+    systemProperty 'java.library.path', testJavaCP
+    systemProperty 'org.bytedeco.javacpp.logger.debug', 'true'
+
+    environment = [ 'LD_LIBRARY_PATH' : testJavaCP ]
+}

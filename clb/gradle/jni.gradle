@@ -1,0 +1,7 @@
+ext {
+    javaParent = file(System.getProperty("java.home")).getParentFile().getCanonicalFile()
+    extractJavaDirForFile = { fileName -> fileTree(javaParent) { include "**/$fileName" }.getAt(0).getParentFile() }
+
+    javaInclude = extractJavaDirForFile('jni.h')
+    javaPlatformInclude = extractJavaDirForFile('jni_md.h')
+}

@@ -1,0 +1,6 @@
+ext {
+    javaProviderPrj = project(':simpleProvider')
+
+    javacppGenDir = "${javaProviderPrj.buildDir}/javacpp"
+    javacppGenFile = file(javacppGenDir)
+}

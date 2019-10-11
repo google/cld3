@@ -1,0 +1,3 @@
+include('jniSimpleProviderLib')
+include('simpleProvider')
+include('cl')

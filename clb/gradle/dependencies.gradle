@@ -1,0 +1,35 @@
+ext {
+    groups = [
+        spring:                     'org.springframework',
+
+        javacpp:                    'org.bytedeco',
+        
+        junit_jupiter:              'org.junit.jupiter',
+        assertj:                    'org.assertj',
+    ]
+    versions = [
+        // for spring boot 2.1.3.RELEASE !!! Need to upgrade
+        spring:                     '5.1.5.RELEASE',
+
+        javacpp:                    '1.5.1-1',
+        
+        junit:                      '5.5.1',
+        assertj:                    '3.13.2',
+    ]
+    libraries = [
+        // spring
+        spring_core:                "${groups.spring}:spring-core:${versions.spring}",
+        // bytebuddy
+        bytebuddy:                  "${groups.bytebuddy}:byte-buddy:${versions.bytebuddy}",
+        bytebuddy_agent:            "${groups.bytebuddy}:byte-buddy-agent:${versions.bytebuddy}",
+        // javacpp
+        javacpp:                    "${groups.javacpp}:javacpp:${versions.javacpp}",
+        // junit
+        junit_jupiter:              "${groups.junit_jupiter}:junit-jupiter:${versions.junit}",
+        junit_jupiter_api:          "${groups.junit_jupiter}:junit-jupiter-api:${versions.junit}",
+        junit_jupiter_params:       "${groups.junit_jupiter}:junit-jupiter-params:${versions.junit}",
+        junit_jupiter_engine:       "${groups.junit_jupiter}:junit-jupiter-engine:${versions.junit}",
+        // assertj
+        assertj_core:               "${groups.assertj}:assertj-core:${versions.assertj}",
+    ]
+}

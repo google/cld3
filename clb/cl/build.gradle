@@ -1,0 +1,37 @@
+buildscript {
+    repositories {
+        gradlePluginPortal()
+    }
+    ext {
+        springBootVersion = '2.1.9.RELEASE'
+        gradleRootDir = "${rootProject.getRootDir()}/gradle"
+    }
+
+    apply from: "$gradleRootDir/repositories.gradle"
+    apply from: "$gradleRootDir/dependencies.gradle"
+
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
+    }
+}
+
+plugins {
+    id 'java'
+}
+
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+apply from: "$gradleRootDir/repositories.gradle"
+apply from: "$gradleRootDir/dependencies.gradle"
+
+dependencyManagement {
+    applyMavenExclusions false
+}
+
+dependencies {
+    implementation project(':simpleProvider') // javacpp is api-config dep-cy, grabbed by transitive
+
+    // boot
+    compile("org.springframework.boot:spring-boot-starter")
+}

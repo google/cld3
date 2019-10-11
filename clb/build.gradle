@@ -1,0 +1,11 @@
+buildscript {
+    ext {
+        gradleRootDir = "${rootProject.getRootDir()}/gradle"
+    }
+
+}
+
+ext {
+    gradleRootDir = "${rootProject.getRootDir()}/gradle"
+    gradleDir = "${rootProject.getRootDir()}/gradle"
+}
