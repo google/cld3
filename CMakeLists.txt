@@ -24,7 +24,10 @@ add_definitions(-fPIC) # Position Independant Code
 add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0)
 add_definitions(-std=c++11) # Needed for std::to_string(), ...
 
-include_directories(${CMAKE_CURRENT_BINARY_DIR}) # needed to include generated pb headers
+# https://github.com/google/cld3/issues/23
+# https://github.com/google/cld3/pull/22
+include_directories(${CMAKE_CURRENT_BINARY_DIR}
+${Protobuf_INCLUDE_DIRS}) # needed to include generated pb headers
 
 add_library(${PROJECT_NAME} 
 	${PROTO_SRCS} ${PROTO_HDRS}
