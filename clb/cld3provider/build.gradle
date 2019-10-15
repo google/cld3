@@ -14,10 +14,11 @@ buildscript {
 
 plugins {
     id 'java-library'
+    id 'maven-publish'
 }
 
 ext {
-    nativeProviderPrj = project(':jniSimpleProviderLib')
+    nativeProviderPrj = project(':jniCldProviderLib')
     nativeProviderLibDir = "${nativeProviderPrj.buildDir}/lib/main/release"
     nativeProviderBuildTasks = nativeProviderPrj.getTasksByName('assembleRelease', false)
 }
@@ -25,29 +26,25 @@ ext {
 apply from: "$gradleRootDir/repositories.gradle"
 apply from: "$gradleRootDir/dependencies.gradle"
 apply from: "$gradleRootDir/junit.gradle"
-apply from: "$gradleDir/native.gradle"
+apply from: "$gradleRootDir/native.gradle"
 
 dependencies {
-    // javacpp
     api             libraries.javacpp
 
-    // junit
     testCompile     libraries.junit_jupiter
-    // assertj
-    // testCompile     libraries.commons_io
     testCompile     libraries.assertj_core
 }
 
-def mainClassName = 'simple.SimpleProviderLib'
+def providerLibClassName = 'cld3.CldProviderLib'
 
-// called by jniSimpleProviderLib
+// called by jni ProviderLib
 task generateJavacpp(dependsOn: compileJava) {
     ext.headerDir = javacppGenFile
     ext.sourceDir = javacppGenFile
     doLast {
         new org.bytedeco.javacpp.tools.Builder()
             .classPaths(compileJava.destinationDir.toString())
-            .classesOrPackages(mainClassName)
+            .classesOrPackages(providerLibClassName)
             .outputDirectory(javacppGenDir)
             .deleteJniFiles(false)
             .compile(false)
@@ -55,19 +52,41 @@ task generateJavacpp(dependsOn: compileJava) {
     }
 }
 
+test {
+    dependsOn nativeProviderBuildTasks
+
+    def testJavaCP = [ nativeProviderLibDir ].join(File.pathSeparator)
+
+    systemProperty 'org.bytedeco.javacpp.logger.debug', 'true'
+    systemProperty 'java.library.path', testJavaCP
+    environment = [ 'LD_LIBRARY_PATH' : testJavaCP ]
+}
+
 jar {
     dependsOn nativeProviderBuildTasks
     from (nativeProviderLibDir) {
-        into ('simple/linux-x86_64')
+        into "cld3/$javacppOsName-x86_64"
+        include "*$sharedLibSuffix"
     }
+    archiveAppendix = javacppOsName
 }
 
-test {
-    dependsOn nativeProviderBuildTasks
-    def testJavaCP = [nativeProviderLibDir].join(File.pathSeparator)
-
-    systemProperty 'java.library.path', testJavaCP
-    systemProperty 'org.bytedeco.javacpp.logger.debug', 'true'
-
-    environment = [ 'LD_LIBRARY_PATH' : testJavaCP ]
+publishing {
+    publications {
+        provider(MavenPublication) {
+            from components.java
+            groupId 'clarabridge'
+            artifactId "${project.name}-$javacppOsName" // default - project.name
+            //version version // project.version, semver
+        }
+    }
+    repositories {
+        maven {
+            url project.'nexus.repo.publish'
+            credentials {
+                username = project.'nexus.deploy.user'
+                password = project.'nexus.deploy.password'
+            }
+        }
+    }
 }

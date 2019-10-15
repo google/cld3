@@ -1,0 +1,95 @@
+ext {
+    thirdPartyDir="$rootProjectRootDir/third_party"
+    extractedArchiveDir="$topBuildDir/extracted"
+
+    protobufNameVer="protobuf-${versions.protobuf}"
+    protobufExtractedDir = "$extractedArchiveDir/$protobufNameVer"
+    protobufSrcLibsDir = "$protobufExtractedDir/src/.libs"
+    protobufInstallDir="$topBuildDir/$protobufNameVer"
+}
+
+task cleanThirdParty(type: Delete) {
+    delete topBuildDir
+    doLast { println "done cleanThirdParty at $topBuildDir" }
+}
+
+task extractProtoArchive(type: Copy) {
+    from tarTree("$thirdPartyDir/protobuf/protobuf-${versions.protobuf}.tar.gz")
+    into extractedArchiveDir
+    doLast { println "done extractProtoArchive thirdPartyDir: $thirdPartyDir extractedArchiveDir: $extractedArchiveDir" }
+}
+
+task configureProtobuf(type: Exec, dependsOn: 'extractProtoArchive') {
+    workingDir protobufExtractedDir
+    executable './configure'
+    args = [
+        '--disable-shared',
+        '--with-pic',
+        'CXXFLAGS=-D_GLIBCXX_USE_CXX11_ABI=0',
+        "--prefix=$protobufInstallDir"
+    ]
+    inputs.file("$protobufExtractedDir/configure")
+    outputs.file("$protobufExtractedDir/Makefile")
+
+    doLast { println "done configureProtobuf at: $extractedArchiveDir" }
+}
+
+task buildProtobuf(type: Exec, dependsOn: 'configureProtobuf') {
+    workingDir protobufExtractedDir
+    executable 'make'
+    inputs.file("$protobufExtractedDir/Makefile")
+    outputs.dir(protobufSrcLibsDir)
+
+    doLast { println "done buildProtobuf at: $extractedArchiveDir" }
+}
+
+task installProtobuf(type: Exec, dependsOn: 'buildProtobuf') {
+    workingDir protobufExtractedDir
+    executable 'make'
+    args = [ 'install' ]
+    inputs.dir(protobufSrcLibsDir)
+    outputs.dir(protobufInstallDir)
+
+    doLast { println "done installProtobuf at: $extractedArchiveDir" }
+}
+
+task configureCld(type: Exec, dependsOn: 'installProtobuf') {
+    workingDir topRootDir
+    executable 'cmake'
+    args = [
+        "-DProtobuf_INCLUDE_DIR=$protobufInstallDir/include",
+        "-DProtobuf_PROTOC_EXECUTABLE=$protobufInstallDir/bin/protoc",
+        "-DProtobuf_PROTOC_LIBRARY=$protobufInstallDir/lib/libprotoc.a",
+        "-DProtobuf_LIBRARY=$protobufInstallDir/lib/libprotobuf.a",
+        "-DProtobuf_LITE_LIBRARY=$protobufInstallDir/lib/libprotobuf-lite.a",
+        '-DProtobuf_USE_STATIC_LIBS=ON',
+        '-B',
+        topBuildDir,
+        '-S',
+        topRootDir
+    ]
+    inputs.dir(protobufInstallDir)
+    outputs.file("$topBuildDir/Makefile")
+
+    doLast { println "done configureCld at: $topRootDir" }
+}
+
+task buildCld(type: Exec, dependsOn: 'configureCld') {
+    workingDir topRootDir
+    executable 'cmake'
+    args = [
+        '--build',
+        topBuildDir,
+        '-t',
+        'cld3'
+    ]
+    inputs.file("$topBuildDir/Makefile");
+    outputs.file("$topBuildDir/libcld3.a");
+
+    doLast { println "done buildCld at: $topRootDir" }
+}
+
+task versionCmake(type: Exec) {
+    executable 'cmake'
+    args = [ '--version' ]
+}

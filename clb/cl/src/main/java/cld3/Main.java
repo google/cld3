@@ -1,4 +1,4 @@
-package simple;
+package cld3;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -7,9 +7,9 @@ public class Main implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        try (final SimpleProviderLib.SimpleProviderImpl lib = new SimpleProviderLib.SimpleProviderImpl()) {
-            long simpleNum = lib.getSimpleNum();
-            System.out.println("getSimpleNum: " + simpleNum);
+        try (final CldProviderLib.CldProviderImpl lib = new CldProviderLib.CldProviderImpl()) {
+            String detectedLang = lib.detectLang("I like my round table");
+            System.out.println("detectedLang: " + detectedLang);
         }
     }
     

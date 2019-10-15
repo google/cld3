@@ -1,6 +1,23 @@
+import org.gradle.internal.os.OperatingSystem
+
 ext {
-    javaProviderPrj = project(':simpleProvider')
+    javaProviderPrj = project(':cld3provider')
 
     javacppGenDir = "${javaProviderPrj.buildDir}/javacpp"
     javacppGenFile = file(javacppGenDir)
+
+    getJavacppOsName = {
+        def curOs = OperatingSystem.current();
+        if (curOs.isLinux()) {
+            return 'linux'
+        } else if (curOs.isMacOsX()) {
+            return 'macosx'
+        }
+        throw new GradleException("OS: ${curOs.getName()} is currently not supported!")
+    }
+
+    getSharedLibSuffix = { return OperatingSystem.current().getSharedLibrarySuffix() }
+
+    javacppOsName = getJavacppOsName() 
+    sharedLibSuffix = getSharedLibSuffix()
 }

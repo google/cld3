@@ -2,10 +2,15 @@ buildscript {
     ext {
         gradleRootDir = "${rootProject.getRootDir()}/gradle"
     }
-
 }
 
 ext {
-    gradleRootDir = "${rootProject.getRootDir()}/gradle"
-    gradleDir = "${rootProject.getRootDir()}/gradle"
+    rootProjectRootDir = rootProject.getRootDir()
+    gradleRootDir = "$rootProjectRootDir/gradle"
+
+    topRootDir = "$rootProjectRootDir/.."
+    topBuildDir = "$topRootDir/build"
 }
+
+apply from: "$gradleRootDir/dependencies.gradle"
+apply from: "$gradleRootDir/third_party.gradle"

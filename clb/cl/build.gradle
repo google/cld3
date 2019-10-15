@@ -30,7 +30,7 @@ dependencyManagement {
 }
 
 dependencies {
-    implementation project(':simpleProvider') // javacpp is api-config dep-cy, grabbed by transitive
+    implementation project(':cld3provider') // javacpp is api-config dep-cy, grabbed by transitive
 
     // boot
     compile("org.springframework.boot:spring-boot-starter")

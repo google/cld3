@@ -1,3 +1,3 @@
-include('jniSimpleProviderLib')
-include('simpleProvider')
+include('jniCldProviderLib')
+include('cld3provider')
 include('cl')

@@ -1,0 +1,34 @@
+plugins {
+    id 'cpp-library'
+}
+
+apply from: "$gradleRootDir/jni.gradle"
+apply from: "$gradleRootDir/native.gradle"
+
+library {
+    // dependencies { api project(':list') implementation project(':utilities')}
+
+    tasks.withType(CppCompile).configureEach {
+        dependsOn(javaProviderPrj.generateJavacpp, ':buildCld')
+        includes.from(javaInclude, javaPlatformInclude)
+        source.from( 
+            // It would be good to have masks support in the future for
+            // https://docs.gradle.org/current/javadoc/org/gradle/api/file/ConfigurableFileCollection.html
+            "$javacppGenDir/jnijavacpp.cpp",
+            "$javacppGenDir/jniCldProviderLib.cpp"
+        )
+        compilerArgs.addAll(['-Werror', '-std=c++0x', '-D_GLIBCXX_USE_CXX11_ABI=0'])
+    }
+
+    tasks.withType(LinkSharedLibrary).configureEach {
+        libs.from(
+            "$protobufInstallDir/lib/libprotobuf-lite.a",
+            "$topBuildDir/libcld3.a"
+        )
+        // linkerArgs.addAll(['-Wl,--no-allow-shlib-undefined'])
+    }
+
+    privateHeaders.from("$topRootDir/src")
+    privateHeaders.from(topBuildDir)
+    privateHeaders.from("$protobufInstallDir/include")
+}

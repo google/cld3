@@ -1,4 +1,4 @@
-package simple;
+package cld3;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -6,8 +6,8 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class SimpleTests {
-    private static SimpleProviderLib.SimpleProviderImpl lib;
+public class CldTests {
+    private static CldProviderLib.CldProviderImpl lib;
 
     private static void printEnv(String name) {
         System.out.println(name + ": " + System.getenv(name));
@@ -18,7 +18,7 @@ public class SimpleTests {
 
     @BeforeAll
     private static void beforeAll() throws Exception {
-        lib = new SimpleProviderLib.SimpleProviderImpl();
+        lib = new CldProviderLib.CldProviderImpl();
     }
 
     @AfterAll
@@ -29,12 +29,12 @@ public class SimpleTests {
     }
 
     @Test
-    void customTest1() throws Exception {
+    void detectLanguageTest() throws Exception {
         printEnv("PATH");
         printEnv("LD_LIBRARY_PATH");
         printProp("java.library.path");
 
-        long simpleNum = lib.getSimpleNum();
-        assertThat(simpleNum).isEqualTo(17);
+        String detectedLang = lib.detectLang("I like my round table");
+        assertThat(detectedLang).isEqualTo("en");
     }
 }

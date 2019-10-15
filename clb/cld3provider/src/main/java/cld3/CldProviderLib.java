@@ -1,34 +1,35 @@
-package simple;
+package cld3;
 
 import org.bytedeco.javacpp.Loader;
 import org.bytedeco.javacpp.Pointer;
 import org.bytedeco.javacpp.annotation.Platform;
 import org.bytedeco.javacpp.annotation.Properties;
 import org.bytedeco.javacpp.annotation.Namespace;
+import org.bytedeco.javacpp.annotation.StdString;
 
-@Properties(target = "simple.SimpleProviderLib", value = {
-    @Platform(include = "simple_lib.h")
+@Properties(target = "cld3.CldProviderLib", value = {
+    @Platform(include = "cld3_lib.h")
     //, @Platform(value = "windows-x86_64", preload = { "icudt49", "icuuc49", "icuin49", "icuio49" })
     //, @Platform(value = "linux-x86_64", preload = { "icudata", "icuuc", "icui18n", "icuio" })
 })
-@Namespace("simple")
-public class SimpleProviderLib {
+@Namespace("cld3")
+public class CldProviderLib {
 
-    public static class SimpleProviderImpl extends Pointer implements SimpleProvider {
+    public static class CldProviderImpl extends Pointer implements CldProvider {
         static {
             // load(getCallerClass(2), loadProperties(), Loader.pathsFirst);
-            Loader.load(SimpleProviderImpl.class);
+            Loader.load(CldProviderImpl.class);
         }
 
-        public SimpleProviderImpl() { allocate(); }
+        public CldProviderImpl() { allocate(); }
         private native void allocate();
 
         // custom part
-        private native long getSimpleNum0();
+        private native @StdString String detectLang0(@StdString String text);
 
         @Override
-        public long getSimpleNum() {
-            return getSimpleNum0();
+        public String detectLang(String text) {
+            return detectLang0(text);
         }
     }
 }

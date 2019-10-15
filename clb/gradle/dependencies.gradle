@@ -12,6 +12,8 @@ ext {
         spring:                     '5.1.5.RELEASE',
 
         javacpp:                    '1.5.1-1',
+
+        protobuf:                   '2.5.0',
         
         junit:                      '5.5.1',
         assertj:                    '3.13.2',
