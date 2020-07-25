@@ -1,0 +1,13 @@
+include LICENSE
+include README.md
+include requirements.txt
+global-include *h
+global-include *cc
+global-include *proto
+prune .github/
+prune .eggs/
+global-exclude *.pyc
+global-exclude *.cache
+global-exclude *.so
+exclude src/cld_3/protos/*h
+exclude src/cld_3/protos/*cc
