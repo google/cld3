@@ -1,13 +1,15 @@
-"""Setup utility for gCLD3."""
+"""Setup utility for gcld3."""
 
-from distutils.command import build
 import os
 import shutil
 import subprocess
 import setuptools
+from setuptools.command import build_ext
 
-__version__ = '3.0.0'
+__version__ = '3.0.1'
 _NAME = 'gcld3'
+
+REQUIREMENTS = ['pybind11 >= 2.5.0', 'wheel >= 0.34.2']
 
 PROTO_FILES = [
     'src/feature_extractor.proto',
@@ -50,7 +52,7 @@ SRCS = [
 ]
 
 
-class CompileProtos(build.build):
+class CompileProtos(build_ext.build_ext):
   """Compile protocol buffers via `protoc` compiler."""
 
   def run(self):
@@ -64,7 +66,7 @@ class CompileProtos(build.build):
     command = ['protoc', f'--cpp_out={compiled_protos_dir}', '--proto_path=src']
     command.extend(PROTO_FILES)
     subprocess.run(command, check=True, cwd='./')
-    build.build.run(self)
+    build_ext.build_ext.run(self)
 
 
 class PyBindIncludes(object):
@@ -100,13 +102,13 @@ setuptools.setup(
     author='Rami Al-Rfou',
     author_email='rmyeid@google.com',
     cmdclass={
-        'build': CompileProtos,
+        'build_ext': CompileProtos,
     },
     ext_modules=ext_modules,
     description='CLD3 is a neural network model for language identification.',
     long_description=DESCRIPTION,
     name=_NAME,
-    setup_requires=['pybind11>=2.5.0'],
+    setup_requires=REQUIREMENTS,
     url='https://github.com/google/cld3',
     version=__version__,
     zip_safe=False,
