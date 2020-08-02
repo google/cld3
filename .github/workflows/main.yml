@@ -28,6 +28,7 @@ jobs:
 
     - name: Build package
       run: |
+        apt-get install protobuf-compiler python3-dev
         pip install setuptools
         python setup.py install
 
