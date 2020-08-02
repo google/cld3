@@ -3,8 +3,19 @@ name: gcld3
 on: [push]
 
 jobs:
-  build:
+  macos:
+    runs-on: ubuntu-latest
+    steps:
+      - name: OS Dependencies
+        run: sudo apt-get install libprotobuf-dev protobuf-compiler python3-dev
 
+  ubuntu:
+    runs-on: macos-latest
+    steps:
+      - name: OS Dependencies
+        run: sudo brew install protobuf
+
+  build:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -29,7 +40,6 @@ jobs:
 
     - name: Build package
       run: |
-        sudo apt-get install libprotobuf-dev protobuf-compiler python3-dev
         pip install setuptools
         python setup.py install
 
