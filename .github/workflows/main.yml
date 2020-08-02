@@ -26,7 +26,7 @@ jobs:
         python -m pip install --upgrade pip
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-    -name: Build package
+    - name: Build package
       run: |
         pip install setuptools
         python setup.py install
