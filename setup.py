@@ -91,8 +91,8 @@ ext_modules = [
             PyBindIncludes(),
         ],
         libraries=['protobuf'],
-        extra_compile_args=["-std=c++11", "-stdlib=libc++" if MACOS else ""],
-        extra_link_args=["-stdlib=libc++" if MACOS else ""],
+        extra_compile_args=["-std=c++11", "-stdlib=libc++"] if MACOS else [],
+        extra_link_args=["-stdlib=libc++"] if MACOS else [],
         language='c++'),
 ]
 
