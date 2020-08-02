@@ -1,6 +1,7 @@
 """Setup utility for gcld3."""
 
 import os
+import platform
 import shutil
 import subprocess
 import setuptools
