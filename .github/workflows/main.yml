@@ -48,5 +48,8 @@ jobs:
           python -m pip install cibuildwheel==1.5.5
 
     - name: Build wheels
+      env:
+        CIBW_BEFORE_BUILD_LINUX: sudo apt-get install libprotobuf-dev protobuf-compiler python3-dev
+        CIBW_BEFORE_BUILD_MACOS: brew install protobuf
       run: |
           python -m cibuildwheel --output-dir wheelhouse
