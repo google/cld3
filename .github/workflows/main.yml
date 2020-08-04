@@ -44,11 +44,11 @@ jobs:
         pytest src/python/gcld3_test.py
 
     - name: Build sdist
-      if: runner.os == 'Linux' && python-version == 3.8
+      if: runner.os == 'Linux' && ${{ matrix.python-version }} == 3.8
       run: python setup.py sdist
       
     - uses: actions/upload-artifact@v2
-      if: runner.os == 'Linux' && python-version == 3.8
+      if: runner.os == 'Linux' && ${{ matrix.python-version }} == 3.8
       with:
           path: dist/*.tar.gz
 
