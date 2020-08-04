@@ -72,7 +72,9 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest,  macos-latest]
+
     steps:
+    - uses: actions/checkout@v2
 
     - name: Set up Python 3.8
       uses: actions/setup-python@v2
