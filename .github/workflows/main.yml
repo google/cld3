@@ -92,7 +92,7 @@ jobs:
         CIBW_BEFORE_BUILD_LINUX: yum -y install protobuf-devel protobuf-compiler python3-devel
         CIBW_REPAIR_WHEEL_COMMAND_LINUX: "auditwheel repair --lib-sdir . -w {dest_dir} {wheel}"
         CIBW_BEFORE_BUILD_MACOS: brew install protobuf
-        CIBW_REPAIR_WHEEL_COMMAND_MACOS: "delocate-listdeps {wheel} && delocate-wheel -w {dest_dir} {wheel}"
+        CIBW_REPAIR_WHEEL_COMMAND_MACOS: "delocate-listdeps {wheel} && delocate-wheel -w -v {dest_dir} {wheel}"
       run: |
           python -m cibuildwheel --output-dir wheelhouse
           
