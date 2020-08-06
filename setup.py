@@ -108,6 +108,7 @@ setuptools.setup(
         'build_ext': CompileProtos,
     },
     ext_modules=ext_modules,
+    packages=setuptools.find_packages(),
     description='CLD3 is a neural network model for language identification.',
     long_description=DESCRIPTION,
     name=_NAME,
