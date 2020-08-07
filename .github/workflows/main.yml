@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 jobs:
 
-  test: 
+  test:
     name: ${{ matrix.os }}-${{matrix.python-version}}-test
     runs-on: ${{ matrix.os }}
     strategy:
@@ -14,12 +14,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-  
+
     - name: Linux Dependencies
       if: runner.os == 'Linux'
       run: sudo apt-get install libprotobuf-dev protobuf-compiler python3-dev
 
-    - name: MacOS Dependencies      
+    - name: MacOS Dependencies
       if: runner.os == 'macOS'
       run: brew install protobuf
 
@@ -41,7 +41,7 @@ jobs:
     - name:  Test with pytest
       run: |
         pip install pytest pytest-cov
-        pytest src/python/gcld3_test.py
+        pytest gcld3/gcld3_test.py
 
 
   sdist:
@@ -95,12 +95,12 @@ jobs:
         CIBW_REPAIR_WHEEL_COMMAND_MACOS: "delocate-listdeps {wheel} && delocate-wheel -w {dest_dir} -v {wheel}"
       run: |
           python -m cibuildwheel --output-dir wheelhouse
-          
+
     - uses: actions/upload-artifact@v2
       with:
           path: ./wheelhouse/*.whl
-          
-          
+
+
   testpypi:
     needs: [wheel, sdist]
     runs-on: ubuntu-latest
@@ -118,12 +118,12 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: '3.8'
-    
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install twine
-    
+
       - name: Upload to test pypi
         env:
           TWINE_USERNAME: ${{ secrets.TEST_PYPI_USERNAME }}
