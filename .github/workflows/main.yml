@@ -59,7 +59,7 @@ jobs:
           run: |
             python -m pip install --upgrade pip
             pip install setuptools wheel
-        -_ name: Build sdist
+        - name: Build sdist
           run: python setup.py sdist
 
         - uses: actions/upload-artifact@v2
