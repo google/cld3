@@ -49,7 +49,7 @@ SRCS = [
     'src/cld_3/protos/sentence.pb.cc',
     'src/cld_3/protos/task_spec.pb.cc',
     # pybind11 bindings
-    'src/python/gcld3.cc',
+    'gcld3/pybind_ext.cc',
 ]
 
 
@@ -82,17 +82,18 @@ class PyBindIncludes(object):
     import pybind11  # pylint: disable=g-import-not-at-top
     return pybind11.get_include()
 
-MACOS = platform.system() == "Darwin"
+
+MACOS = platform.system() == 'Darwin'
 ext_modules = [
     setuptools.Extension(
-        _NAME,
+        'gcld3.pybind_ext',
         sorted(SRCS),
         include_dirs=[
             PyBindIncludes(),
         ],
         libraries=['protobuf'],
-        extra_compile_args=["-std=c++11", "-stdlib=libc++"] if MACOS else [],
-        extra_link_args=["-stdlib=libc++"] if MACOS else [],
+        extra_compile_args=['-std=c++11', '-stdlib=libc++'] if MACOS else [],
+        extra_link_args=['-stdlib=libc++'] if MACOS else [],
         language='c++'),
 ]
 

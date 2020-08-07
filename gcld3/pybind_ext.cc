@@ -2,7 +2,7 @@
 #include <pybind11/pytypes.h>
 #include <pybind11/stl.h>
 
-#include "../nnet_language_identifier.h"
+#include "../src/nnet_language_identifier.h"
 
 namespace pybind11 {
 
@@ -11,7 +11,7 @@ using chrome_lang_id::NNetLanguageIdentifier;
 // This is conventional.
 namespace py = pybind11;
 
-PYBIND11_MODULE(gcld3, py_module) {
+PYBIND11_MODULE(pybind_ext, py_module) {
   py::class_<NNetLanguageIdentifier>(py_module, "NNetLanguageIdentifier")
       .def(py::init<const int, const int>(), py::arg("min_num_bytes"),
            py::arg("max_num_bytes"))
