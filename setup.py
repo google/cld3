@@ -7,7 +7,7 @@ import subprocess
 import setuptools
 from setuptools.command import build_ext
 
-__version__ = '3.0.11'
+__version__ = '3.0.12'
 _NAME = 'gcld3'
 
 REQUIREMENTS = ['pybind11 >= 2.5.0', 'wheel >= 0.34.2']
