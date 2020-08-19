@@ -101,7 +101,7 @@ jobs:
           path: ./wheelhouse/*.whl
 
 
-  testpypi:
+  pypi:
     needs: [wheel, sdist]
     runs-on: ubuntu-latest
     # upload to PyPI on every tag starting with 'v'
