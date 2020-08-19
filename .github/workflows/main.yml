@@ -1,0 +1,132 @@
+name: gcld3
+
+on: [push, pull_request]
+
+jobs:
+
+  test:
+    name: ${{ matrix.os }}-${{matrix.python-version}}-test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest,  macos-latest]
+        python-version: [3.6, 3.7, 3.8, pypy3]
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Linux Dependencies
+      if: runner.os == 'Linux'
+      run: sudo apt-get install libprotobuf-dev protobuf-compiler python3-dev
+
+    - name: MacOS Dependencies
+      if: runner.os == 'macOS'
+      run: brew install protobuf
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+    - name: Build package
+      run: |
+        pip install setuptools
+        python setup.py install
+
+    - name:  Test with pytest
+      run: |
+        pip install pytest pytest-cov
+        pytest gcld3/tests/gcld3_test.py
+
+
+  sdist:
+      name: Build source distribution
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v2
+
+        - uses: actions/setup-python@v2
+          name: Install Python
+          with:
+            python-version: "3.8"
+
+        - name: Install dependencies
+          run: |
+            python -m pip install --upgrade pip
+            pip install setuptools wheel
+        - name: Build sdist
+          run: python setup.py sdist
+
+        - uses: actions/upload-artifact@v2
+          with:
+            path: dist/*.tar.gz
+
+  wheel:
+    name: ${{ matrix.os }}-wheel
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest,  macos-latest]
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
+      with:
+          python-version: 3.8
+
+    - name: Install cibuildwheel
+      run: |
+          python -m pip install cibuildwheel==1.5.5 auditwheel delocate
+
+    - name: Build
+      env:
+        CIBW_BUILD: "cp36-* cp38-* pp36-*"
+        CIBW_SKIP: "*-win32 *-manylinux_i686 pp27-* cp27-* cp35-*"
+        CIBW_BEFORE_BUILD_LINUX: yum -y install protobuf-devel protobuf-compiler python3-devel
+        CIBW_REPAIR_WHEEL_COMMAND_LINUX: "auditwheel repair --lib-sdir . -w {dest_dir} {wheel}"
+        CIBW_BEFORE_BUILD_MACOS: brew install protobuf
+        CIBW_REPAIR_WHEEL_COMMAND_MACOS: "delocate-listdeps {wheel} && delocate-wheel -w {dest_dir} -v {wheel}"
+      run: |
+          python -m cibuildwheel --output-dir wheelhouse
+
+    - uses: actions/upload-artifact@v2
+      with:
+          path: ./wheelhouse/*.whl
+
+
+  testpypi:
+    needs: [wheel, sdist]
+    runs-on: ubuntu-latest
+    # upload to PyPI on every tag starting with 'v'
+    if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags/v')
+    # alternatively, to publish when a GitHub Release is created, use the following rule:
+    # if: github.event_name == 'release' && github.event.action == 'published'
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: artifact
+          path: dist
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install twine
+
+      - name: Upload to test pypi
+        env:
+          TWINE_USERNAME: ${{ secrets.TEST_PYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.TEST_PYPI_PASSWORD }}
+        run: |
+          twine upload --repository-url https://test.pypi.org/legacy/ dist/*
