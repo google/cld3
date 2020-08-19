@@ -101,7 +101,7 @@ jobs:
           path: ./wheelhouse/*.whl
 
 
-  testpypi:
+  pypi:
     needs: [wheel, sdist]
     runs-on: ubuntu-latest
     # upload to PyPI on every tag starting with 'v'
@@ -130,3 +130,10 @@ jobs:
           TWINE_PASSWORD: ${{ secrets.TEST_PYPI_PASSWORD }}
         run: |
           twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+
+      - name: Upload to pypi
+        env:
+          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        run: |
+          twine upload dist/*
