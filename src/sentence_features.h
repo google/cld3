@@ -30,12 +30,15 @@ using WholeSentenceFeature = FeatureFunction<Sentence>;
 
 using WholeSentenceExtractor = FeatureExtractor<Sentence>;
 
-// Declare registry for the whole Sentence feature functions.  NOTE: this is not
-// yet set to anything meaningful.  It will be set so in NNetLanguageIdentifier
-// constructor, *before* we use any feature.
+// Declare registry for the whole Sentence feature functions.  This is required
+// for clang's -Wundefined-var-template.  However, MSVC has a bug which treats
+// this declaration as a definition, leading to multiple definition errors, so
+// omit this on MSVC.
+#if !defined(COMPILER_MSVC)
 template <>
 WholeSentenceFeature::Registry
-    *RegisterableClass<WholeSentenceFeature>::registry_ = nullptr;
+    *RegisterableClass<WholeSentenceFeature>::registry_;
+#endif
 
 }  // namespace chrome_lang_id
 
