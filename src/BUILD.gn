@@ -24,6 +24,10 @@ proto_library("protos") {
   proto_out_dir = "cld_3/protos"
 }
 
+config("warnings") {
+  cflags = [ "-Wno-shadow" ]
+}
+
 static_library("cld_3") {
   sources = [
     "base.cc",
@@ -90,6 +94,7 @@ static_library("cld_3") {
     "//third_party/protobuf:protobuf_lite",
     ":protos",
   ]
+  configs += [ ":warnings" ]
 }
 
 # The executables below are functional. Uncomment to use.
