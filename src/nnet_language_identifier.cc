@@ -284,8 +284,6 @@ NNetLanguageIdentifier::FindTopNMostFreqLangs(const string &text,
   CLD2::LangSpan script_span;
   std::unordered_map<string, LangChunksStats> lang_stats;
   int total_num_bytes = 0;
-  Result result;
-  string language;
   int chunk_size = 0;  // Use the default.
   while (ss.GetOneScriptSpanLower(&script_span)) {
     const int num_original_span_bytes = script_span.text_bytes;
@@ -302,8 +300,8 @@ NNetLanguageIdentifier::FindTopNMostFreqLangs(const string &text,
 
     const string selected_text = SelectTextGivenScriptSpan(script_span);
 
-    result = FindLanguageOfValidUTF8(selected_text);
-    language = result.language;
+    Result result = FindLanguageOfValidUTF8(selected_text);
+    string language = result.language;
     lang_stats[language].byte_sum += num_original_span_bytes;
     lang_stats[language].prob_sum +=
         result.probability * num_original_span_bytes;
@@ -356,7 +354,7 @@ string NNetLanguageIdentifier::SelectTextGivenBeginAndSize(
     const char *text_begin, int text_size) {
   string output_text;
 
-  // If the size of the input is greater than the maxium number of bytes needed
+  // If the size of the input is greater than the maximum number of bytes needed
   // for a prediction, then concatenate snippets that are equally spread out
   // throughout the input.
   if (text_size > max_num_bytes_) {
