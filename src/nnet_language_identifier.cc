@@ -123,7 +123,7 @@ NNetLanguageIdentifier::NNetLanguageIdentifier(int min_num_bytes,
       max_num_bytes_(max_num_bytes) {
   CLD3_CHECK(max_num_bytes_ > 0);
   CLD3_CHECK(min_num_bytes_ >= 0);
-  CLD3_CHECK(min_num_bytes_ < max_num_bytes_);
+  CLD3_CHECK(min_num_bytes_ <= max_num_bytes_);
 
   num_snippets_ = (max_num_bytes_ <= kNumSnippets) ? 1 : kNumSnippets;
   snippet_size_ = max_num_bytes_ / num_snippets_;
