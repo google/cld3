@@ -50,7 +50,6 @@ add_library(${PROJECT_NAME}
 	src/script_span/generated_entities.cc
 	src/script_span/getonescriptspan.cc
 	src/script_span/getonescriptspan.h
-	src/script_span/getonescriptspan_test.cc
 	src/script_span/utf8statetable.cc
 	src/script_span/offsetmap.cc
 	src/script_span/text_processing.cc
