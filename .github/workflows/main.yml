@@ -13,7 +13,7 @@ jobs:
         python-version: [3.6, 3.7, 3.8, pypy3]
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Linux Dependencies
       if: runner.os == 'Linux'
@@ -24,7 +24,7 @@ jobs:
       run: brew install protobuf
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       with:
         python-version: ${{ matrix.python-version }}
 
@@ -48,9 +48,9 @@ jobs:
       name: Build source distribution
       runs-on: ubuntu-latest
       steps:
-        - uses: actions/checkout@v2
+        - uses: actions/checkout@v3
 
-        - uses: actions/setup-python@v2
+        - uses: actions/setup-python@v3
           name: Install Python
           with:
             python-version: "3.8"
@@ -62,7 +62,7 @@ jobs:
         - name: Build sdist
           run: python setup.py sdist
 
-        - uses: actions/upload-artifact@v2
+        - uses: actions/upload-artifact@v3
           with:
             path: dist/*.tar.gz
 
@@ -79,14 +79,14 @@ jobs:
             arch: aarch64
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Set up QEMU
       if: ${{ matrix.arch == 'aarch64' }}
-      uses: docker/setup-qemu-action@v1
+      uses: docker/setup-qemu-action@v2
 
     - name: Set up Python 3.8
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       with:
           python-version: 3.8
 
@@ -106,7 +106,7 @@ jobs:
       run: |
           python -m cibuildwheel --output-dir wheelhouse
 
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v3
       with:
           path: ./wheelhouse/*.whl
 
@@ -119,13 +119,13 @@ jobs:
     # alternatively, to publish when a GitHub Release is created, use the following rule:
     # if: github.event_name == 'release' && github.event.action == 'published'
     steps:
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v3
         with:
           name: artifact
           path: dist
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: '3.8'
 
