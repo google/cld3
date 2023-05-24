@@ -8,7 +8,7 @@ cmake_minimum_required(VERSION 3.9)
 find_package(Protobuf REQUIRED)
 message(STATUS "Protobuf_FOUND= ${Protobuf_FOUND}")
 message(STATUS "Protobuf_VERSION= ${Protobuf_VERSION}")
-message(WARNING "Protobuf 3 and CLD3 seems happy together. This script does NOT check if your verison of protobuf is compatible.")
+message(WARNING "Protobuf 3 and CLD3 seems happy together. This script does NOT check if your version of protobuf is compatible.")
 message(STATUS "Protobuf_LIBRARIES= ${Protobuf_LIBRARIES}")
 message(STATUS "Protobuf_LITE_LIBRARIES= ${Protobuf_LITE_LIBRARIES}") # Usually /usr/lib64/libprotobuf-lite.so
 
