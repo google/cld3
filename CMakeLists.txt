@@ -8,7 +8,7 @@ cmake_minimum_required(VERSION 3.9)
 find_package(Protobuf REQUIRED)
 message(STATUS "Protobuf_FOUND= ${Protobuf_FOUND}")
 message(STATUS "Protobuf_VERSION= ${Protobuf_VERSION}")
-message(WARNING "Protobuf 2.5 and CLD3 seems happy together. This script does NOT check if your verison of protobuf is compatible.")
+message(WARNING "Protobuf 3 and CLD3 seems happy together. This script does NOT check if your version of protobuf is compatible.")
 message(STATUS "Protobuf_LIBRARIES= ${Protobuf_LIBRARIES}")
 message(STATUS "Protobuf_LITE_LIBRARIES= ${Protobuf_LITE_LIBRARIES}") # Usually /usr/lib64/libprotobuf-lite.so
 
@@ -21,7 +21,6 @@ my_protobuf_generate_cpp(cld_3/protos PROTO_SRCS PROTO_HDRS src/feature_extracto
 message(STATUS "PROTO_HDRS= ${PROTO_HDRS}")
 
 add_definitions(-fPIC) # Position Independant Code
-add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0)
 add_definitions(-std=c++11) # Needed for std::to_string(), ...
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR} ${Protobuf_INCLUDE_DIRS}) # needed to include generated pb headers
